@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/png" href="{% static 'ask_together/img/logo1.png' %}" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+        <title>{% block title %}AskTogether{% endblock %}</title>
+        <style>
+        pre pre{
+                padding:10px;
+            }
+            pre{
+                font-size: 14px;
+                max-height: 500px;
+            }
+            .rich-content img{
+                display:block;
+                max-width: 700px;
+            }
+        </style>
+    </head>
+    <body>
+        {% block content %}
+        {% endblock %}
+        <script>
+            function formatUTCtoLocal(selector = ".datetime") {
+                document.querySelectorAll(selector).forEach(el => {
+                    const dt = new Date(el.dataset.dt);
+                    el.textContent = dt.toLocaleString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true
+                    });
+                });
+            }
+        </script>
+        {% block script_block %}{% endblock %}
+    </body>
+</html>

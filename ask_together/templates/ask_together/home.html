@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Ask Together
+{% endblock %}
+
+{% block content %}
+    {% include 'ask_together/includes/header.html' %}
+    <main class="container ">
+        <div class="flex justify-content-center row mt-4">
+            <div class="col-8 px-0 ">
+                <div class="d-flex justify-content-end mb-3">
+                    <a href="{% url 'ask_together:question_create' %}" class="btn btn-outline-primary d-block">
+                        Ask Question
+                    </a>
+                </div>    
+                <div class="border border-secondary-subtle rounded">
+                    {% for question in questions %}
+                        <div class="py-4  border-bottom d-flex flex-column">
+                            <h3 class="px-4">
+                                <a href="{% url 'ask_together:question_detail' question.pk %}" class="text-primary text-decoration-none">
+                                    {{question.title}}
+                                </a>
+                            </h3>
+                            <p class="mb-0 px-4 text-break">
+                                {{question.description|striptags|truncatewords:30}}
+                            </p>
+                            <div class=" px-4 align-self-end mt-2 d-flex gap-2">
+                                <p class="mb-0 fw-medium">{{question.user.username}}</p>
+                                <p class="datetime mb-0" data-dt="{{ question.created_at|date:'c' }}">
+                                    {{ question.created_at|date:"M d, Y H:i" }}
+                                </p>
+                            </div>  
+                        </div>
+                    {% endfor%}
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
+{% block script_block %}
+    <script>
+        formatUTCtoLocal()
+    </script>
+{% endblock %}
+

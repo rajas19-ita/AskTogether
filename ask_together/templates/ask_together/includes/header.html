@@ -1,0 +1,15 @@
+<header>
+    <nav class="navbar bg-body-tertiary">
+        <div class="container d-flex justify-content-between">
+            <h1 class="navbar-brand">
+                AskTogether
+            </h1>
+            <form method="post" action="{% url 'ask_together:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-secondary">
+                    logout
+                </button>
+            </form>
+        </div>
+    </nav>
+</header>

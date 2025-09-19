@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Ask question
+{% endblock %}
+
+{% block content %}
+    {% include 'ask_together/includes/header.html' %}
+    <main class="container">
+        <div class="row my-4">
+            <form method="post" action="{% url 'ask_together:question_create' %}" class="col-7 m-auto d-flex flex-column gap-4">
+                {% csrf_token %}
+                    <div class=" row">
+                        <label for="id_title" class=" col-1 form-label">Title:</label>
+                        <div class=" col-9">
+                            <input type="text" name="title" maxlength="200" required="" id="id_title" class="form-control">
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <label for="id_description" class="form-label">Description:</label>
+                        <textarea name="description" cols="40" rows="10" summernote="{'toolbar': [['style', ['style']], ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']], ['color', ['color']], ['para', ['ul', 'ol']], ['insert', ['link', 'picture', 'hr']], ['view', ['help']]]}" id="id_description" hidden="true" style="display: none;"></textarea>
+                        <script>
+                            var settings_id_description = {"width": 720, "height": 480, "lang": "en-US", "toolbar": [["style", ["style"]], ["font", ["bold", "italic", "underline", "strikethrough", "clear"]], ["color", ["color"]], ["para", ["ul", "ol"]], ["insert", ["link", "picture", "hr"]], ["view", ["help"]]], "url": {"language": "/static/summernote/lang/summernote-en-US.min.js", "upload_attachment": "/summernote/upload_attachment/"}};
+                        </script>
+                        <style>
+                            iframe.note-fullscreen {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                             width: 100vw!important;
+                            height: 100vh!important;
+                            z-index: 4000;
+                            }
+                        </style>
+                        <div class="summernote-div" cols="40" rows="10" summernote="{'toolbar': [['style', ['style']], ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']], ['color', ['color']], ['para', ['ul', 'ol']], ['insert', ['link', 'picture', 'hr']], ['view', ['help']]]}" width="720" height="480">
+                            <iframe id="id_description_iframe" src="/summernote/editor/id_description/" frameborder="0" width="720" height="480" style="height: 480px;"></iframe>
+                        </div>
+                        {% for error in form.description.errors %}
+                                <p class="text-danger mb-0">{{error}}</p>
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-success align-self-center">Submit</button>
+            </form>
+        </div>
+    </main>
+{% endblock %}
