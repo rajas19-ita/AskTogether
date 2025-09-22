@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
 from .models import Question, MyUser
 from django.db.models import Sum
+from django.core.paginator import Paginator
 
 
 # Create your views here.
@@ -17,7 +18,13 @@ class HomePageView(LoginRequiredMixin,TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["questions"] = Question.objects.all().order_by('-created_at') 
+        questions = Question.objects.all().order_by('-created_at') 
+        
+        paginator = Paginator(questions, 5)
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        
+        context['page_obj'] = page_obj
         
         return context
     
@@ -72,14 +79,18 @@ class QuestionDetailView(LoginRequiredMixin, DetailView):
         
         answers = object.answers.annotate(
             total_votes=Sum('votes__value')
-        )
+        ).order_by('-created_at')
         
-        for ans in answers:
+        paginator = Paginator(answers, 10)
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        
+        for ans in page_obj:
             ans.total_votes = ans.total_votes or 0
             vote = ans.votes.filter(user=self.request.user).first()
             ans.user_vote = vote.value if vote else 0
             
-        context['answers'] = answers
+        context['answers'] = page_obj
                 
         return context
     
