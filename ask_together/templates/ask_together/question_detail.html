@@ -47,7 +47,7 @@
                                 </div>
                             </div>
                             <div class="mt-4" id="question{{object.id}}_comments_container">
-                                {% for comment in object.comments.all %}
+                                {% for comment in first_comments %}
                                     <div class="px-3 py-2 border-top">
                                         <p class="mb-0">
                                             {{comment.content}}
@@ -60,8 +60,13 @@
                                 {% endfor %}
                             </div>
                             <div>
-                                <button data-btn="show" id="question{{object.id}}_comment_btn" class="text-primary btn p-0 m-0 border-0 bg-transparent " 
+                                <div class="d-flex gap-4">
+                                    <button data-btn="show" id="question{{object.id}}_comment_btn" class="text-primary btn p-0 m-0 border-0 bg-transparent " 
                                     onClick="handleCommentFormDisplay('question',{{object.id}},this)">Add a comment</button>
+                                    {% if has_more_comments %}
+                                        <button  class="text-primary btn p-0 m-0 border-0 bg-transparent" data-last-comment-id="{{last_comment_id}}"  onClick="fetchMoreComments('question', {{object.id}},this)">Show more comments</button>
+                                    {% endif %}
+                                </div>
                                 <form id="question{{object.id}}_comment_form" class="d-none" onSubmit="handleCommentSubmit(event, {{object.id}}, null, this)">
                                     <textarea name="content" id="question{{object.id}}_comment_content" class="w-100 p-2 form-control"></textarea>
                                     <div class="d-flex gap-2 mt-2">
@@ -147,7 +152,7 @@
                                         </div>
                                     </div>
                                     <div class="{% if answer.comments.count %}mt-4{% endif %}" id="answer{{answer.id}}_comments_container">
-                                        {% for comment in answer.comments.all %}
+                                        {% for comment in answer.first_comments %}
                                             <div class="px-3 py-2 border-top">
                                                 <p class="mb-0">
                                                     {{comment.content}}
@@ -160,8 +165,13 @@
                                         {% endfor %}
                                     </div>
                                     <div>
-                                        <button data-btn="show" id="answer{{answer.id}}_comment_btn" class="text-primary btn p-0 m-0 border-0 bg-transparent " 
-                                            onClick="handleCommentFormDisplay('answer',{{answer.id}},this)">Add a comment</button>
+                                        <div class="d-flex gap-4">
+                                            <button data-btn="show" id="answer{{answer.id}}_comment_btn" class="text-primary btn p-0 m-0 border-0 bg-transparent " 
+                                                onClick="handleCommentFormDisplay('answer',{{answer.id}},this)">Add a comment</button>
+                                            {% if answer.has_more_comments %}
+                                                <button  class="text-primary btn p-0 m-0 border-0 bg-transparent" data-last-comment-id="{{answer.last_comment_id}}"  onClick="fetchMoreComments('answer', {{answer.id}},this)">Show more comments</button>
+                                            {% endif %}
+                                        </div>
                                         <form id="answer{{answer.id}}_comment_form" class="d-none" onSubmit="handleCommentSubmit(event, null, {{answer.id}}, this)">
                                             <textarea name="content" id="answer{{answer.id}}_comment_content" class="w-100 p-2 form-control"></textarea>
                                             <div class="d-flex gap-2 mt-2">
@@ -594,6 +604,34 @@
                         console.log(err)
                     })
             }
+        }
+
+        const fetchMoreComments = (type, id, button)=>{
+            const csrfToken = formEl.querySelector('[name=csrfmiddlewaretoken]').value
+            const last_id = button.dataset.lastCommentId
+
+            fetch(`http://127.0.0.1:8000/asktogether/api/comments/?${type==="question"?'question_id':'answer_id'}=${id}&last_id=${last_id}`,{
+                method:'GET',
+                headers:{
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(res =>{
+                if(res.ok){
+                    return res.json()
+                }else{
+                    return res.json().then((err)=> {throw err})
+                }
+            })
+            .then(data =>{
+                data.comments.forEach((comment)=>addCommentToUi(comment, type, id))
+                button.dataset.lastCommentId = data.last_id
+                if(!data.has_more){
+                    button.classList.add('d-none')
+                }
+
+            })
+            .catch(err => {console.log(err)})
         }
 
     </script>

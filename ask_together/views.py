@@ -77,6 +77,21 @@ class QuestionDetailView(LoginRequiredMixin, DetailView):
         user_vote = object.votes.filter(user=self.request.user).first()
         context['user_vote'] = user_vote.value if user_vote else 0
         
+        comment_limit = 6
+        
+        question_comments = object.comments.all().order_by('id')[:comment_limit+1]
+        question_comments = list(question_comments)
+        
+        if len(question_comments) > comment_limit:
+            context['has_more_comments'] = True
+            context['first_comments'] = question_comments[:comment_limit]
+            context['last_comment_id'] = context['first_comments'][-1].id
+        else:
+            context['has_more_comments'] = False
+            context['last_comment_id'] = question_comments[-1].id if question_comments else None
+            context['first_comments'] = question_comments       
+    
+        
         answers = object.answers.annotate(
             total_votes=Sum('votes__value')
         ).order_by('-created_at')
@@ -89,6 +104,18 @@ class QuestionDetailView(LoginRequiredMixin, DetailView):
             ans.total_votes = ans.total_votes or 0
             vote = ans.votes.filter(user=self.request.user).first()
             ans.user_vote = vote.value if vote else 0
+            
+            comments = ans.comments.all().order_by('id')[:comment_limit+1]
+            comments = list(comments)
+            
+            if len(comments) > comment_limit:
+                ans.has_more_comments = True
+                ans.first_comments = comments[:comment_limit]
+                ans.last_comment_id = ans.first_comments[-1].id
+            else:
+                ans.has_more_comments = False
+                ans.last_comment_id = comments[-1].id if comments else None
+                ans.first_comments = comments
             
         context['answers'] = page_obj
                 

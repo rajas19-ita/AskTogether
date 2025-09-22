@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from .serializers import AnswerSerializer, CommentSerializer
-from ask_together.models import Question, Answer, MyUser, Vote
+from ask_together.models import Question, Answer, MyUser, Vote, Comment
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.utils import timezone
@@ -235,3 +235,68 @@ def vote_answer(request, pk):
     
     
     return Response({'message':f'{action}d successfully', 'answer_id':vote.answer.id, 'u_vote':vote.value})
+
+
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def get_comments(request):
+    try:
+        limit = int(request.GET.get('limit',20))
+    except (ValueError,TypeError):
+        return Response({"error":"Invalid Limit"}, status=400)
+    
+    try:
+        last_id = request.GET.get('last_id')
+        last_id = int(last_id) if last_id is not None else None
+    except (ValueError, TypeError):
+        return Response({"error": "Invalid last_id"}, status=400)
+    
+    limit = max(1, min(limit, 20))
+
+    if request.GET.get('question_id'):
+        try:
+            question_id = int(request.GET.get('question_id'))
+        except (ValueError, TypeError):
+            return Response({"error": "Invalid question_id"}, status=400)
+        
+        qs = Comment.objects.filter(question_id = question_id).order_by('id')   
+    else:    
+        try:
+            answer_id = int(request.GET.get('answer_id'))
+        except (ValueError, TypeError):
+            return Response({"error": "Invalid answer_id"}, status=400)
+
+        qs = Comment.objects.filter(answer_id = answer_id).order_by('id')
+    
+    
+    
+    if last_id:
+        qs = qs.filter(id__gt=last_id)
+        
+    comments = list(qs[:limit+1])
+    has_more = len(comments) > limit
+    
+    if has_more:
+        comments = comments[:limit]
+    
+    data = {
+        "comments": [
+            {
+                'id':comment.id,
+                'content': comment.content,
+                'user': {
+                    "id": comment.user.id,
+                    "username":comment.user.username
+                },
+                'created_at': comment.created_at.isoformat(),
+                'updated_at': comment.updated_at.isoformat()
+            } 
+            for comment in comments
+        ],
+        "has_more":has_more,
+        "last_id": comments[-1].id if comments else None,
+    }
+    
+    
+    return Response(data)
