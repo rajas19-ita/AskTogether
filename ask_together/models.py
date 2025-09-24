@@ -14,6 +14,9 @@ class MyUser(AbstractUser):
     x_handle = models.CharField(max_length=100, blank=True)
     profile_image = models.ImageField(upload_to='profiles', blank=True)
     
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username"]
+    
 
 
 class Question(models.Model):

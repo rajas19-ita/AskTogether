@@ -1,8 +1,20 @@
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import MyUser, Question, Answer
 from django import forms
 from django_summernote.widgets import SummernoteWidget
 from .utils import sanitize_html
+
+
+class LoginForm(AuthenticationForm):
+    username = forms.EmailField(
+        label='Email',
+        max_length=254,
+        widget=forms.EmailInput(
+            attrs={
+                'id':'email'
+            }
+        )
+    )
 
 
 class SignUpForm(UserCreationForm):

@@ -1,4 +1,4 @@
-from .forms import SignUpForm, QuestionForm, UserUpdateForm
+from .forms import SignUpForm, QuestionForm, UserUpdateForm, LoginForm
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
@@ -31,6 +31,7 @@ class HomePageView(LoginRequiredMixin,TemplateView):
     
 class UserLoginView(LoginView):
     template_name = 'ask_together/login.html'
+    authentication_form = LoginForm
 
     def get_success_url(self):
         return reverse('ask_together:home')
