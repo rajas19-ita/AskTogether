@@ -17,26 +17,34 @@
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-4">
-                    <div class="avatar header-avatar">
-                        <a class="w-100 h-100 d-block" style="cursor:pointer" href="{% url 'ask_together:user_profile' request.user.id %}">
-                            <img class=" w-100 h-100 object-fit-cover" src="{% if request.user.profile_image %}{{request.user.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"/>
-                        </a>
-                    </div>
+                    {% if user.is_authenticated %}
+                        <div class="avatar header-avatar">
+                            <a class="w-100 h-100 d-block" style="cursor:pointer" href="{% url 'ask_together:user_profile' request.user.id %}">
+                                <img class=" w-100 h-100 object-fit-cover" src="{% if request.user.profile_image %}{{request.user.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"/>
+                            </a>
+                        </div>
+                    {% endif %}
                     <div class="dropdown">
                         <button class="btn-hamburger dropdown-toggle"  type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
                                 <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
                             </svg>
                         </button>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <form method="post" action="{% url 'ask_together:logout' %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="dropdown-item">
-                                        logout
-                                    </button>
-                                </form>
-                            </li>
+                        <ul class="dropdown-menu text-center">
+                            {% if user.is_authenticated %}
+                                <li>
+                                    <form method="post" action="{% url 'ask_together:logout' %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item">
+                                            logout
+                                        </button>
+                                    </form>
+                                </li>
+                            {% else %}
+                                <li>
+                                    <a href="{% url 'ask_together:login' %}" class="text-decoration-none d-block ">Login / Signup</a>
+                                </li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>
@@ -44,9 +52,3 @@
         </div> 
     </nav>
 </header>
-{% comment %} <form method="post" action="{% url 'ask_together:logout' %}">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-outline-secondary">
-        logout
-    </button>
-</form> {% endcomment %}

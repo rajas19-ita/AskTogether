@@ -107,8 +107,6 @@ def create_comment(request):
     return Response(serializer.errors, status=400)
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication])
-@permission_classes([IsAuthenticated])
 def get_posts(request, pk):
     user = get_object_or_404(MyUser, pk=pk)
     

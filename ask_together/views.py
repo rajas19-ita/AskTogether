@@ -27,8 +27,7 @@ GOOGLE_CLIENT_CONFIG = settings.GOOGLE_CLIENT_CONFIG
 
 # Create your views here.
 
-class HomePageView(LoginRequiredMixin,TemplateView):
-    login_url = reverse_lazy('ask_together:login')
+class HomePageView(TemplateView):
     template_name = 'ask_together/home.html'
     
     def get_context_data(self, **kwargs):
@@ -85,8 +84,7 @@ class QuestionCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
     
     
-class QuestionDetailView(LoginRequiredMixin, DetailView):
-    login_url = reverse_lazy('ask_together:login')
+class QuestionDetailView(DetailView):
     template_name='ask_together/question_detail.html'
     model = Question
     
@@ -98,8 +96,9 @@ class QuestionDetailView(LoginRequiredMixin, DetailView):
         total_votes = object.votes.aggregate(score=Sum('value'))['score'] or 0
         context['total_votes'] = total_votes
         
-        user_vote = object.votes.filter(user=self.request.user).first()
-        context['user_vote'] = user_vote.value if user_vote else 0
+        if self.request.user.is_authenticated:
+            user_vote = object.votes.filter(user=self.request.user).first()
+            context['user_vote'] = user_vote.value if user_vote else 0
         
         comment_limit = 6
         
@@ -126,8 +125,9 @@ class QuestionDetailView(LoginRequiredMixin, DetailView):
         
         for ans in page_obj:
             ans.total_votes = ans.total_votes or 0
-            vote = ans.votes.filter(user=self.request.user).first()
-            ans.user_vote = vote.value if vote else 0
+            if self.request.user.is_authenticated:
+                vote = ans.votes.filter(user=self.request.user).first()
+                ans.user_vote = vote.value if vote else 0
             
             comments = ans.comments.all().order_by('id')[:comment_limit+1]
             comments = list(comments)
@@ -147,8 +147,7 @@ class QuestionDetailView(LoginRequiredMixin, DetailView):
     
     
     
-class UserDetailView(LoginRequiredMixin, DetailView):
-    login_url = reverse_lazy('ask_together:login')
+class UserDetailView(DetailView):
     template_name = 'ask_together/user_profile.html'
     model = MyUser
 
