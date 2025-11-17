@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
     
 {% block title %}
     {{object.title}}
@@ -6,158 +7,61 @@
 
 {% block content %}
     {% include 'ask_together/includes/header.html' %}
-    <main class="container">
-        <div class="row my-4">
-            <div class="col-8 m-auto">
-                <div class="mb-3">
-                    <div class="pb-3 border-bottom">
-                        <h2>{{object.title}}</h2>
-                        <div class="flex">
-                            <p class="mb-0"><span class="datetime" data-dt="{{ object.created_at|date:'c' }}">{{ object.created_at|date:"M d, Y H:i" }}</span></p>
-                        </div>
-                    </div> 
-                    <div class=" pt-4 d-flex gap-4">
-                        <div class="">
-                            <div class="d-flex flex-column gap-2 align-items-center">
-                                <button data-action="upvote" class="btn btn-outline-secondary rounded-circle p-2 d-flex question{{object.id}}-vote-btn {% if user_vote == 1 %}active{% endif %}" onClick="handleVote('question',{{object.id}},'upvote',this)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 16 16">
-                                        <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
-                                    </svg>
-                                </button>
-                                <span id="question{{object.id}}_vote_count"  class="fw-medium fs-4">{{total_votes}}</span>
-                                <button data-action="downvote" class="btn btn-outline-secondary rounded-circle p-2 d-flex question{{object.id}}-vote-btn {% if user_vote == -1 %}active{% endif %}" onClick="handleVote('question',{{object.id}},'downvote',this)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
-                                        <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="d-flex flex-column flex-grow-1 ">
-                            <div class="pb-4">
-                                {{object.description|safe}}
-                            </div>
-                            <div class="d-flex justify-content-end">
-                                <div class="bg-primary-subtle bg-opacity-25 py-1 px-2 rounded small">
-                                    <p class="mb-0  text-light-emphasis">
-                                        asked <span class="datetime " data-dt="{{ object.created_at|date:'c' }}">
-                                            {{ object.created_at|date:"M d, Y H:i" }}
-                                        </span>
-                                    </p>
-                                    <p class="mb-0 text-primary fs-6">{{object.user.username}}</p>
+    <main class="min-vh-100">
+        <div class="container">
+            <div class="d-flex min-vh-100">
+                {% include 'ask_together/includes/sidebar.html' %}
+                <div class="py-4 px-4 border-start flex-grow-1 d-flex flex-column align-items-center">
+                    <div class="w-100" style="max-width:980px">
+                        <div class="mb-3">
+                            <div class="pb-3 border-bottom">
+                                <h2 class="fw-normal fs-3">{{object.title}}</h2>
+                                <div class="d-flex">
+                                   <p class="mb-0 small d-flex gap-2"><span class="text-secondary">Asked </span><span class="timeago" data-dt="{{ object.created_at|date:'c' }}">{{ object.created_at|date:"M d, Y H:i" }}</span></p>
                                 </div>
-                            </div>
-                            <div class="mt-4" id="question{{object.id}}_comments_container">
-                                {% for comment in first_comments %}
-                                    <div class="px-3 py-2 border-top">
-                                        <p class="mb-0">
-                                            {{comment.content}}
-                                            <span class="d-inline-block">
-                                                <span>- {{comment.user.username}}</span>
-                                                <span class="datetime text-secondary small" data-dt="{{ comment.created_at|date:'c' }}">{{ comment.created_at|date:"M d, Y H:i" }}</span>
-                                            </span>
-                                        </p>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                            <div>
-                                <div class="d-flex gap-4">
-                                    <button data-btn="show" id="question{{object.id}}_comment_btn" class="text-primary btn p-0 m-0 border-0 bg-transparent " 
-                                    onClick="handleCommentFormDisplay('question',{{object.id}},this)">Add a comment</button>
-                                    {% if has_more_comments %}
-                                        <button  class="text-primary btn p-0 m-0 border-0 bg-transparent" data-last-comment-id="{{last_comment_id}}"  onClick="fetchMoreComments('question', {{object.id}},this)">Show more comments</button>
-                                    {% endif %}
-                                </div>
-                                <form id="question{{object.id}}_comment_form" class="d-none" onSubmit="handleCommentSubmit(event, {{object.id}}, null, this)">
-                                    <textarea name="content" id="question{{object.id}}_comment_content" class="w-100 p-2 form-control"></textarea>
-                                    <div class="d-flex gap-2 mt-2">
-                                        <button class="btn btn-sm btn-primary" type="submit">Add Comment</button>
-                                        <button class="text-primary btn p-0 m-0 border-0 bg-transparent" type="button" data-btn="cancel"
-                                        onClick="handleCommentFormDisplay('question',{{object.id}},this)">Cancel</button>
-                                    </div>    
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <h3 id="answer_count" class="fs-4">{{object.answers.count}} Answer{{object.answers.count|pluralize}}</h3>
-                </div>
-                <div class="pagination">
-                    <span class="step-links">
-                        {% if answers.has_previous %}
-                            <a href="?page=1">&laquo; first</a>
-                            <a href="?page={{ answers.previous_page_number }}">previous</a>
-                        {% endif %}
-
-                        <span class="current">
-                            Page {{ answers.number }} of {{ answers.paginator.num_pages }}.
-                        </span>
-
-                        {% if answers.has_next %}
-                            <a href="?page={{ answers.next_page_number }}">next</a>
-                            <a href="?page={{ answers.paginator.num_pages }}">last &raquo;</a>
-                        {% endif %}
-                    </span>
-                </div>
-                <div id="answer_container">
-                    {% for answer in answers %}
-                        <div class="d-flex gap-4 border-bottom py-4 ">
-                                <div class="d-flex flex-column align-items-center gap-4">
+                            </div> 
+                            <div class=" pt-4 d-flex gap-4">
+                                <div class="">
                                     <div class="d-flex flex-column gap-2 align-items-center">
-                                        <button data-action="upvote" class="btn btn-outline-secondary rounded-circle p-2 d-flex answer{{answer.id}}-vote-btn  {% if answer.user_vote == 1 %}active{% endif %}" onClick="handleVote('answer',{{answer.id}},'upvote',this)">
+                                        <button data-action="upvote" class="btn-vote d-flex question{{object.id}}-vote-btn {% if user_vote == 1 %}btn-vote-active{% endif %}" onClick="handleVote('question',{{object.id}},'upvote',this)">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 16 16">
                                                 <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
                                             </svg>
                                         </button>
-                                        <span id="answer{{answer.id}}_vote_count" class="fw-medium fs-4">{{answer.total_votes}}</span>
-                                        <button data-action="downvote" class="btn btn-outline-secondary rounded-circle p-2 d-flex answer{{answer.id}}-vote-btn {% if answer.user_vote == -1 %}active{% endif %}" onClick="handleVote('answer',{{answer.id}},'downvote',this)">
+                                        <span id="question{{object.id}}_vote_count"  class="fw-medium fs-4">{{total_votes}}</span>
+                                        <button data-action="downvote" class="btn-vote d-flex question{{object.id}}-vote-btn {% if user_vote == -1 %}btn-vote-active{% endif %}" onClick="handleVote('question',{{object.id}},'downvote',this)">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
                                                 <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
                                             </svg>
                                         </button>
                                     </div>
-                                    {% if object.user == request.user %}
-                                        <div>
-                                            <button id="answer{{answer.id}}_acc_btn" class="btn p-0 m-0 border-0 bg-transparent" onClick="handleAcceptedAnswer({{answer.id}}, this)">
-                                                <svg data-accepted='false' xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-check-circle {% if question.accepted_answer == answer %} d-none {% endif %}" viewBox="0 0 16 16">
-                                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                                                    <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
-                                                </svg>
-                                                
-                                                <svg data-accepted='true'  xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-check-circle-fill text-success {% if question.accepted_answer != answer %} d-none {% endif %}" viewBox="0 0 16 16">
-                                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    {% elif answer == question.accepted_answer %}
-                                        <div>
-                                            <svg id="answer{{answer.id}}_acc_svg" xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-check-circle-fill text-success" viewBox="0 0 16 16">
-                                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                                            </svg>
-                                        </div>
-                                    {% endif%}
                                 </div>
-                                <div class="flex-grow-1">
-                                    <div class=" pb-4 rich-content">
-                                        {{answer.content|safe}}
+                                <div class="d-flex flex-column flex-grow-1 ">
+                                    <div class="pb-4">
+                                        {{object.description|safe}}
                                     </div>
                                     <div class="d-flex justify-content-end">
-                                        <div class=" py-1 px-2 small ">
-                                            <p class="mb-0  text-light-emphasis">
-                                                answered <span class="datetime " data-dt="{{ answer.created_at|date:'c' }}">
-                                                    {{ answer.created_at|date:"M d, Y H:i" }}
+                                        <div class="bg-brand-light py-2 px-2 rounded">
+                                            <p class="mb-1  text-secondary small">
+                                                asked <span class="datetime " data-dt="{{ object.created_at|date:'c' }}">
+                                                    {{ object.created_at|date:"M d, Y H:i" }}
                                                 </span>
                                             </p>
-                                            <p class="mb-0 text-primary fs-6">{{answer.author.username}}</p>
+                                            <div class="d-flex align-items-center gap-2" >
+                                                <div class="avatar list-avatar" style="width:30px;height:30px">
+                                                    <img class=" w-100 h-100 object-fit-cover" src="{% if object.user.profile_image %}{{object.user.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"/>
+                                                </div>
+                                                <p class="mb-0 text-brand fs-6">{{object.user.username}}</p>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="{% if answer.comments.count %}mt-4{% endif %}" id="answer{{answer.id}}_comments_container">
-                                        {% for comment in answer.first_comments %}
+                                    <div class="mt-4" id="question{{object.id}}_comments_container">
+                                        {% for comment in first_comments %}
                                             <div class="px-3 py-2 border-top">
-                                                <p class="mb-0">
+                                                <p class="mb-0 fs-6">
                                                     {{comment.content}}
                                                     <span class="d-inline-block">
-                                                        <span>- {{comment.user.username}}</span>
+                                                        <span class="text-brand">- {{comment.user.username}}</span>
                                                         <span class="datetime text-secondary small" data-dt="{{ comment.created_at|date:'c' }}">{{ comment.created_at|date:"M d, Y H:i" }}</span>
                                                     </span>
                                                 </p>
@@ -166,65 +70,215 @@
                                     </div>
                                     <div>
                                         <div class="d-flex gap-4">
-                                            <button data-btn="show" id="answer{{answer.id}}_comment_btn" class="text-primary btn p-0 m-0 border-0 bg-transparent " 
-                                                onClick="handleCommentFormDisplay('answer',{{answer.id}},this)">Add a comment</button>
-                                            {% if answer.has_more_comments %}
-                                                <button  class="text-primary btn p-0 m-0 border-0 bg-transparent" data-last-comment-id="{{answer.last_comment_id}}"  onClick="fetchMoreComments('answer', {{answer.id}},this)">Show more comments</button>
+                                            <button data-btn="show" id="question{{object.id}}_comment_btn" class="text-primary btn p-0 m-0 border-0 bg-transparent small" 
+                                            onClick="handleCommentFormDisplay('question',{{object.id}},this)">Add a comment</button>
+                                            {% if has_more_comments %}
+                                                <button  class="text-primary btn p-0 m-0 border-0 bg-transparent small" data-last-comment-id="{{last_comment_id}}"  onClick="fetchMoreComments('question', {{object.id}},this)">Show more comments</button>
                                             {% endif %}
                                         </div>
-                                        <form id="answer{{answer.id}}_comment_form" class="d-none" onSubmit="handleCommentSubmit(event, null, {{answer.id}}, this)">
-                                            <textarea name="content" id="answer{{answer.id}}_comment_content" class="w-100 p-2 form-control"></textarea>
+                                        <form id="question{{object.id}}_comment_form" class="d-none" onSubmit="handleCommentSubmit(event, {{object.id}}, null, this)">
+                                            <textarea name="content" id="question{{object.id}}_comment_content" class="w-100 p-2 form-control"></textarea>
                                             <div class="d-flex gap-2 mt-2">
                                                 <button class="btn btn-sm btn-primary" type="submit">Add Comment</button>
                                                 <button class="text-primary btn p-0 m-0 border-0 bg-transparent" type="button" data-btn="cancel"
-                                                onClick="handleCommentFormDisplay('answer',{{answer.id}},this)">Cancel</button>
+                                                onClick="handleCommentFormDisplay('question',{{object.id}},this)">Cancel</button>
                                             </div>    
                                         </form>
                                     </div>
                                 </div>
+                            </div>
                         </div>
-                    {% endfor %}
-                </div>
-                <div class="pagination">
-                    <span class="step-links">
-                        {% if answers.has_previous %}
-                            <a href="?page=1">&laquo; first</a>
-                            <a href="?page={{ answers.previous_page_number }}">previous</a>
-                        {% endif %}
-
-                        <span class="current">
-                            Page {{ answers.number }} of {{ answers.paginator.num_pages }}.
-                        </span>
-
-                        {% if answers.has_next %}
-                            <a href="?page={{ answers.next_page_number }}">next</a>
-                            <a href="?page={{ answers.paginator.num_pages }}">last &raquo;</a>
-                        {% endif %}
-                    </span>
-                </div>
-                <div class="mt-3">
-                    <form id="answer_form" >
-                        {% csrf_token %}
-                        <label for="id_content" class="fs-5 mb-3">Your Answer:</label>
-                        <textarea name="content" cols="40" rows="10" summernote="{'toolbar': [['style', ['style']], ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']], ['color', ['color']], ['para', ['ul', 'ol']], ['insert', ['link', 'picture', 'hr']], ['view', ['help']]], 'width': '100%', 'height': '400px'}" id="id_content" hidden="true" style="display: none;"></textarea>
-                        <script>
-                            var settings_id_content = {"width": "100%", "height": "400px", "lang": "en-US", "toolbar": [["style", ["style"]], ["font", ["bold", "italic", "underline", "strikethrough", "clear"]], ["color", ["color"]], ["para", ["ul", "ol"]], ["insert", ["link", "picture", "hr"]], ["view", ["help"]]], "url": {"language": "/static/summernote/lang/summernote-en-US.min.js", "upload_attachment": "/summernote/upload_attachment/"}};
-                        </script>
-                        <style>
-                            iframe.note-fullscreen {
-                            position: fixed;
-                            top: 0;
-                            left: 0;
-                            width: 100vw!important;
-                            height: 100vh!important;
-                            z-index: 4000;
-                            }
-                        </style>
-                        <div class="summernote-div" cols="40" rows="10" summernote="{'toolbar': [['style', ['style']], ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']], ['color', ['color']], ['para', ['ul', 'ol']], ['insert', ['link', 'picture', 'hr']], ['view', ['help']]], 'width': '100%', 'height': '400px'}" width="100%" height="400px">
-                            <iframe id="id_content_iframe" src="/summernote/editor/id_content/" frameborder="0" width="100%" height="400px" style="height: 400px;"></iframe>
+                        <div class="mb-3">
+                            <h3 id="answer_count" class="fs-4">{{object.answers.count}} Answer{{object.answers.count|pluralize}}</h3>
                         </div>
-                        <button type="submit" class="btn btn-primary mt-3">Post Your Answer</button>
-                    </form>
+                        {% if answers %}
+                            <div class="d-flex justify-content-center mb-3">
+                                <span class="d-flex align-items-center gap-3">
+                                    {% if answers.has_previous %}
+                                        <a href="?page=1" class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-double-left" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+                                                <path fill-rule="evenodd" d="M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+                                            </svg>
+                                        </a>
+                                        <a href="?page={{ answers.previous_page_number }}"  class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+                                            </svg>
+                                        </a>
+                                    {% endif %}
+            
+                                    <span class="current">
+                                        {{ answers.number }} of {{ answers.paginator.num_pages }}
+                                    </span>
+            
+                                    {% if answers.has_next %}
+                                        <a href="?page={{ answers.next_page_number }}" class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
+                                            </svg>
+                                        </a>
+                                        <a href="?page={{ answers.paginator.num_pages }}" class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-double-right" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708"/>
+                                                <path fill-rule="evenodd" d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708"/>
+                                            </svg>
+                                        </a>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        {% endif %}
+                        <div id="answer_container">
+                            {% for answer in answers %}
+                                <div class="d-flex gap-4 border-bottom py-4 ">
+                                        <div class="d-flex flex-column align-items-center gap-2">
+                                            <div class="d-flex flex-column gap-2 align-items-center">
+                                                <button data-action="upvote" class="btn-vote d-flex answer{{answer.id}}-vote-btn  {% if answer.user_vote == 1 %}btn-vote-active{% endif %}" onClick="handleVote('answer',{{answer.id}},'upvote',this)">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 16 16">
+                                                        <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
+                                                    </svg>
+                                                </button>
+                                                <span id="answer{{answer.id}}_vote_count" class="fw-medium fs-4">{{answer.total_votes}}</span>
+                                                <button data-action="downvote" class="btn-vote d-flex answer{{answer.id}}-vote-btn {% if answer.user_vote == -1 %}btn-vote-active{% endif %}" onClick="handleVote('answer',{{answer.id}},'downvote',this)">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                                                        <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            {% if object.user == request.user %}
+                                                <div>
+                                                    <button id="answer{{answer.id}}_acc_btn" class="btn p-0 m-0 border-0 bg-transparent" onClick="handleAcceptedAnswer({{answer.id}}, this)">
+                                                        <svg data-accepted='false'  xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="40" height="40" viewBox="0 0 20 20" class="text-secondary text-opacity-50 {% if question.accepted_answer == answer %} d-none {% endif %}">
+                                                            <path d="M8.294 16.998c-.435 0-.847-.203-1.111-.553L3.61 11.724a1.392 1.392 0 0 1 .27-1.951 1.392 1.392 0 0 1 1.953.27l2.351 3.104 5.911-9.492a1.396 1.396 0 0 1 1.921-.445c.653.406.854 1.266.446 1.92L9.478 16.34a1.39 1.39 0 0 1-1.12.656c-.022.002-.042.002-.064.002z"/>
+                                                        </svg>
+                                                        <svg data-accepted='true' xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="40" height="40" viewBox="0 0 20 20" class="text-success {% if question.accepted_answer != answer %} d-none {% endif %}">
+                                                            <path d="M8.294 16.998c-.435 0-.847-.203-1.111-.553L3.61 11.724a1.392 1.392 0 0 1 .27-1.951 1.392 1.392 0 0 1 1.953.27l2.351 3.104 5.911-9.492a1.396 1.396 0 0 1 1.921-.445c.653.406.854 1.266.446 1.92L9.478 16.34a1.39 1.39 0 0 1-1.12.656c-.022.002-.042.002-.064.002z"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            {% elif answer == question.accepted_answer %}
+                                                <div>
+                                                    <svg id="answer{{answer.id}}_acc_svg"  xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="40" height="40" viewBox="0 0 20 20" class="text-success">
+                                                        <path d="M8.294 16.998c-.435 0-.847-.203-1.111-.553L3.61 11.724a1.392 1.392 0 0 1 .27-1.951 1.392 1.392 0 0 1 1.953.27l2.351 3.104 5.911-9.492a1.396 1.396 0 0 1 1.921-.445c.653.406.854 1.266.446 1.92L9.478 16.34a1.39 1.39 0 0 1-1.12.656c-.022.002-.042.002-.064.002z"/>
+                                                    </svg>
+                                                </div>
+                                            {% endif%}
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class=" pb-4 rich-content">
+                                                {{answer.content|safe}}
+                                            </div>
+                                            <div class="d-flex justify-content-end">
+                                                <div class="{% if answer.author == question.user %}bg-brand-light rounded{% endif %} py-2 px-2 small ">
+                                                    <p class="mb-1 text-secondary">
+                                                        answered <span class="datetime " data-dt="{{ answer.created_at|date:'c' }}">
+                                                            {{ answer.created_at|date:"M d, Y H:i" }}
+                                                        </span>
+                                                    </p>
+                                                    <div class="d-flex align-items-center gap-2" >
+                                                        <div class="avatar list-avatar" style="width:30px;height:30px">
+                                                            <img class=" w-100 h-100 object-fit-cover" src="{% if answer.author.profile_image %}{{answer.author.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"/>
+                                                        </div>
+                                                        <p class="mb-0 text-brand fs-6">{{answer.author.username}}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="{% if answer.comments.count %}mt-4{% endif %}" id="answer{{answer.id}}_comments_container">
+                                                {% for comment in answer.first_comments %}
+                                                    <div class="px-3 py-2 border-top">
+                                                        <p class="mb-0 fs-6">
+                                                            {{comment.content}}
+                                                            <span class="d-inline-block">
+                                                                <span class="text-brand">- {{comment.user.username}}</span>
+                                                                <span class="datetime text-secondary small" data-dt="{{ comment.created_at|date:'c' }}">{{ comment.created_at|date:"M d, Y H:i" }}</span>
+                                                            </span>
+                                                        </p>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                            <div>
+                                                <div class="d-flex gap-4">
+                                                    <button data-btn="show" id="answer{{answer.id}}_comment_btn" class="text-primary btn p-0 m-0 border-0 bg-transparent " 
+                                                        onClick="handleCommentFormDisplay('answer',{{answer.id}},this)">Add a comment</button>
+                                                    {% if answer.has_more_comments %}
+                                                        <button  class="text-primary btn p-0 m-0 border-0 bg-transparent" data-last-comment-id="{{answer.last_comment_id}}"  onClick="fetchMoreComments('answer', {{answer.id}},this)">Show more comments</button>
+                                                    {% endif %}
+                                                </div>
+                                                <form id="answer{{answer.id}}_comment_form" class="d-none" onSubmit="handleCommentSubmit(event, null, {{answer.id}}, this)">
+                                                    <textarea name="content" id="answer{{answer.id}}_comment_content" class="w-100 p-2 form-control"></textarea>
+                                                    <div class="d-flex gap-2 mt-2">
+                                                        <button class="btn btn-sm btn-primary" type="submit">Add Comment</button>
+                                                        <button class="text-primary btn p-0 m-0 border-0 bg-transparent" type="button" data-btn="cancel"
+                                                        onClick="handleCommentFormDisplay('answer',{{answer.id}},this)">Cancel</button>
+                                                    </div>    
+                                                </form>
+                                            </div>
+                                        </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% if answers %}
+                            <div class="d-flex justify-content-center mt-3">
+                                <span class="d-flex align-items-center gap-3">
+                                    {% if answers.has_previous %}
+                                        <a href="?page=1" class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-double-left" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+                                                <path fill-rule="evenodd" d="M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+                                            </svg>
+                                        </a>
+                                        <a href="?page={{ answers.previous_page_number }}"  class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+                                            </svg>
+                                        </a>
+                                    {% endif %}
+            
+                                    <span class="current">
+                                        {{ answers.number }} of {{ answers.paginator.num_pages }}
+                                    </span>
+            
+                                    {% if answers.has_next %}
+                                        <a href="?page={{ answers.next_page_number }}" class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
+                                            </svg>
+                                        </a>
+                                        <a href="?page={{ answers.paginator.num_pages }}" class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-double-right" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708"/>
+                                                <path fill-rule="evenodd" d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708"/>
+                                            </svg>
+                                        </a>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        {% endif %}
+                        <div class="mt-3">
+                            <form id="answer_form" >
+                                {% csrf_token %}
+                                <label for="id_content" class="fs-5 mb-3">Your Answer:</label>
+                                <textarea name="content" cols="40" rows="10" summernote="{'toolbar': [['style', ['style']], ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']], ['color', ['color']], ['para', ['ul', 'ol']], ['insert', ['link', 'picture', 'hr']], ['view', ['help']]], 'width': '100%', 'height': '400px'}" id="id_content" hidden="true" style="display: none;"></textarea>
+                                <script>
+                                    var settings_id_content = {"width": "100%", "height": "400px", "lang": "en-US", "toolbar": [["style", ["style"]], ["font", ["bold", "italic", "underline", "strikethrough", "clear"]], ["color", ["color"]], ["para", ["ul", "ol"]], ["insert", ["link", "picture", "hr"]], ["view", ["help"]]], "url": {"language": "/static/summernote/lang/summernote-en-US.min.js", "upload_attachment": "/summernote/upload_attachment/"}};
+                                </script>
+                                <style>
+                                    iframe.note-fullscreen {
+                                    position: fixed;
+                                    top: 0;
+                                    left: 0;
+                                    width: 100vw!important;
+                                    height: 100vh!important;
+                                    z-index: 4000;
+                                    }
+                                </style>
+                                <div class="summernote-div" cols="40" rows="10" summernote="{'toolbar': [['style', ['style']], ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']], ['color', ['color']], ['para', ['ul', 'ol']], ['insert', ['link', 'picture', 'hr']], ['view', ['help']]], 'width': '100%', 'height': '400px'}" width="100%" height="400px">
+                                    <iframe id="id_content_iframe" src="/summernote/editor/id_content/" frameborder="0" width="100%" height="400px" style="height: 400px;"></iframe>
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-3">Post Your Answer</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -233,6 +287,11 @@
 {% block script_block %}
     <script>
         formatUTCtoLocal()
+
+        document.querySelectorAll('.timeago').forEach(el => {
+            const dt = el.dataset.dt;
+            el.textContent = `${timeAgo(dt)}`;
+        });
 
         const formEl = document.getElementById("answer_form");
         let acceptedAnswer = {% if object.accepted_answer %}{{object.accepted_answer.id}}{% else %}null{% endif %}
@@ -364,7 +423,7 @@
             let actionMap = {upvote:1, downvote:-1}
             let value = actionMap[prevAction]
 
-            if (button.classList.contains('active')){
+            if (button.classList.contains('btn-vote-active')){
                 action = 'remove'
             }
             
@@ -388,9 +447,9 @@
             .then(data=>{
                 let activeAction = ''
                 document.querySelectorAll(`.${type+id}-vote-btn`).forEach((btn)=>{
-                    if(btn.classList.contains('active')){
+                    if(btn.classList.contains('btn-vote-active')){
                         activeAction = btn.dataset.action
-                        btn.classList.remove('active')
+                        btn.classList.remove('btn-vote-active')
                     }
                 })
                 spanEl = document.getElementById(`${type+id}_vote_count`)
@@ -400,7 +459,7 @@
                 if(action === 'remove'){
                     vote_count -= value
                 }else{
-                    button.classList.add('active')
+                    button.classList.add('btn-vote-active')
                     if(activeAction){
                         vote_count -= actionMap[activeAction]
                     }

@@ -61,6 +61,7 @@ class UserUpdateForm(forms.ModelForm):
                         ['insert', ['link', 'picture','hr']],
                         ['view', ['help']],
                     ],
+                    'width':'100%'
                 }
             })
         }

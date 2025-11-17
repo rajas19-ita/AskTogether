@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    login
+{% endblock %}
+
+{% block content %}
+    <main class=" min-vh-100" >
+      <div class="container">
+        <div class="d-flex min-vh-100 flex-column align-items-center justify-content-center row">
+            <div class="d-flex flex-column mb-7 gap-3 col-8 col-md-6 col-xl-4 p-5 rounded-3 login-card">
+                <div>
+                    <img src="{% static 'ask_together/img/logo_b.png' %}" style="width:60px;"/>
+                    <h1 class="fs-2 mt-1">Account Setup</h1>
+                </div>
+                <form method="post" action="{% url 'ask_together:account_setup' %}" class="d-flex flex-column gap-3">
+                    {% csrf_token %}
+                    <div class="d-flex flex-column gap-1">
+                        <label for="username_select" class="fs-6 text-secondary">Select Username:</label>
+                        <input type="text" name="username" class="form-input" maxlength="150" autofocus="" required="" id="username_select"
+                         value="{{user.username}}">
+                        <p class="mt-1 fs-6 text-success" id='username_message'>username '{{user.username}}' is available</p>
+                    </div>
+                    <button id="username_select_btn" class="btn btn-primary" type="submit" >Done</button>
+                </form>
+            </div>
+        </div>
+      </div>
+    </main>
+{% endblock %}
+
+{% block script_block %}
+    <script>
+        const usernameCheckUrl = "{% url 'ask_together:check_username' %}";
+        usernameInput = document.getElementById('username_select')
+
+        const debouncedFunction = (callback, delay)=>{
+            let timeoutId
+            return (...args)=>{
+                clearTimeout(timeoutId)
+                timeoutId = setTimeout(()=>{
+                    callback(...args)
+                }, delay)
+            }
+        }
+        
+        const handleUsernameCheck = (username)=>{
+            fetch(`${usernameCheckUrl}?username=${username}`)
+            .then(res=>{
+                if(res.ok){
+                    return res.json()
+                }else{
+                    return res.json().then((err)=>{throw err})
+                }
+            })
+            .then(data=>{
+                let available = data.available
+                messageEl = document.getElementById('username_message')
+                selectBtn = document.getElementById('username_select_btn')
+
+                if(available){
+                    messageEl.classList.remove('text-danger')
+                    messageEl.classList.add('text-success')  
+                    messageEl.innerHTML = `username '${username}' is available`
+                    selectBtn.disabled = false
+                }else{
+                    messageEl.classList.add('text-danger')
+                    messageEl.classList.remove('text-success')
+                    messageEl.innerHTML = `username '${username}' is taken`
+                    selectBtn.disabled = true  
+                }
+
+            })
+            .catch(err=>{
+                console.log(err)
+            })
+        }
+
+        const debouncedUsernameCheck = debouncedFunction(handleUsernameCheck, 300)
+
+        const handleChange = (e)=>{
+            debouncedUsernameCheck(e.target.value)
+        }
+
+        usernameInput.addEventListener('input', handleChange)
+
+    </script>
+{% endblock %}

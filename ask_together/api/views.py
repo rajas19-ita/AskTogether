@@ -300,3 +300,24 @@ def get_comments(request):
     
     
     return Response(data)
+
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def check_username(request):
+    username = request.GET.get('username')
+    if not username:
+        return Response({"error":"username query param is required"}, status=400)
+    
+    
+    if request.user.username == username:
+        return Response({"available": True}, status=200)
+    
+    username_exists = MyUser.objects.filter(username=username).exists()
+    
+    if username_exists:
+        return Response({"available":False}, status=200)
+    else:
+        return Response({"available":True}, status=200)
+    
+        

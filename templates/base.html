@@ -4,26 +4,24 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="icon" type="image/png" href="{% static 'ask_together/img/logo1.png' %}" />
+        <link rel="icon" type="image/png" href="{% static 'ask_together/img/logo_s.png' %}" />
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+        
+    
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+        
+        <link rel="stylesheet" href="{% static 'css/base.css' %}"/>
+        
+        {% block css_block %}{% endblock %}
+
         <title>{% block title %}AskTogether{% endblock %}</title>
-        <style>
-        pre pre{
-                padding:10px;
-            }
-            pre{
-                font-size: 14px;
-                max-height: 500px;
-            }
-            .rich-content img{
-                display:block;
-                max-width: 700px;
-            }
-        </style>
     </head>
     <body>
         {% block content %}
         {% endblock %}
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
         <script>
             function formatUTCtoLocal(selector = ".datetime") {
                 document.querySelectorAll(selector).forEach(el => {
@@ -37,6 +35,30 @@
                         hour12: true
                     });
                 });
+            }
+
+            function timeAgo(dateString) {
+                const now = new Date();
+                const past = new Date(dateString);
+
+                const seconds = Math.floor((now - past) / 1000);
+
+                const intervals = [
+                    { label: 'year', seconds: 31536000 },
+                    { label: 'month', seconds: 2592000 },
+                    { label: 'day', seconds: 86400 },
+                    { label: 'hour', seconds: 3600 },
+                    { label: 'minute', seconds: 60 },
+                    { label: 'second', seconds: 1 }
+                ];
+
+                for (const interval of intervals) {
+                    const count = Math.floor(seconds / interval.seconds);
+                    if (count > 0) {
+                        return `${count} ${interval.label}${count > 1 ? 's' : ''} ago`;
+                    }
+                }
+                return 'just now';
             }
         </script>
         {% block script_block %}{% endblock %}

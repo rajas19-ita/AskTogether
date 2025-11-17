@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ncviqpvktcx#-(&&$b796y=l9_x5tzs)1_xt+1i2zo5+17q7y4'
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -146,3 +146,26 @@ INTERNAL_IPS = [
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'rajaskadge@gmail.com'
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+
+GOOGLE_CLIENT_CONFIG={
+    "web":{
+        "client_id":os.getenv('GOOGLE_CLIENT_ID'),
+        "project_id": "asktogether",
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_secret": os.getenv('GOOGLE_CLIENT_SECRET'),
+        "redirect_uris": [
+            os.getenv('GOOGLE_REDIRECT_URI')
+        ],
+        "javascript_origins": ["http://127.0.0.1:8000"]
+    }
+}

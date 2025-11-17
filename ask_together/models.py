@@ -13,6 +13,7 @@ class MyUser(AbstractUser):
     github = models.CharField(max_length=100, blank=True)
     x_handle = models.CharField(max_length=100, blank=True)
     profile_image = models.ImageField(upload_to='profiles', blank=True)
+    is_profile_complete = models.BooleanField(default=False)
     
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
