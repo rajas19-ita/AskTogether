@@ -27,9 +27,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG") == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -42,13 +42,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ask_together',
-    "debug_toolbar",
     'django_summernote',
     'rest_framework',
+    'storages'
 ]
 
+if DEBUG:
+    INSTALLED_APPS += ["debug_toolbar"]
+
+
 MIDDLEWARE = [
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -57,6 +60,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if DEBUG:
+    MIDDLEWARE.insert(0,"debug_toolbar.middleware.DebugToolbarMiddleware")
 
 ROOT_URLCONF = 'mysite.urls'
 
@@ -81,16 +87,31 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': os.getenv('DB_PORT'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('PROD_DB_NAME'),
+            'USER': os.getenv('PROD_DB_USER'),
+            'PASSWORD': os.getenv('PROD_DB_PASSWORD'),
+            'HOST': os.getenv('PROD_DB_HOST'),
+            'PORT': os.getenv('PROD_DB_PORT'),
+            'OPTIONS':{
+                'sslmode':'require'
+            }
+        }
+    }
 
 
 # Password validation
@@ -127,11 +148,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -144,8 +161,40 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+if DEBUG:
+    STATIC_URL = 'static/'
+
+    MEDIA_ROOT = BASE_DIR / 'media'
+    
+    MEDIA_URL = "/media/"
+else:
+    MEDIA_URL = f"https://myapp-qna-bucket.s3.amazonaws.com/"
+    STATIC_URL = f"https://myapp-qna-bucket.s3.amazonaws.com/static/"
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        },
+        "staticfiles": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+            "OPTIONS": {
+                "location": "static",
+            },
+        },
+    }
+
+    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+    AWS_S3_REGION_NAME = "ap-south-1"
+    AWS_DEFAULT_ACL = None
+    AWS_QUERYSTRING_AUTH = False 
+
+
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"

@@ -1,4 +1,4 @@
-from .forms import SignUpForm, QuestionForm, UserUpdateForm, LoginForm
+from .forms import SignUpForm, QuestionForm, UserUpdateForm, LoginForm, AnswerForm
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
@@ -90,6 +90,9 @@ class QuestionDetailView(DetailView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        answer_form = AnswerForm()
+        context['answer_form'] = answer_form
 
         object = context['object']
         

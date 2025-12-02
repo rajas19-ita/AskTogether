@@ -116,7 +116,7 @@
     </main>
     <script>
         let allPosts = []
-        fetch('http://127.0.0.1:8000/asktogether/api/users/{{object.id}}/posts/')
+        fetch("{% url 'ask_together:get_posts' object.id %}")
             .then(res=>{
                     if(res.ok){
                         return res.json()

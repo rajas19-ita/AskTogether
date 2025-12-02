@@ -21,7 +21,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('asktogether/',include('ask_together.urls')),
+    path('',include('ask_together.urls')),
     path('admin/', admin.site.urls),
     path('summernote/', include('django_summernote.urls')),
 ] + debug_toolbar_urls()

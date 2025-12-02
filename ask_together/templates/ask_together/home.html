@@ -57,8 +57,8 @@
                                         </p>
                                         <div class=" align-self-end mt-2 d-flex gap-2 small align-items-center">
                                             <a class="text-decoration-none d-flex text-brand gap-1 align-items-center" style="cursor:pointer" href="{% url 'ask_together:user_profile' question.user.id %}">
-                                                <div class="avatar list-avatar">
-                                                    <img class=" w-100 h-100 object-fit-cover" src="{% if question.user.profile_image %}{{question.user.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"/>
+                                                <div>
+                                                    <img class="at-avatar at-avatar-sm" src="{% if question.user.profile_image %}{{question.user.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"/>
                                                 </div>
                                                {{question.user.username}}
                                             </a>

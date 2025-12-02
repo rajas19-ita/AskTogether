@@ -4,12 +4,12 @@
     <nav class="navbar bg-white border-bottom">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center w-100">
-                <a href="{% url 'ask_together:home' %}" class="navbar-brand d-flex gap-2 align-items-center font-roboto fw-medium text-decoration-none">
+                <a href="{% url 'ask_together:home' %}" class="navbar-brand d-flex gap-2 align-items-center at-font-roboto text-decoration-none at-heading-color-dark">
                     <img src="{% static 'ask_together/img/logo_b.png' %}" style="width:40px"/>
-                    AskTogether
+                    <span class=""><span style="font-size:1.28rem">Ask</span><span class="fw-semibold at-text-brand-primary">Together</span></span>
                 </a>
                 <div class="position-relative w-100 me-5" style="max-width:600px">
-                    <input type="text" class=" navbar-search" placeholder="Search..." >
+                    <input type="text" class="at-form-input at-navbar-search" placeholder="Search..." >
                     <div class="position-absolute " style="top:50%;left:0.8rem;transform:translateY(-50%)">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search text-secondary mb-1"  viewBox="0 0 16 16">
                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
@@ -18,13 +18,22 @@
                 </div>
                 <div class="d-flex align-items-center gap-4">
                     {% if user.is_authenticated %}
-                        <div class="avatar header-avatar">
-                            <a class="w-100 h-100 d-block" style="cursor:pointer" href="{% url 'ask_together:user_profile' request.user.id %}">
-                                <img class=" w-100 h-100 object-fit-cover" src="{% if request.user.profile_image %}{{request.user.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"/>
+                        <div class="">
+                            <img style="width:24px" src="{% static 'ask_together/img/bell.png'  %}"/>
+                        </div>
+                        <div class="">
+                            <a class="" style="cursor:pointer" href="{% url 'ask_together:user_profile' request.user.id %}">
+                                <img class="at-avatar at-avatar-md at-avatar-ring" src="{% if request.user.profile_image %}{{request.user.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"/>
                             </a>
                         </div>
                     {% endif %}
-                    <div class="dropdown">
+                    {% if not user.is_authenticated %}
+                        <div class="d-flex align-items-center gap-2" >
+                            <a href="{% url 'ask_together:login' %}" class="text-decoration-none at-font-roboto at-btn at-btn-text">Login</a>
+                            <a href="{% url 'ask_together:signup' %}" class="text-decoration-none at-btn at-btn-brand">Sign up</a>
+                        </div>
+                    {% endif %}
+                    {% comment %} <div class="dropdown">
                         <button class="btn-hamburger dropdown-toggle"  type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
                                 <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
@@ -46,7 +55,7 @@
                                 </li>
                             {% endif %}
                         </ul>
-                    </div>
+                    </div>  {% endcomment %}
                 </div>
             </div>  
         </div> 

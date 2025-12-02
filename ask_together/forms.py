@@ -22,6 +22,26 @@ class SignUpForm(UserCreationForm):
         model = MyUser
         fields = ['username','email']
         
+class AnswerForm(forms.ModelForm):
+    class Meta:
+        model = Answer
+        fields = ['content']
+        widgets = {
+            'content': SummernoteWidget(attrs={
+                'summernote':{
+                    'toolbar':[
+                        ['style',['style']],
+                        ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+                        ['color', ['color']],
+                        ['para', ['ul', 'ol']],
+                        ['insert', ['link', 'picture','hr']],
+                        ['view', ['help']],
+                    ],
+                    'width':'100%',
+                    'height': '400px'
+                }
+            })
+        }
         
 class QuestionForm(forms.ModelForm):
     class Meta:
@@ -38,6 +58,7 @@ class QuestionForm(forms.ModelForm):
                         ['insert', ['link', 'picture','hr']],
                         ['view', ['help']],
                     ],
+                    'width':'100%'
                 }
             })
         }
