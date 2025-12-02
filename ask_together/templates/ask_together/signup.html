@@ -9,9 +9,13 @@
   {% include 'ask_together/includes/header.html' %}
     <main class="min-vh-100">
         <div class="container">
-            <div class="d-flex min-vh-100 flex-column  align-items-center justify-content-center row">
-                <div class="d-flex flex-column mb-3 mt-3 col-8 col-md-6 col-xl-4 gap-3">
-                    <a class="google-btn" href="{% url 'ask_together:google_login' %}">
+            <div class="d-flex min-vh-100 flex-column  align-items-center mt-3 row">
+                <div class="d-flex flex-column mb-3 mt-3 col-8 col-md-6 col-xl-3 gap-3">
+                    <div class="d-flex flex-column gap-1">
+                        <img src="{% static 'ask_together/img/logo_b.png' %}" style="width:60px;"/>
+                        <h2 class="fs-3 mt-1">Sign Up</h2>
+                    </div>
+                    <a class="at-btn at-btn-google" href="{% url 'ask_together:google_login' %}">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="32px" height="32px"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
                         Continue with google
                     </a>
@@ -19,50 +23,44 @@
                         <div class="flex-grow-1 border-top"></div>
                             <span class="fs-5">or</span>
                         <div class="flex-grow-1 border-top"></div>
-                    </div>
-                    <div class="d-flex flex-column gap-3 p-5 rounded-3 login-card">
-                        <div>
-                            <img src="{% static 'ask_together/img/logo_b.png' %}" style="width:60px;"/>
-                            <h2 class="fs-2 mt-1">Sign Up</h2>
+                    </div>   
+                    <form method="post" action="{% url 'ask_together:signup' %}" class="d-flex flex-column gap-3">
+                        {% csrf_token %}
+                        <div class="d-flex flex-column">
+                            <label for="id_username" class="fs-6 at-heading-color-dark ">Username</label>
+                            <input type="text" name="username" class="at-form-input" maxlength="150" autofocus="" required="" aria-describedby="id_username_helptext" id="id_username"
+                            placeholder="Enter username">
+                            {% for error in form.username.errors %}
+                                <p class="text-danger mb-0 mt-1 fs-6">{{error}}</p>
+                            {% endfor %}
                         </div>
-                        <form method="post" action="{% url 'ask_together:signup' %}" class="d-flex flex-column gap-3">
-                            {% csrf_token %}
-                            <div class="d-flex flex-column gap-1">
-                                <label for="id_username" class="fs-6 text-secondary">Username:</label>
-                                <input type="text" name="username" class="form-input" maxlength="150" autofocus="" required="" aria-describedby="id_username_helptext" id="id_username"
-                                placeholder="Enter username">
-                                {% for error in form.username.errors %}
-                                    <p class="text-danger mb-0">{{error}}</p>
-                                {% endfor %}
-                            </div>
-                            <div class="d-flex flex-column gap-1">
-                                <label for="id_email" class="fs-6 text-secondary">Email:</label>
-                                <input type="email" name="email" class="form-input"  maxlength="254" required="" id="id_email"
-                                placeholder="Enter email">
-                                {% for error in form.email.errors %}
-                                    <p class="text-danger mb-0">{{error}}</p>
-                                {% endfor %}
-                            </div>
-                            <div class="d-flex flex-column gap-1">
-                                <label for="id_password1" class="fs-6 text-secondary">Password:</label>
-                                <input type="password" name="password1" class="form-input" autocomplete="new-password" required="" aria-describedby="id_password1_helptext" id="id_password1"
-                                placeholder="Enter password">
-                                {% for error in form.password1.errors %}
-                                    <p class="text-danger mb-0">{{error}}</p>
-                                {% endfor %}
-                            </div>
-                            <div class="d-flex flex-column gap-1">
-                                <label for="id_password2" class="fs-6 text-secondary">Password confirmation:</label>
-                                <input type="password" name="password2" class="form-input" autocomplete="new-password" required="" aria-describedby="id_password2_helptext" id="id_password2"
-                                placeholder="Re-enter password">
-                                {% for error in form.password2.errors %}
-                                    <p class="text-danger mb-0">{{error}}</p>
-                                {% endfor %}
-                            </div>
-                            <button type="submit" class="btn-signup mt-2">Sign up</button>
-                            <p class="mb-0">Already have an account? <a href="{% url 'ask_together:login' %}">Login</a></p>  
-                        </form>
-                    </div>
+                        <div class="d-flex flex-column">
+                            <label for="id_email" class="fs-6 at-heading-color-dark">Email</label>
+                            <input type="email" name="email" class="at-form-input"  maxlength="254" required="" id="id_email"
+                            placeholder="Enter email">
+                            {% for error in form.email.errors %}
+                                <p class="text-danger mb-0 mt-1 fs-6">{{error}}</p>
+                            {% endfor %}
+                        </div>
+                        <div class="d-flex flex-column">
+                            <label for="id_password1" class="fs-6 at-heading-color-dark">Password</label>
+                            <input type="password" name="password1" class="at-form-input" autocomplete="new-password" required="" aria-describedby="id_password1_helptext" id="id_password1"
+                            placeholder="Enter password">
+                            {% for error in form.password1.errors %}
+                                <p class="text-danger mb-0 mt-1 fs-6">{{error}}</p>
+                            {% endfor %}
+                        </div>
+                        <div class="d-flex flex-column">
+                            <label for="id_password2" class="fs-6 at-heading-color-dark">Password confirmation</label>
+                            <input type="password" name="password2" class="at-form-input" autocomplete="new-password" required="" aria-describedby="id_password2_helptext" id="id_password2"
+                            placeholder="Re-enter password">
+                            {% for error in form.password2.errors %}
+                                <p class="text-danger mb-0 mt-1 fs-6">{{error}}</p>
+                            {% endfor %}
+                        </div>
+                        <button type="submit" class="at-btn at-btn-brand at-btn-lg text-uppercase mt-2">Sign up</button>
+                        <p class="mb-0">Already have an account? <a href="{% url 'ask_together:login' %}" class="at-text-brand-primary">Login</a></p>  
+                    </form>
                 </div>
             </div>
         </div>

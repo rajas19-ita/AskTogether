@@ -12,21 +12,35 @@
         <div class="d-flex min-vh-100 flex-column align-items-center mt-5 row">
           <div class="d-flex flex-column mb-7 mt-3 col-8 col-md-6 col-xl-3 gap-3">
             {% if request.GET.ssrc == 'ask_question' %}
-                <div class="alert alert-info text-center">
+                <div class="alert alert-info text-center mb-0">
                     You must be logged in to ask a question.
                 </div>
             {% elif request.GET.ssrc == 'vote' %}
-                <div class="alert alert-info text-center">
+                <div class="alert alert-info text-center mb-0">
                     You must be logged in to vote.
                 </div>
             {% elif request.GET.ssrc == 'add_comment' %}
-                <div class="alert alert-info text-center">
+                <div class="alert alert-info text-center mb-0">
                     You must be logged in to add a comment.
                 </div>
             {% elif request.GET.ssrc == 'post_answer' %}
-                <div class="alert alert-info text-center">
+                <div class="alert alert-info text-center mb-0">
                     You must be logged in to post an answer.
                 </div>
+            {% endif %}
+            {% if messages %}
+                <div class=" alert alert-danger text-center mb-0">
+                  <ul class="list-unstyled mb-0">
+                    {% for message in messages %}
+                    <li class="text-decoration-none">{{message}}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+            {% endif %}
+            {% if form.non_field_errors %}
+              <div class=" alert alert-danger text-center">
+                  <p class="mb-0">Invalid username/password</p>
+              </div>
             {% endif %}
 
             <div class="d-flex flex-column gap-1">
@@ -42,45 +56,27 @@
                     <span class="fs-5">or</span>
                 <div class="flex-grow-1 border-top"></div>
             </div>
-            <div class="d-flex flex-column  gap-3">
-              {% if messages %}
-                <div class=" border border-danger-subtle p-4 mb-3 rounded-2 text-center">
-                  <ul class="list-unstyled mb-0">
-                    {% for message in messages %}
-                    <li class="text-danger text-decoration-none">{{message}}</li>
-                    {% endfor %}
-                  </ul>
+            <form method="post" action="{% url 'ask_together:login' %}" class="d-flex flex-column gap-3">
+                {% csrf_token %}
+                <div class="d-flex flex-column">
+                    <label for="email" class="fs-6 at-heading-color-dark ">Email</label>
+                    <input type="email" name="username" id="email" maxlength="254" required="" placeholder="Enter Email" class="at-form-input">
                 </div>
-              {% endif %}
-              
-              <form method="post" action="{% url 'ask_together:login' %}" class="d-flex flex-column gap-3">
-                  {% csrf_token %}
-                  <div class="d-flex flex-column">
-                      <label for="email" class="fs-6 at-heading-color-dark ">Email:</label>
-                      <input type="email" name="username" id="email" maxlength="254" required="" placeholder="Enter Email" class="at-form-input">
-                  </div>
-                  
-                  <div class="d-flex flex-column mb-2">
-                      <label for="id_password" class="fs-6 at-heading-color-dark ">Password:</label>
-                      <input type="password" name="password" autocomplete="current-password" required="" id="id_password" placeholder="Enter Password"
-                      class="at-form-input">
-                  </div>
-    
-                  {% if request.GET.next %}
-                    <input type="hidden" name="next" value="{{ request.GET.next }}">
-                  {% endif %}
-                  
-                  <button type="submit" class="btn-login">Login</button>
-                  
-
-                  <p class="mb-0 ">Don't have an account? <a href="{% url 'ask_together:signup' %}" class="at-text-brand-primary">Sign up</a></p>
                 
-                  {% if form.non_field_errors %}
-                      <p class="text-danger">Invalid username/password</p>
-                  {% endif %}
-    
-              </form>
-            </div>
+                <div class="d-flex flex-column mb-2">
+                    <label for="id_password" class="fs-6 at-heading-color-dark ">Password</label>
+                    <input type="password" name="password" autocomplete="current-password" required="" id="id_password" placeholder="Enter Password"
+                    class="at-form-input">
+                </div>
+  
+                {% if request.GET.next %}
+                  <input type="hidden" name="next" value="{{ request.GET.next }}">
+                {% endif %}
+                
+                <button type="submit" class="at-btn at-btn-brand at-btn-lg text-uppercase">Login</button>
+            
+                <p class="mb-0 ">Don't have an account? <a href="{% url 'ask_together:signup' %}" class="at-text-brand-primary">Sign up</a></p>
+            </form> 
           </div>
         </div>  
       </div>
