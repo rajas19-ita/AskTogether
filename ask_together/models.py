@@ -36,6 +36,8 @@ class Question(models.Model):
         on_delete=models.SET_NULL,
         related_name="accepted_for"
     )
+    upvotes = models.SmallIntegerField(default=0)
+    downvotes = models.SmallIntegerField(default=0)
     accepted_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -45,6 +47,8 @@ class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
     author = models.ForeignKey(MyUser, on_delete=models.SET_NULL, null=True, related_name='answers')
     content = models.TextField()
+    upvotes = models.SmallIntegerField(default=0)
+    downvotes = models.SmallIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

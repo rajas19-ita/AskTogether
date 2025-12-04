@@ -7,6 +7,7 @@ from ask_together.models import Question, Answer, MyUser, Vote, Comment
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.utils import timezone
+from django.db.models import F
 
 @api_view(['POST'])
 @authentication_classes([SessionAuthentication])
@@ -165,7 +166,15 @@ def vote_question(request, pk):
                 "u_vote": 0
             }, status=404)
             
+        value = vote.value
         vote.delete()
+        if value == 1:
+            question.upvotes = F('upvotes') - 1
+            question.save(update_fields=['upvotes'])
+        else:
+            question.downvotes = F('downvotes') - 1
+            question.save(update_fields=['downvotes'])
+        
         return Response({'message':'Vote removed successfully', 'question_id':question.id, 'u_vote':0})
 
     
@@ -182,8 +191,24 @@ def vote_question(request, pk):
         else:
             vote.value = value
             vote.save()
+            
+            if action == 'upvote':
+                question.downvotes = F('downvotes') - 1
+                question.upvotes = F('upvotes') + 1
+            else:
+                question.downvotes = F('downvotes') + 1
+                question.upvotes = F('upvotes') - 1
+            
+            question.save(update_fields=['upvotes', 'downvotes'])  
+            
             return Response({'message':f'switched to {action}','question_id':vote.question.id, 'u_vote':vote.value})
-    
+    else:
+        if action == 'upvote':
+            question.upvotes = F('upvotes') + 1
+        else:
+            question.downvotes = F('downvotes') + 1
+        
+        question.save(update_fields=['upvotes', 'downvotes'])  
     
     return Response({'message':f'{action}d successfully', 'question_id':vote.question.id, 'u_vote':vote.value})
 
@@ -212,7 +237,16 @@ def vote_answer(request, pk):
                 "u_vote": 0
             }, status=404)
             
+        value = vote.value
         vote.delete()
+        if value == 1:
+            answer.upvotes = F('upvotes') - 1
+            answer.save(update_fields=['upvotes'])
+        else:
+            answer.downvotes = F('downvotes') - 1
+            answer.save(update_fields=['downvotes'])
+        
+        
         return Response({'message':'Vote removed successfully', 'answer_id':answer.id, 'u_vote':0})
 
     
@@ -229,7 +263,24 @@ def vote_answer(request, pk):
         else:
             vote.value = value
             vote.save()
+            
+            if action == 'upvote':
+                answer.downvotes = F('downvotes') - 1
+                answer.upvotes = F('upvotes') + 1
+            else:
+                answer.downvotes = F('downvotes') + 1
+                answer.upvotes = F('upvotes') - 1
+            
+            answer.save(update_fields=['upvotes', 'downvotes'])  
+            
             return Response({'message':f'switched to {action}','answer_id':vote.answer.id, 'u_vote':vote.value})
+    else:
+        if action == 'upvote':
+            answer.upvotes = F('upvotes') + 1
+        else:
+            answer.downvotes = F('downvotes') + 1
+        
+        answer.save(update_fields=['upvotes', 'downvotes'])  
     
     
     return Response({'message':f'{action}d successfully', 'answer_id':vote.answer.id, 'u_vote':vote.value})
