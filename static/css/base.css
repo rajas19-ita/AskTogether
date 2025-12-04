@@ -57,6 +57,10 @@ h6 {
   color: var(--color-text-primary) !important;
 }
 
+.at-text-secondary {
+  color: var(--color-text-secondary) !important;
+}
+
 .at-font-sourcesans3 {
   font-family: var(--font-family-body) !important;
 }

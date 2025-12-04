@@ -33,29 +33,6 @@
                             <a href="{% url 'ask_together:signup' %}" class="text-decoration-none at-btn at-btn-brand">Sign up</a>
                         </div>
                     {% endif %}
-                    {% comment %} <div class="dropdown">
-                        <button class="btn-hamburger dropdown-toggle"  type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
-                            </svg>
-                        </button>
-                        <ul class="dropdown-menu text-center">
-                            {% if user.is_authenticated %}
-                                <li>
-                                    <form method="post" action="{% url 'ask_together:logout' %}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="dropdown-item">
-                                            logout
-                                        </button>
-                                    </form>
-                                </li>
-                            {% else %}
-                                <li>
-                                    <a href="{% url 'ask_together:login' %}" class="text-decoration-none d-block ">Login / Signup</a>
-                                </li>
-                            {% endif %}
-                        </ul>
-                    </div>  {% endcomment %}
                 </div>
             </div>  
         </div> 

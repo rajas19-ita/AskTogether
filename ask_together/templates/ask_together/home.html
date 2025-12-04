@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block title %}
     Ask Together
@@ -11,9 +12,39 @@
         <div class="container">
             <div class="d-flex min-vh-100">
                 {% include 'ask_together/includes/sidebar.html' %}
-                <div class="py-3 px-4 border-start flex-grow-1 d-flex flex-column align-items-center">
-                    <div class="w-100" style="max-width:980px">
-                        <div class="d-flex justify-content-end mb-3">
+                <div class="pb-4 px-4 border-start flex-grow-1 d-flex flex-column align-items-center">
+                    <div class="w-100 d-flex flex-column" style="max-width:980px">
+                        <div class="at-heading-color-dark d-flex align-items-center justify-content-center fs-6 mb-4 mt-2">
+                                        <span class="">
+                                            {{4215|intcomma}} questions
+                                        </span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                            <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                        </svg>
+                                        <span>
+                                            {{21150|intcomma}} answers
+                                        </span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                            <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                        </svg>
+                                        <span>
+                                            {{3142|intcomma}} users
+                                        </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="d-flex gap-2">
+                                <div class="mt-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-stars at-heading-color-dark" viewBox="0 0 16 16">
+                                        <path d="M7.657 6.247c.11-.33.576-.33.686 0l.645 1.937a2.89 2.89 0 0 0 1.829 1.828l1.936.645c.33.11.33.576 0 .686l-1.937.645a2.89 2.89 0 0 0-1.828 1.829l-.645 1.936a.361.361 0 0 1-.686 0l-.645-1.937a2.89 2.89 0 0 0-1.828-1.828l-1.937-.645a.361.361 0 0 1 0-.686l1.937-.645a2.89 2.89 0 0 0 1.828-1.828zM3.794 1.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387A1.73 1.73 0 0 0 4.593 5.69l-.387 1.162a.217.217 0 0 1-.412 0L3.407 5.69A1.73 1.73 0 0 0 2.31 4.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387A1.73 1.73 0 0 0 3.407 2.31zM10.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.16 1.16 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.16 1.16 0 0 0-.732-.732L9.1 2.137a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732z"/>
+                                    </svg>
+                                </div>
+                                <div class="d-flex flex-column mt-1">
+                                    <h1 class="mb-0 fs-3 " style="">
+                                        Welcome back, {{user.username}}
+                                    </h1>
+                                    <span class="fs-6 at-text-secondary">Ask, Answer, Interact and have a wonderful day.</span>
+                                </div>
+                            </div>
                             <a href="{% if user.is_authenticated %}
                                         {% url 'ask_together:question_create' %}
                                     {% else %}
@@ -22,92 +53,98 @@
                                 class="btn-askquestion d-block text-decoration-none">
                                 Ask Question
                             </a>
-                        </div>    
-                        <div class="border rounded mb-3">
-                            {% for question in page_obj %}
-                                <div class="row g-0 gap-4 align-items-start py-4 {% if not forloop.last %}border-bottom{% endif %}">
-                                    <div class="col-2 d-flex flex-column gap-2 align-items-end fs-6">
-                                        <div>{{question.votes.count}} votes</div>
-                                        {% if question.answers.exists %}
-                                            {% if question.accepted_answer %}
-                                                <div class="px-2 py-1 rounded bg-success text-white border border-success">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
-                                                        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
-                                                    </svg> {{question.answers.count}} answers
-                                                </div>
-                                            {% else %}
-                                                <div class="px-2 py-1 rounded text-success border border-success">
-                                                    {{question.answers.count}} answers
+                        </div>
+                        <div class="px-2">
+                            
+                            <h2 class="fs-4">Top Questions</h2>
+                                
+                            
+                            <div class="border rounded mb-3">
+                                {% for question in page_obj %}
+                                    <div class="row g-0 gap-4 align-items-start py-4 {% if not forloop.last %}border-bottom{% endif %}">
+                                        <div class="col-2 d-flex flex-column gap-2 align-items-end fs-6">
+                                            <div>{{question.votes.count}} votes</div>
+                                            {% if question.answers.exists %}
+                                                {% if question.accepted_answer %}
+                                                    <div class="px-2 py-1 rounded bg-success text-white border border-success">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+                                                        </svg> {{question.answers.count}} answers
+                                                    </div>
+                                                {% else %}
+                                                    <div class="px-2 py-1 rounded text-success border border-success">
+                                                        {{question.answers.count}} answers
+                                                    </div>
+                                                {% endif %}
+                                            {% else  %}
+                                                <div class="text-secondary">
+                                                    0 answers
                                                 </div>
                                             {% endif %}
-                                        {% else  %}
-                                            <div class="text-secondary">
-                                                0 answers
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                    <div class=" col-9 d-flex flex-column">
-                                        <h3 class=" fs-5 fw-normal mb-1">
-                                            <a href="{% url 'ask_together:question_detail' question.pk %}" class=" text-brand text-decoration-none">
-                                                {{question.title}}
-                                            </a>
-                                        </h3>
-                                        <p class="mb-2 text-break fs-6">
-                                            {{question.description|striptags|truncatewords:30}}
-                                        </p>
-                                        <div class=" align-self-end mt-2 d-flex gap-2 small align-items-center">
-                                            <a class="text-decoration-none d-flex text-brand gap-1 align-items-center" style="cursor:pointer" href="{% url 'ask_together:user_profile' question.user.id %}">
-                                                <div>
-                                                    <img class="at-avatar at-avatar-sm" src="{% if question.user.profile_image %}{{question.user.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"/>
-                                                </div>
-                                               {{question.user.username}}
-                                            </a>
-                                            <p class="mb-0 text-secondary">
-                                                asked
-                                                <span class="datetime mb-0 " data-dt="{{ question.created_at|date:'c' }}">
-                                                    {{ question.created_at|date:"M d, Y H:i" }}
-                                                </span>
+                                        </div>
+                                        <div class=" col-9 d-flex flex-column">
+                                            <h3 class=" fs-5 fw-normal mb-1">
+                                                <a href="{% url 'ask_together:question_detail' question.pk %}" class=" text-brand text-decoration-none">
+                                                    {{question.title}}
+                                                </a>
+                                            </h3>
+                                            <p class="mb-2 text-break fs-6">
+                                                {{question.description|striptags|truncatewords:30}}
                                             </p>
-                                        </div>  
+                                            <div class=" align-self-end mt-2 d-flex gap-2 small align-items-center">
+                                                <a class="text-decoration-none d-flex text-brand gap-1 align-items-center" style="cursor:pointer" href="{% url 'ask_together:user_profile' question.user.id %}">
+                                                    <div>
+                                                        <img class="at-avatar at-avatar-sm" src="{% if question.user.profile_image %}{{question.user.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"/>
+                                                    </div>
+                                                    {{question.user.username}}
+                                                </a>
+                                                <p class="mb-0 text-secondary">
+                                                    asked
+                                                    <span class="datetime mb-0 " data-dt="{{ question.created_at|date:'c' }}">
+                                                        {{ question.created_at|date:"M d, Y H:i" }}
+                                                    </span>
+                                                </p>
+                                            </div>  
+                                        </div>
                                     </div>
-                                </div>
-    
-                            {% endfor%}
-                        </div>
-                        <div class="d-flex justify-content-center">
-                            <span class="d-flex align-items-center gap-3">
-                                {% if page_obj.has_previous %}
-                                    <a href="?page=1" class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-double-left" viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd" d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
-                                            <path fill-rule="evenodd" d="M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
-                                        </svg> 
-                                    </a>
-                                    <a href="?page={{ page_obj.previous_page_number }}" class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
-                                        </svg> 
-                                    </a>
-                                {% endif %}
         
-                                <span class="current">
-                                    {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                {% endfor%}
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <span class="d-flex align-items-center gap-3">
+                                    {% if page_obj.has_previous %}
+                                        <a href="?page=1" class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-double-left" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+                                                <path fill-rule="evenodd" d="M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+                                            </svg> 
+                                        </a>
+                                        <a href="?page={{ page_obj.previous_page_number }}" class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+                                            </svg> 
+                                        </a>
+                                    {% endif %}
+            
+                                    <span class="current">
+                                        {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                    </span>
+            
+                                    {% if page_obj.has_next %}
+                                        <a href="?page={{ page_obj.next_page_number }}" class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
+                                            </svg>
+                                        </a>
+                                        <a href="?page={{ page_obj.paginator.num_pages }}" class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-double-right" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708"/>
+                                                <path fill-rule="evenodd" d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708"/>
+                                            </svg>
+                                        </a>
+                                    {% endif %}
                                 </span>
-        
-                                {% if page_obj.has_next %}
-                                    <a href="?page={{ page_obj.next_page_number }}" class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
-                                        </svg>
-                                    </a>
-                                    <a href="?page={{ page_obj.paginator.num_pages }}" class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-double-right" viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708"/>
-                                            <path fill-rule="evenodd" d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708"/>
-                                        </svg>
-                                    </a>
-                                {% endif %}
-                            </span>
+                            </div>
                         </div>
                     </div>
                 </div>
