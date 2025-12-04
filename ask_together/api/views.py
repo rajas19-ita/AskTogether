@@ -3,11 +3,12 @@ from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from .serializers import AnswerSerializer, CommentSerializer
-from ask_together.models import Question, Answer, MyUser, Vote, Comment
+from ask_together.models import Question, Answer, MyUser, Vote, Comment, Notification
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.utils import timezone
 from django.db.models import F
+from ask_together.services.notifications import notify_answer_posted, notify_comment_on_answer, notify_comment_on_question
 
 @api_view(['POST'])
 @authentication_classes([SessionAuthentication])
@@ -15,7 +16,11 @@ from django.db.models import F
 def create_answer(request):
     serializer = AnswerSerializer(data=request.data)
     if serializer.is_valid():   
-        serializer.save(author=request.user)
+        answer = serializer.save(author=request.user)
+        
+        if answer.author != answer.question.user:        
+            notify_answer_posted(answer)
+        
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
 
@@ -103,7 +108,13 @@ def accept_answer(request, pk):
 def create_comment(request):
     serializer = CommentSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save(user=request.user)
+        comment = serializer.save(user=request.user)
+        
+        if comment.question:
+            notify_comment_on_question(comment)
+        else:
+            notify_comment_on_answer(comment)
+        
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
 

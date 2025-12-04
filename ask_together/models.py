@@ -91,3 +91,31 @@ class Comment(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean() 
         super().save(*args, **kwargs)
+
+TYPE_CHOICES = [
+    ("QUESTION_POSTED", "Question Posted"),
+    ("ANSWER_POSTED", "Answer Posted"),
+    ("COMMENT_ON_QUESTION", "Comment on Question"),
+    ("COMMENT_ON_ANSWER", "Comment on Answer"),
+    ("ANSWER_SELECTED", "Answer Selected"),
+    ("UPVOTE_MILESTONE", "Upvote Milestone"),
+]     
+        
+class Notification(models.Model):
+    user = models.ForeignKey(MyUser, null=True, blank=True, on_delete=models.CASCADE, related_name='notifications')
+    
+    actor = models.ForeignKey(MyUser, null=True, blank=True,
+                              on_delete=models.SET_NULL, related_name='triggered_notifications')
+    
+    message = models.CharField(max_length=255)
+    
+    question = models.ForeignKey(Question, null=True, blank=True, on_delete=models.CASCADE)
+    answer = models.ForeignKey(Answer, null=True, blank=True, on_delete=models.CASCADE)
+    
+    event_type = models.CharField(max_length=50, choices=TYPE_CHOICES)
+    
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
