@@ -14,6 +14,8 @@
   --color-heading-dark: #1f1f1f;
   --search-border: #ddd;
   --search-placeholder: #888;
+  --color-primary-300: #a8c1f7;
+  --color-primary-200: #bed0f9;
 
   /* ======================
      🔠 Typography
@@ -53,6 +55,17 @@ h6 {
   color: var(--color-heading-dark) !important;
 }
 
+.at-bg-primary-300 {
+  background-color: var(--color-primary-300) !important;
+}
+.at-bg-primary-200 {
+  background-color: var(--color-primary-200) !important;
+}
+
+.at-border-primary-300 {
+  border-color: var(--color-primary-300) !important;
+}
+
 .at-text-body-color {
   color: var(--color-text-primary) !important;
 }
@@ -83,6 +96,7 @@ h6 {
   border-radius: 0.375rem;
   cursor: pointer;
   color: var(--color-heading);
+  text-decoration: none;
 }
 
 .at-btn-brand {
@@ -97,6 +111,10 @@ h6 {
 
 .at-btn-brand:active {
   transform: scale(0.97);
+}
+
+.at-btn-md {
+  padding: 0.5rem 1.25rem;
 }
 
 .at-btn-text {
@@ -192,11 +210,11 @@ h6 {
   border: none;
   background-color: transparent;
 
-  width: 100%;
   padding: 0.55rem 0.75rem;
   border-radius: 0.375rem;
   font-weight: 500;
   font-size: 1rem;
+  margin-right: 0.25rem;
 
   color: var(--color-heading-dark) !important;
   transition: all 0.15s ease-in-out;
@@ -325,23 +343,6 @@ a {
 /* .sidebar-links.active {
   background-color: #e9ecef;
 } */
-
-.btn-askquestion {
-  font-family: "Roboto", sans-serif;
-  font-size: 1rem;
-  letter-spacing: 0.5px;
-  color: #fff !important;
-  background-color: #2563eb;
-  padding: 0.5rem 1.25rem;
-  border: none;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.btn-askquestion:hover {
-  background-color: #1d4ed8;
-}
 
 .btn-vote {
   color: #3c3c3c;
