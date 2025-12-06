@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}
+    Notifications
+{% endblock %}
+
+{% block content %}
+    {% include 'ask_together/includes/header.html' %}
+    <main class="min-vh-100">
+        <div class="container">
+            <div class="d-flex min-vh-100">
+                {% include 'ask_together/includes/sidebar.html' %}
+                <div class="pb-4 px-4 border-start flex-grow-1 d-flex flex-column align-items-center">
+                    <div class="w-100 d-flex flex-column" style="max-width:980px">
+                        Notifications
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

@@ -36,3 +36,43 @@ def notify_comment_on_answer(comment):
         answer = comment.answer
     )
     
+def notify_answer_accepted(answer):
+    if answer.author == answer.question.user:
+        return
+    
+    if Notification.objects.filter(
+        user = answer.author,
+        event_type = "ANSWER_SELECTED",
+        answer = answer
+    ).exists():
+        return
+    
+    Notification.objects.create(
+        user=answer.author,
+        actor=answer.question.user,
+        event_type="ANSWER_SELECTED",
+        message=f"Your answer was accepted.",
+        question=answer.question,
+        answer=answer
+    )
+    
+def notify_question_upvote_milestone(question, milestone):
+    Notification.objects.create(
+        user = question.user,
+        actor=None,
+        event_type="UPVOTE_MILESTONE",
+        message=f"Congratulations! your question has crossed {milestone} upvotes.",
+        question = question,
+        upvotes = milestone
+    )
+    
+def notify_answer_upvote_milestone(answer, milestone):
+    Notification.objects.create(
+        user = answer.author,
+        actor=None,
+        event_type="UPVOTE_MILESTONE",
+        message=f"Congratulations! your answer has crossed {milestone} upvotes.",
+        question = answer.question,
+        answer = answer,
+        upvotes = milestone
+    )
