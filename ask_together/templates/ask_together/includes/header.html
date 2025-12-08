@@ -18,8 +18,11 @@
                 </div>
                 <div class="d-flex align-items-center gap-4">
                     {% if user.is_authenticated %}
-                        <div class="">
-                            <img style="width:24px" src="{% static 'ask_together/img/bell.png'  %}"/>
+                        <div class="position-relative">
+                            <a class="text-decoration-none" href="{% url 'ask_together:notifications' %}">
+                                <img style="width:24px" src="{% static 'ask_together/img/bell.png'  %}"/>
+                                <span class="position-absolute text-white bg-danger rounded-circle d-flex align-items-center justify-content-center d-none fw-medium" style="font-size:0.625rem;width:1rem;height:1rem;top:0;left:55%" id="header_notification_count"></span>
+                            </a>
                         </div>
                         <div class="">
                             <a class="" style="cursor:pointer" href="{% url 'ask_together:user_profile' request.user.id %}">
@@ -38,3 +41,26 @@
         </div> 
     </nav>
 </header>
+{% block script_block %}
+<script>
+    const fetchUnreadNotificationsCount = ()=>{
+        fetch(`{% url 'ask_together:get_notifications_count' %}?is_read=false`)
+        .then(res =>{
+                    if(res.ok){
+                        return res.json()
+                    }else{
+                        return res.json().then((err)=> {throw err})
+                    }
+            })
+        .then(data=>{
+            if(data.count !== 0){
+                let countEl = document.getElementById('header_notification_count')
+                countEl.innerHTML = data.count
+                countEl.classList.remove('d-none')
+            }
+        })
+    }
+
+    fetchUnreadNotificationsCount()
+</script>
+{% endblock %}

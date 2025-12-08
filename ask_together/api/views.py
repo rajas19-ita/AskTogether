@@ -464,5 +464,23 @@ def get_notifications(request):
     })
     
     
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def get_notifications_count(request):
+    is_read = request.GET.get('is_read')
+    filters = {}
+    if is_read is not None:
+        filters['is_read'] = is_read.lower().strip()=='true'
+    else:
+        filters['is_read'] = False
+        
+    filters['user'] = request.user
+        
+    notifications = Notification.objects.filter(**filters).count()
+    return Response({
+        'is_read':filters['is_read'],
+        'count':notifications
+    })
     
     

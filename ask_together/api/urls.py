@@ -10,5 +10,6 @@ urlpatterns = [
     path("questions/<int:pk>/accept/", views.accept_answer, name="answer_accept"),
     path("comments/", views.get_comments, name="get_comments"),
     path("check-username/", views.check_username, name="check_username"),
-    path('notifications/', views.get_notifications, name="get_notifications")
+    path('notifications/', views.get_notifications, name="get_notifications"),
+    path('notifications/count/',views.get_notifications_count, name="get_notifications_count")
 ]

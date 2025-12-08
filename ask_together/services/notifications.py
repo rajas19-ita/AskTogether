@@ -51,7 +51,7 @@ def notify_answer_accepted(answer):
         user=answer.author,
         actor=answer.question.user,
         event_type="ANSWER_SELECTED",
-        message=f"Your answer was accepted.",
+        message=f"Your answer was accepted as the solution — nice work!",
         question=answer.question,
         answer=answer
     )

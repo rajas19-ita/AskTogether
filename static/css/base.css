@@ -53,6 +53,10 @@ h6 {
   color: var(--color-heading-dark) !important;
 }
 
+.at-bg-heading-color {
+  background-color: var(--color-heading) !important;
+}
+
 .at-text-body-color {
   color: var(--color-text-primary) !important;
 }
@@ -111,6 +115,34 @@ h6 {
 
 .at-btn-text:active {
   transform: scale(0.97);
+}
+
+.at-btn-tabs::after {
+  content: "";
+  display: block;
+  border-radius: 10%;
+  width: 0%;
+  margin-left: -5px;
+  height: 5px;
+  background-color: var(--color-primary);
+  transition: width 0.15s ease;
+}
+
+.at-btn-tabs:hover {
+  /* color: var(--color-primary) !important; */
+  color: var(--color-heading-dark) !important;
+}
+
+.at-btn-tabs:hover::after {
+  width: 120%;
+}
+
+.at-btn-tabs:active {
+  transform: scale(0.98);
+}
+
+.at-btn-tabs.active::after {
+  width: 120%;
 }
 
 .at-form-input {
@@ -220,6 +252,16 @@ h6 {
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
   flex-shrink: 0 !important;
+}
+
+.at-tab-content {
+  display: none;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.at-tab-content.active {
+  display: flex;
 }
 
 .form-input {
