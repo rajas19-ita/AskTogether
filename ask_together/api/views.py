@@ -2,13 +2,17 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
-from .serializers import AnswerSerializer, CommentSerializer
+from .serializers import AnswerSerializer, CommentSerializer, NotificationSerializer
 from ask_together.models import Question, Answer, MyUser, Vote, Comment, Notification
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.utils import timezone
 from django.db.models import F
-from ask_together.services.notifications import notify_answer_posted, notify_comment_on_answer, notify_comment_on_question
+from ask_together.services.notifications import (notify_answer_posted, notify_comment_on_answer, 
+                                                 notify_comment_on_question,
+                                                 notify_answer_accepted,
+                                                 notify_question_upvote_milestone,
+                                                 notify_answer_upvote_milestone)
 
 @api_view(['POST'])
 @authentication_classes([SessionAuthentication])
@@ -53,6 +57,7 @@ def accept_answer(request, pk):
         question.accepted_answer = answer
         question.accepted_at = timezone.now()
         question.save()
+        notify_answer_accepted(answer)
         
         return Response({
             "question_id":question.id,
@@ -79,6 +84,7 @@ def accept_answer(request, pk):
         question.accepted_answer = answer
         question.accepted_at = timezone.now()
         question.save()
+        notify_answer_accepted(answer)
         
         return Response({
             "question_id": question.id,
@@ -152,6 +158,8 @@ def get_posts(request, pk):
         
     return Response(items[:10])
 
+upvote_milestone = [5, 25, 50, 100, 500]
+
 @api_view(['POST'])
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -219,8 +227,20 @@ def vote_question(request, pk):
         else:
             question.downvotes = F('downvotes') + 1
         
-        question.save(update_fields=['upvotes', 'downvotes'])  
+        question.save(update_fields=['upvotes', 'downvotes'])
     
+    question.refresh_from_db()
+        
+    for i in range(len(upvote_milestone)-1, -1, -1):
+        milestone = upvote_milestone[i]
+        temp = question.upvotes // milestone
+        
+        if (temp and
+            not Notification.objects
+                .filter(user=question.user, question=question, event_type="UPVOTE_MILESTONE", upvotes = milestone).exists()):
+            notify_question_upvote_milestone(question, milestone)
+            break
+        
     return Response({'message':f'{action}d successfully', 'question_id':vote.question.id, 'u_vote':vote.value})
 
 @api_view(['POST'])
@@ -293,6 +313,16 @@ def vote_answer(request, pk):
         
         answer.save(update_fields=['upvotes', 'downvotes'])  
     
+    answer.refresh_from_db()
+    
+    for i in range(len(upvote_milestone)-1, -1, -1):
+        milestone = upvote_milestone[i]
+        temp = answer.upvotes // milestone
+        if (temp and
+            not Notification.objects
+                .filter(user=answer.author, answer=answer, event_type="UPVOTE_MILESTONE", upvotes = milestone).exists()):
+            notify_answer_upvote_milestone(answer, milestone)
+            break
     
     return Response({'message':f'{action}d successfully', 'answer_id':vote.answer.id, 'u_vote':vote.value})
 
@@ -381,3 +411,76 @@ def check_username(request):
         return Response({"available":True}, status=200)
     
         
+
+
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def get_notifications(request):
+    cursor_id = request.GET.get('cursor_id')
+    is_read = request.GET.get('is_read')
+    
+    filters = {}
+    if cursor_id:
+        filters['id__lt'] = int(cursor_id)
+    
+    if is_read is not None:
+        filters['is_read'] = is_read.lower().strip()=='true'
+    else:
+        filters['is_read'] = False
+    
+    filters['user'] = request.user
+    
+    notifications = Notification.objects.filter(
+        **filters
+    ).select_related(
+        "user",
+        "actor",
+        "question",
+        "answer"
+    ).only(
+        "id","message","event_type","is_read","created_at", "user", "actor", "question", "answer", "upvotes",
+        "user__id", "user__username", "user__profile_image",
+        "actor__id", "actor__username", "actor__profile_image",
+        "question__id", "question__title",
+        "answer__id"
+    ).order_by('-id')[:10]
+    
+    if not notifications:
+        return Response({
+            "next_cursor": None,
+            "data": []
+        })
+    
+    if not filters['is_read'] and notifications:
+        ids = [n.id for n in notifications]
+        Notification.objects.filter(id__in=ids).update(is_read=True)
+    
+    next_cursor = notifications[len(notifications)-1].id if notifications else None
+        
+    return Response({
+        "next_cursor":next_cursor,
+        "data":NotificationSerializer(notifications, many=True).data
+    })
+    
+    
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def get_notifications_count(request):
+    is_read = request.GET.get('is_read')
+    filters = {}
+    if is_read is not None:
+        filters['is_read'] = is_read.lower().strip()=='true'
+    else:
+        filters['is_read'] = False
+        
+    filters['user'] = request.user
+        
+    notifications = Notification.objects.filter(**filters).count()
+    return Response({
+        'is_read':filters['is_read'],
+        'count':notifications
+    })
+    
+    

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ask_together.models import Answer, MyUser, Comment
+from ask_together.models import Answer, MyUser, Comment, Notification, Question
 from ask_together.utils import sanitize_html
 
 
@@ -51,3 +51,25 @@ class CommentSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Comment must be linked to exactly one of Question or Answer.')
         
         return data
+    
+
+class UserShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MyUser
+        fields = ['id', 'username', 'profile_image']
+        
+class QuestionShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Question
+        fields = ['id', 'title']
+
+class NotificationSerializer(serializers.ModelSerializer):
+    user = UserShortSerializer()
+    actor = UserShortSerializer()
+    question = QuestionShortSerializer()
+    
+    class Meta:
+        model = Notification
+        fields = ['id', 'user', 'actor', 'message', 'question', 'answer', 'event_type', 'upvotes', 'is_read','created_at']
+        
+        
