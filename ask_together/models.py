@@ -114,6 +114,8 @@ class Notification(models.Model):
     
     event_type = models.CharField(max_length=50, choices=TYPE_CHOICES)
     
+    upvotes = models.SmallIntegerField(default=0)
+    
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     

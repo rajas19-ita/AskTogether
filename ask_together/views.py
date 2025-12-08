@@ -42,6 +42,9 @@ class HomePageView(TemplateView):
         
         return context
     
+class NotificationsView(TemplateView):
+    template_name='ask_together/notifications.html'
+    
     
 class UserLoginView(LoginView):
     template_name = 'ask_together/login.html'
