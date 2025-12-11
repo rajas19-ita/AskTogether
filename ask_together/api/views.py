@@ -13,6 +13,8 @@ from ask_together.services.notifications import (notify_answer_posted, notify_co
                                                  notify_answer_accepted,
                                                  notify_question_upvote_milestone,
                                                  notify_answer_upvote_milestone)
+from ask_together.presenters.answer_presenter import AnswerPresenter
+from django.template.loader import render_to_string
 
 @api_view(['POST'])
 @authentication_classes([SessionAuthentication])
@@ -25,10 +27,27 @@ def create_answer(request):
         if answer.author != answer.question.user:        
             notify_answer_posted(answer)
         
-        return Response(serializer.data, status=201)
+        presenter = AnswerPresenter(
+            answer=answer, 
+            request=request, 
+            question=answer.question, 
+            user_vote=0, 
+            skip_comments=True
+        )
+        
+        html = render_to_string(
+            "ask_together/components/answer.html", 
+            {'ctx':presenter.to_context()}, 
+            request=request
+        )
+        
+        return Response(
+            {"answer": serializer.data,"html":html}, 
+            status=201
+        )
     return Response(serializer.errors, status=400)
 
-@api_view(['POST', 'PATCH', 'DELETE'])
+@api_view(['POST', 'DELETE'])
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def accept_answer(request, pk):
@@ -41,12 +60,12 @@ def accept_answer(request, pk):
         return Response({"message":"You are not allowed to accept answer for this question."}, status=403)
     
     if request.method == 'POST':
-        if question.accepted_answer:
-            return Response({"message":"You have accepted answer for this question"}, status=400)
-        
         answer_id = request.data.get("answer")
         if not answer_id:
             return Response({"message":"Answer Id is required"}, status=400)
+        
+        if question.accepted_answer and int(answer_id) == question.accepted_answer.id:
+            return Response({"message":"You have already accepted this answer"}, status=400)
         
         try:
             answer = Answer.objects.get(id=answer_id, question=question)
@@ -61,33 +80,6 @@ def accept_answer(request, pk):
         
         return Response({
             "question_id":question.id,
-            "accepted_answer": answer.id,
-            "accepted_at": question.accepted_at
-        }, status=200)
-        
-    elif request.method == 'PATCH':
-        if not question.accepted_answer:
-            return Response({"message":"You have not accepted answer for this question"}, status=400)
-        
-        answer_id = request.data.get("answer")
-        if not answer_id:
-            return Response({"message":"Answer Id is required"}, status=400)
-        
-        if int(answer_id) == question.accepted_answer.id:
-            return Response({"message":"You have already accepted this answer"}, status=400)
-        
-        try:
-            answer = Answer.objects.get(id=answer_id, question=question)
-        except Answer.DoesNotExist:
-            return Response({"message":"Answer not found"}, status=404)
-        
-        question.accepted_answer = answer
-        question.accepted_at = timezone.now()
-        question.save()
-        notify_answer_accepted(answer)
-        
-        return Response({
-            "question_id": question.id,
             "accepted_answer": answer.id,
             "accepted_at": question.accepted_at
         }, status=200)
@@ -120,8 +112,14 @@ def create_comment(request):
             notify_comment_on_question(comment)
         else:
             notify_comment_on_answer(comment)
+            
+        html = render_to_string(
+            "ask_together/components/comment.html",
+            {"comment": comment},
+            request=request
+        )
         
-        return Response(serializer.data, status=201)
+        return Response({"comment":serializer.data, "html":html}, status=201)
     return Response(serializer.errors, status=400)
 
 @api_view(['GET'])
@@ -380,7 +378,12 @@ def get_comments(request):
                     "username":comment.user.username
                 },
                 'created_at': comment.created_at.isoformat(),
-                'updated_at': comment.updated_at.isoformat()
+                'updated_at': comment.updated_at.isoformat(),
+                'html': render_to_string(
+                    "ask_together/components/comment.html",
+                    {"comment":comment},
+                    request=request
+                )
             } 
             for comment in comments
         ],

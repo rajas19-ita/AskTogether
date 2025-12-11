@@ -1,0 +1,38 @@
+<div class="d-flex flex-column gap-2 align-items-center at-bg-primary-100 rounded-1">
+    {% if user.is_authenticated %}
+        <button data-action="upvote"
+                class="at-btn-vote {{ type }}{{ id }}-vote-btn {% if user_vote == 1 %}active{% endif %}"
+                onClick="handleVote('{{ type }}', {{ id }}, 'upvote', this)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 16 16">
+                <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
+            </svg>
+        </button>
+    {% else %}
+        <a href="{% url 'ask_together:login' %}?ssrc=vote"
+           class="at-btn-vote">
+           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 16 16">
+                <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
+           </svg>
+        </a>
+    {% endif %}
+
+    <span id="{{ type }}{{ id }}_vote_count" class="fw-medium fs-4">
+        {{ total_votes }}
+    </span>
+
+    {% if user.is_authenticated %}
+        <button data-action="downvote"
+                class="at-btn-vote {{ type }}{{ id }}-vote-btn {% if user_vote == -1 %}active{% endif %}"
+                onClick="handleVote('{{ type }}', {{ id }}, 'downvote', this)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+            </svg>
+        </button>
+    {% else %}
+        <a href="{% url 'ask_together:login' %}?ssrc=vote" class="at-btn-vote">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+            </svg>
+        </a>
+    {% endif %}
+</div>

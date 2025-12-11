@@ -16,25 +16,6 @@
                 {% include 'ask_together/includes/sidebar.html' %}
                 <div class="py-4 px-4 border-start flex-grow-1 d-flex flex-column align-items-center">
                     <div class="w-100 d-flex flex-column" style="max-width:900px">
-                        {% comment %} <div class="at-heading-color-dark d-flex justify-content-center fs-6 mb-4  fw-medium">
-                            <div class="d-flex align-items-center at-bg-primary-200 px-2 py-1">
-                                <span class="">
-                                    {{4215|intcomma}} questions
-                                </span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
-                                    <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
-                                </svg>
-                                <span>
-                                    {{21150|intcomma}} answers
-                                </span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
-                                    <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
-                                </svg>
-                                <span>
-                                    {{3142|intcomma}} users
-                                </span>
-                            </div>
-                        </div> {% endcomment %}
                         <div class="d-flex justify-content-between align-items-center mb-5 ">
                                 <div class="d-flex flex-column mt-1 ">
                                     <div class="d-flex gap-1 align-items-end">
@@ -81,55 +62,68 @@
                                 </div>
                             </div>              
                                                    
-                            <div class="border rounded mb-3 ">
+                            <div class="d-flex flex-column gap-3 mb-3 ">
                                 {% for question in page_obj %}
-                                    <div class="row g-0 gap-4 align-items-start py-4 {% if not forloop.last %}border-bottom{% endif %}">
-                                        <div class="col-2 d-flex flex-column gap-2 align-items-end fs-6">
-                                            <div>{{question.votes.count}} votes</div>
-                                            {% if question.answers.exists %}
-                                                {% if question.accepted_answer %}
-                                                    <div class="px-2 py-1 rounded bg-success text-white border border-success">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
-                                                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
-                                                        </svg> {{question.answers.count}} answers
-                                                    </div>
-                                                {% else %}
-                                                    <div class="px-2 py-1 rounded text-success border border-success">
-                                                        {{question.answers.count}} answers
+                                    <div class="border d-flex flex-column rounded-1 px-4 py-3">
+                                        <h3 class=" fs-5 fw-normal mb-1">
+                                            <a href="{% url 'ask_together:question_detail' question.pk %}" class=" text-brand text-decoration-none">
+                                                {{question.title}}
+                                            </a>
+                                        </h3>
+                                        <p class="mb-2 text-break fs-6">
+                                            {{question.description|striptags|truncatewords:30}}
+                                        </p>
+                                        <div class="d-flex gap-2 justify-content-between">
+                                            <div class="d-flex gap-1 at-text-secondary align-items-center">
+                                                {% if question.answers.exists %}
+                                                    {% if question.accepted_answer %}
+                                                        <div class="small text-success">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                                                <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+                                                            </svg> {{question.answers.count}} answers
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="small at-text-secondary">
+                                                            {{question.answers.count}} answers
+                                                        </div>
+                                                    {% endif %}
+                                                {% else  %}
+                                                    <div class="small at-text-secondary">
+                                                        0 answers
                                                     </div>
                                                 {% endif %}
-                                            {% else  %}
-                                                <div class="text-secondary">
-                                                    0 answers
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                                    <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                                </svg>
+                                                <div class=" small at-text-secondary">
+                                                    {% comment %} <span class=""> {% endcomment %}
+                                                        {% comment %} <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 16 16">
+                                                                <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
+                                                        </svg> {% endcomment %}
+                                                        {% comment %} <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-caret-up" viewBox="0 0 16 16">
+                                                        <path d="M3.204 11h9.592L8 5.519zm-.753-.659 4.796-5.48a1 1 0 0 1 1.506 0l4.796 5.48c.566.647.106 1.659-.753 1.659H3.204a1 1 0 0 1-.753-1.659"/>
+                                                        </svg> {% endcomment %}
+                                                    {% comment %} </span>    {% endcomment %}
+                                                    {{question.votes.count}} votes
                                                 </div>
-                                            {% endif %}
-                                        </div>
-                                        <div class=" col-9 d-flex flex-column">
-                                            <h3 class=" fs-5 fw-normal mb-1">
-                                                <a href="{% url 'ask_together:question_detail' question.pk %}" class=" text-brand text-decoration-none">
-                                                    {{question.title}}
-                                                </a>
-                                            </h3>
-                                            <p class="mb-2 text-break fs-6">
-                                                {{question.description|striptags|truncatewords:30}}
-                                            </p>
-                                            <div class=" align-self-end mt-2 d-flex gap-2 small align-items-center">
-                                                <a class="text-decoration-none d-flex text-brand gap-1 align-items-center" style="cursor:pointer" href="{% url 'ask_together:user_profile' question.user.id %}">
-                                                    <div>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <div>
                                                         <img class="at-avatar at-avatar-sm" src="{% if question.user.profile_image %}{{question.user.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"/>
                                                     </div>
+                                                <a class="text-decoration-none small"href="{% url 'ask_together:user_profile' question.user.id %}">
                                                     {{question.user.username}}
                                                 </a>
-                                                <p class="mb-0 text-secondary">
-                                                    asked
-                                                    <span class="datetime mb-0 " data-dt="{{ question.created_at|date:'c' }}">
-                                                        {{ question.created_at|date:"M d, Y H:i" }}
-                                                    </span>
+                                                <p class="mb-0 at-text-secondary small">
+                                                        asked
+                                                        <span class="datetime mb-0 " data-dt="{{ question.created_at|date:'c' }}">
+                                                            {{ question.created_at|date:"M d, Y H:i" }}
+                                                        </span>
                                                 </p>
-                                            </div>  
+                                            </div>
+
                                         </div>
                                     </div>
-        
                                 {% endfor%}
                             </div>
                             <div class="d-flex justify-content-center">
@@ -176,8 +170,6 @@
 {% endblock %}
 {% block script_block %}
     <script>
-        {% comment %} formatUTCtoLocal() {% endcomment %}
-
         document.querySelectorAll('.datetime').forEach(el => {
             const dt = el.dataset.dt;
             el.textContent = `${timeAgo(dt)}`;

@@ -1,0 +1,9 @@
+<div class="px-3 py-2 at-border-top">
+    <p class="mb-0 fs-6">
+        {{comment.content}}
+        <span class="d-inline-block">
+            <span class="at-text-brand-primary">- {{comment.user.username}}</span>
+            <span class="datetime at-text-secondary small" data-dt="{{ comment.created_at|date:'c' }}">{{ comment.created_at|date:"M d, Y H:i" }}</span>
+        </span>
+    </p>
+</div>

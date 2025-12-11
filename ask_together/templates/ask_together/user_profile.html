@@ -66,15 +66,15 @@
                             <div class="d-flex gap-5">
                                 <div class="d-flex flex-column flex-shrink-0">
                                     <h3 class="fs-5 fw-normal">Stats</h3>
-                                    <div class="rounded border p-3 d-flex flex-wrap gap-5" style="width:100%;max-width:220px">
-                                        <div class="d-flex flex-column ">
-                                            <p class="mb-0">{{object.answers.count}}</p>
+                                    <div class="rounded border p-3 d-flex flex-column gap-4" style="width:100%;max-width:220px">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <p class="mb-0 fs-4">{{object.questions.count}}</p>
+                                            <p class="text-secondary fs-6 mb-0">questions</p>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-center">
+                                            <p class="mb-0 fs-4">{{object.answers.count}}</p>
                                             <p class="text-secondary fs-6 mb-0">answers</p>
                                         </div>  
-                                         <div class="d-flex flex-column ">
-                                            <p class="mb-0">{{object.questions.count}}</p>
-                                            <p class="text-secondary fs-6 mb-0">questions</p>
-                                        </div> 
                                     </div>
                                 </div>
                                 <div class="d-flex flex-column flex-grow-1">
