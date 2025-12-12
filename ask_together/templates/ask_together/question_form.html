@@ -13,7 +13,6 @@
             <div class="d-flex flex-column align-items-center py-4">
                 <div class="w-100" style="max-width:880px">
                     <div class="d-flex align-items-end mb-1">
-
                         <h1 class="mb-0 fs-3 fw-medium ps-1 ">Ask</h1>
                     </div>
                     <div class="p-4 bg-white rounded-3 " >
@@ -21,20 +20,18 @@
                             {% csrf_token %}
                                 <div class=" d-flex flex-column w-100 gap-1">
                                     <label for="id_title" class="fw-semibold fs-6" style="margin-bottom:-5px">Title<span class="text-danger"> *</span></label>
-                                    {% comment %} <p class="mb-1 text-secondary" style="font-size:0.875rem">Imagine you’re asking a question to another person</p> {% endcomment %}
                                     <div class="">
-                                        <input type="text" name="title" maxlength="200" required="" id="id_title" class="form-input w-100" placeholder="e.g. How to center a div using CSS?">
+                                        <input type="text" name="title" maxlength="200" required="" id="id_title" class="at-form-input w-100" placeholder="e.g. How to center a div using CSS?">
                                     </div>
                                 </div>
                                 <div class="d-flex flex-column gap-1">
                                     <label for="id_description" class="fw-semibold fs-6" style="margin-bottom:-3px">Description<span class="text-danger"> *</span></label>
-                                    {% comment %} <p class="mb-1 text-secondary" style="font-size:0.875rem">Include all the information someone would need to answer your question</p> {% endcomment %}
                                     {{form.description}}
                                     {% for error in form.description.errors %}
                                             <p class="text-danger mb-0">{{error}}</p>
                                     {% endfor %}
                                 </div>
-                                <button type="submit" class="btn-askquestion align-self-center">Submit</button>
+                                <button type="submit" class="at-btn at-btn-brand fw-normal align-self-center">Submit</button>
                         </form>
                     </div>
                 </div>

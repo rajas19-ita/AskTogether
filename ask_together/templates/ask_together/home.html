@@ -66,7 +66,7 @@
                                 {% for question in page_obj %}
                                     <div class="border d-flex flex-column rounded-1 px-4 py-3">
                                         <h3 class=" fs-5 fw-normal mb-1">
-                                            <a href="{% url 'ask_together:question_detail' question.pk %}" class=" text-brand text-decoration-none">
+                                            <a href="{% url 'ask_together:question_detail' question.pk %}" class=" at-text-brand-primary text-decoration-none">
                                                 {{question.title}}
                                             </a>
                                         </h3>
@@ -96,21 +96,11 @@
                                                     <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
                                                 </svg>
                                                 <div class=" small at-text-secondary">
-                                                    {% comment %} <span class=""> {% endcomment %}
-                                                        {% comment %} <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 16 16">
-                                                                <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
-                                                        </svg> {% endcomment %}
-                                                        {% comment %} <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-caret-up" viewBox="0 0 16 16">
-                                                        <path d="M3.204 11h9.592L8 5.519zm-.753-.659 4.796-5.48a1 1 0 0 1 1.506 0l4.796 5.48c.566.647.106 1.659-.753 1.659H3.204a1 1 0 0 1-.753-1.659"/>
-                                                        </svg> {% endcomment %}
-                                                    {% comment %} </span>    {% endcomment %}
                                                     {{question.votes.count}} votes
                                                 </div>
                                             </div>
                                             <div class="d-flex gap-2">
-                                                <div>
-                                                        <img class="at-avatar at-avatar-sm" src="{% if question.user.profile_image %}{{question.user.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"/>
-                                                    </div>
+                                                <img class="at-avatar at-avatar-sm" src="{% if question.user.profile_image %}{{question.user.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"/>
                                                 <a class="text-decoration-none small"href="{% url 'ask_together:user_profile' question.user.id %}">
                                                     {{question.user.username}}
                                                 </a>
@@ -129,13 +119,13 @@
                             <div class="d-flex justify-content-center">
                                 <span class="d-flex align-items-center gap-3">
                                     {% if page_obj.has_previous %}
-                                        <a href="?page=1" class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
+                                        <a href="?page=1" class="d-flex align-items-center gap-1 px-2 py-2 at-border rounded">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-double-left" viewBox="0 0 16 16">
                                                 <path fill-rule="evenodd" d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
                                                 <path fill-rule="evenodd" d="M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
                                             </svg> 
                                         </a>
-                                        <a href="?page={{ page_obj.previous_page_number }}" class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
+                                        <a href="?page={{ page_obj.previous_page_number }}" class="d-flex align-items-center gap-1 px-2 py-2 at-border rounded">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
                                                 <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
                                             </svg> 
@@ -147,12 +137,12 @@
                                     </span>
             
                                     {% if page_obj.has_next %}
-                                        <a href="?page={{ page_obj.next_page_number }}" class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
+                                        <a href="?page={{ page_obj.next_page_number }}" class="d-flex align-items-center gap-1 px-2 py-2 at-border rounded">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
                                                 <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
                                             </svg>
                                         </a>
-                                        <a href="?page={{ page_obj.paginator.num_pages }}" class="d-flex align-items-center gap-1 px-2 py-2 border rounded">
+                                        <a href="?page={{ page_obj.paginator.num_pages }}" class="d-flex align-items-center gap-1 px-2 py-2 at-border rounded">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-double-right" viewBox="0 0 16 16">
                                                 <path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708"/>
                                                 <path fill-rule="evenodd" d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708"/>

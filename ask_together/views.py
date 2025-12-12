@@ -310,3 +310,7 @@ class AccountSetupView(View):
     
         return redirect('ask_together:home')
         
+        
+        
+def custom_404(request, exception):
+    return render(request, "ask_together/404.html", status=404)
