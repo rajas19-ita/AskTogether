@@ -413,11 +413,6 @@ a {
   color: #3c3c3c !important;
 }
 
-.at-navbar-color {
-  background-color: #ffffff !important;
-  color: #000000 !important;
-}
-
 .at-sidebar-overlay {
   display: none;
   position: fixed;
@@ -447,10 +442,6 @@ a {
 }
 
 @media (max-width: 1399px) {
-  .at-navbar-color {
-    background-color: #f3e5f5 !important; /* light purple */
-    color: #4a148c !important;
-  }
 }
 
 @media (max-width: 1199px) {
@@ -459,11 +450,6 @@ a {
   }
   .at-sidebar-login {
     display: block !important;
-  }
-
-  .at-navbar-color {
-    background-color: #e8f5e9 !important; /* light green */
-    color: #1b5e20 !important;
   }
 
   .at-nav-login {
@@ -514,23 +500,10 @@ a {
   .at-brand-name {
     display: none;
   }
-
-  .at-navbar-color {
-    background-color: #fff3cd !important; /* light yellow */
-    color: #7a5c00 !important;
-  }
 }
 
 @media (max-width: 767px) {
-  .at-navbar-color {
-    background-color: #e3f2fd !important; /* light blue */
-    color: #0d47a1 !important;
-  }
 }
 
 @media (max-width: 575px) {
-  .at-navbar-color {
-    background-color: #f8f9fa !important; /* light grey */
-    color: #333333 !important;
-  }
 }
