@@ -87,7 +87,7 @@
                                     <p class="mb-2 text-break fs-6">
                                         {{question.description|striptags|truncatewords:30}}
                                     </p>
-                                    <div class="d-flex gap-2 justify-content-between ">
+                                    <div class="d-flex flex-column flex-md-row gap-2 justify-content-between">
                                         <div class="d-flex gap-1 at-text-secondary align-items-center">
                                             {% if question.answers.exists %}
                                                 {% if question.accepted_answer %}
