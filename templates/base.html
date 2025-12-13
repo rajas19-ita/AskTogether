@@ -67,17 +67,21 @@
             const sidebar = document.querySelector('.at-sidebar');
             const overlay = document.querySelector('.at-sidebar-overlay');
 
-            sidebar.addEventListener('click', (e) => {
-                if (e.target.tagName === 'A') {
-                    sidebar.classList.remove('open');
-                    overlay.classList.remove('active');
+            sidebar?.addEventListener('click', (e) => {
+                if (e.target.closest('a')) {
+                    sidebar?.classList.remove('open');
+                    overlay?.classList.remove('active');
                 }
             })
             
-            document.querySelector('.at-sidebar-close').addEventListener('click', (e) => {
-                console.log(overlay)
-                sidebar.classList.remove('open');
+            overlay?.addEventListener('click', () => {
+                sidebar?.classList.remove('open');
                 overlay.classList.remove('active');
+            });
+
+            document.querySelector('.at-sidebar-close')?.addEventListener('click', (e) => {
+                sidebar?.classList.remove('open');
+                overlay?.classList.remove('active');
             })
         </script>
 

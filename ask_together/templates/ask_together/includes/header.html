@@ -53,7 +53,7 @@
 </header>
 {% block script_block %}
 <script>
-    document.querySelector('.at-hamburger').addEventListener('click', () => {
+    document.querySelector('.at-hamburger')?.addEventListener('click', () => {
         let sidebar = document.querySelector('.at-sidebar')
         let overlay = document.querySelector('.at-sidebar-overlay');
         sidebar.classList.toggle('open');
@@ -77,7 +77,8 @@
             }
         })
     }
-
-    fetchUnreadNotificationsCount()
+    if('{{user.is_authenticated}}'=== 'True'){
+        fetchUnreadNotificationsCount()
+    }
 </script>
 {% endblock %}

@@ -6,7 +6,7 @@ from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, 
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetCompleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
-from .models import Question, MyUser
+from .models import Question, MyUser, Answer
 from django.db.models import Sum
 from django.core.paginator import Paginator
 from django.views import View
@@ -45,6 +45,9 @@ class HomePageView(TemplateView):
         page_obj = paginator.get_page(page_number)
         
         context['page_obj'] = page_obj
+        context["question_count"] = Question.objects.count()
+        context["answer_count"]= Answer.objects.count()
+        context["user_count"]= MyUser.objects.count()
         
         return context
     

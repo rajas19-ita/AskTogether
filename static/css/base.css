@@ -381,7 +381,7 @@ h6 {
   flex: 1;
   padding: 2rem;
   max-width: 980px;
-  margin: auto;
+  margin: 0 auto;
 }
 
 .at-rich-content img {
