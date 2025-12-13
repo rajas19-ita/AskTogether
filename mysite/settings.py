@@ -218,7 +218,7 @@ GOOGLE_CLIENT_CONFIG={
         "redirect_uris": [
             os.getenv('GOOGLE_REDIRECT_URI')
         ],
-        "javascript_origins": ["http://127.0.0.1:8000"]
+        "javascript_origins": [os.getenv('GOOGLE_JS_ORIGIN')]
     }
 }
 
