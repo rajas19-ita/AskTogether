@@ -61,6 +61,26 @@
                 return 'just now';
             }
         </script>
+
+        <script>
+        
+            const sidebar = document.querySelector('.at-sidebar');
+            const overlay = document.querySelector('.at-sidebar-overlay');
+
+            sidebar.addEventListener('click', (e) => {
+                if (e.target.tagName === 'A') {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                }
+            })
+            
+            document.querySelector('.at-sidebar-close').addEventListener('click', (e) => {
+                console.log(overlay)
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            })
+        </script>
+
         {% block script_block %}{% endblock %}
     </body>
 </html>

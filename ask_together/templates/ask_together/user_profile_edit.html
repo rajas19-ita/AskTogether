@@ -7,13 +7,13 @@
 
 {% block content %}
     {% include 'ask_together/includes/header.html' %}
-     <main class="min-vh-100">
-        <div class="container">
-            <div class="at-layout">
-                <div class="at-sidebar-wrapper">
-                    {% include 'ask_together/includes/sidebar.html' %}
-                </div>
-                <div class="at-content-container">
+    <div class="container min-vh-100">  
+        <div class="at-layout"> 
+            <div class="at-sidebar-wrapper">
+                {% include 'ask_together/includes/sidebar.html' %}
+            </div>
+            <div class="at-sidebar-overlay"></div>
+            <main class="at-content-container">
                     <h1 class="pb-2 at-border-bottom mb-3 fs-4 ps-1">Edit Profile</h1>
                     <form method="post" action="{% url 'ask_together:user_profile_edit' %}" enctype="multipart/form-data" class=" d-flex flex-column gap-4 pt-2 px-3">
                         {% csrf_token %}
@@ -108,10 +108,9 @@
                             <p class="text-danger mb-0">{{error}}</p>
                         {% endfor %}
                     </form>
-                </div>
-            </div>
+            </main>
         </div>
-    </main>
+    </div>
     <script>
         const profileImage = document.getElementById('profile_image')
         const profileImgInput = document.getElementById('id_profile_image')

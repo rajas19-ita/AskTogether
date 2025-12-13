@@ -8,36 +8,37 @@
 
 {% block content %}
     {% include 'ask_together/includes/header.html' %}
-    <main class="min-vh-100">
-        <div class="container">
-            <div class="d-flex min-vh-100">
+    <div class="container min-vh-100">
+        <div class="at-layout">
+            <div class="at-sidebar-wrapper">
                 {% include 'ask_together/includes/sidebar.html' %}
-                <div class="pb-4 px-4 border-start flex-grow-1 d-flex flex-column">
-                    <div class="w-100 d-flex flex-column gap-3 ps-5" style="max-width:650px">
-                        <h1 class="fs-3 pt-4">Notifications</h1>
-                        <div class="tabs">
-                            <button class="at-btn at-btn-text at-btn-tabs active" data-type="unread" onClick="switchTab(this)">Unread</button>
-                            <button class="at-btn at-btn-text at-btn-tabs" data-type="read" onClick="switchTab(this)">Read</button>
-                        </div>
-                        <div class=" at-tab-content active" id="unread_notifications">
-                            <p class="text-center at-text-secondary d-none" id="no_unread_msg">
-                                No Unread Notifications
-                            </p>
-                            <img src={% static 'ask_together/img/loading_gif.gif' %} class="align-self-center d-none" id="unread_loading_gif" style=""/>
-                            <button class="at-btn at-btn-text d-none" id="load_more_unread" onClick="loadMoreNotifications(this, 'unread')">Load More</button>
-                        </div> 
-                        <div class=" at-tab-content" id="read_notifications">
-                            <p class="text-center at-text-secondary d-none" id="no_read_msg">
-                                No Read Notifications
-                            </p>
-                            <img src={% static 'ask_together/img/loading_gif.gif' %} class="align-self-center d-none" id="read_loading_gif" style=""/>
-                            <button class="at-btn at-btn-text d-none" id="load_more_read" onClick="loadMoreNotifications(this, 'read')">Load More</button>
-                        </div>     
-                    </div>
-                </div>
             </div>
+            <div class="at-sidebar-overlay"></div>
+            <main class="pb-4 px-4 flex-grow-1 d-flex flex-column">
+                <div class="w-100 d-flex flex-column gap-3 ps-sm-5" style="max-width:650px">
+                    <h1 class="fs-3 pt-4">Notifications</h1>
+                    <div class="tabs">
+                        <button class="at-btn at-btn-text at-btn-tabs active" data-type="unread" onClick="switchTab(this)">Unread</button>
+                        <button class="at-btn at-btn-text at-btn-tabs" data-type="read" onClick="switchTab(this)">Read</button>
+                    </div>
+                    <div class=" at-tab-content active" id="unread_notifications">
+                        <p class="text-center at-text-secondary d-none" id="no_unread_msg">
+                            No Unread Notifications
+                        </p>
+                        <img src={% static 'ask_together/img/loading_gif.gif' %} class="align-self-center d-none" id="unread_loading_gif" style=""/>
+                        <button class="at-btn at-btn-text d-none" id="load_more_unread" onClick="loadMoreNotifications(this, 'unread')">Load More</button>
+                    </div> 
+                    <div class=" at-tab-content" id="read_notifications">
+                        <p class="text-center at-text-secondary d-none" id="no_read_msg">
+                            No Read Notifications
+                        </p>
+                        <img src={% static 'ask_together/img/loading_gif.gif' %} class="align-self-center d-none" id="read_loading_gif" style=""/>
+                        <button class="at-btn at-btn-text d-none" id="load_more_read" onClick="loadMoreNotifications(this, 'read')">Load More</button>
+                    </div>     
+                </div>
+            </main>
         </div>
-    </main>
+    </div>
 {% endblock %}
 
 {% block script_block %}

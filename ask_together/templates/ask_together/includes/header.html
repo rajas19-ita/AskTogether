@@ -1,14 +1,25 @@
 {% load static %}
 
 <header class="sticky-top">
-    <nav class="navbar bg-white border-bottom">
+    <nav class="navbar bg-white border-bottom at-navbar-color">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center w-100">
-                <a href="{% url 'ask_together:home' %}" class="navbar-brand d-flex gap-2 align-items-center at-font-roboto text-decoration-none at-heading-color-dark">
-                    <img src="{% static 'ask_together/img/logo_b.png' %}" style="width:40px"/>
-                    <span class=""><span style="font-size:1.28rem">Ask</span><span class="fw-semibold at-text-brand-primary">Together</span></span>
-                </a>
-                <div class="position-relative w-100 me-5" style="max-width:600px">
+                <div class="d-flex align-items-center gap-1">
+                    {% if request.resolver_match.url_name != 'question_create' %}
+                        <button class="at-btn at-btn-text at-hamburger">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+                            </svg>
+                        </button>
+                    {% endif %}
+                    <a href="{% url 'ask_together:home' %}" class="navbar-brand d-flex gap-2 align-items-center at-font-roboto text-decoration-none at-heading-color-dark">
+                        <img src="{% static 'ask_together/img/logo_b.png' %}" style="width:40px"/>
+                        <span class="at-brand-name">
+                            <span style="font-size:1.28rem">Ask</span><span class="fw-semibold at-text-brand-primary">Together</span>
+                        </span>
+                    </a>
+                </div>
+                <div class="position-relative w-100 me-5 at-search-box" style="max-width:600px">
                     <input type="text" class="at-form-input at-navbar-search" placeholder="Search..." >
                     <div class="position-absolute " style="top:50%;left:0.8rem;transform:translateY(-50%)">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search text-secondary mb-1"  viewBox="0 0 16 16">
@@ -16,8 +27,8 @@
                         </svg>
                     </div>
                 </div>
-                <div class="d-flex align-items-center gap-4">
-                    {% if user.is_authenticated %}
+                {% if user.is_authenticated %}
+                    <div class="d-flex align-items-center gap-4">
                         <div class="position-relative">
                             <a class="text-decoration-none" href="{% url 'ask_together:notifications' %}">
                                 <img style="width:24px" src="{% static 'ask_together/img/bell.png'  %}"/>
@@ -28,21 +39,27 @@
                             <a class="" style="cursor:pointer" href="{% url 'ask_together:user_profile' request.user.id %}">
                                 <img class="at-avatar at-avatar-md at-avatar-ring" src="{% if request.user.profile_image %}{{request.user.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"/>
                             </a>
-                        </div>
-                    {% endif %}
-                    {% if not user.is_authenticated %}
-                        <div class="d-flex align-items-center gap-2" >
-                            <a href="{% url 'ask_together:login' %}" class="text-decoration-none at-font-roboto at-btn at-btn-text">Login</a>
-                            <a href="{% url 'ask_together:signup' %}" class="text-decoration-none at-btn at-btn-brand">Sign up</a>
-                        </div>
-                    {% endif %}
-                </div>
+                        </div> 
+                    </div>
+                {% else %}
+                    <div class="d-flex align-items-center gap-2 at-nav-login" >
+                        <a href="{% url 'ask_together:login' %}" class="text-decoration-none at-font-roboto at-btn at-btn-text">Login</a>
+                        <a href="{% url 'ask_together:signup' %}" class="text-decoration-none at-btn at-btn-brand">Sign up</a>
+                    </div>
+                {% endif %}
             </div>  
         </div> 
     </nav>
 </header>
 {% block script_block %}
 <script>
+    document.querySelector('.at-hamburger').addEventListener('click', () => {
+        let sidebar = document.querySelector('.at-sidebar')
+        let overlay = document.querySelector('.at-sidebar-overlay');
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('active');
+    });
+
     const fetchUnreadNotificationsCount = ()=>{
         fetch(`{% url 'ask_together:get_notifications_count' %}?is_read=false`)
         .then(res =>{

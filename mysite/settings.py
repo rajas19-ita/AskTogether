@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG") == 'True'
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".onrender.com"]
 
 
 # Application definition
@@ -166,6 +166,8 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+
 if DEBUG:
     STATIC_URL = 'static/'
 
@@ -173,8 +175,8 @@ if DEBUG:
     
     MEDIA_URL = "/media/"
 else:
-    MEDIA_URL = f"https://myapp-qna-bucket.s3.amazonaws.com/"
-    STATIC_URL = f"https://myapp-qna-bucket.s3.amazonaws.com/static/"
+    MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/"
+    STATIC_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/static/"
 
     STORAGES = {
         "default": {

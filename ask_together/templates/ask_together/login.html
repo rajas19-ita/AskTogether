@@ -78,7 +78,11 @@
                 <p class="mb-0 ">Don't have an account? <a href="{% url 'ask_together:signup' %}" class="at-text-brand-primary">Sign up</a></p>
             </form> 
           </div>
-        </div>  
+        </div>    
       </div>
     </main>
+    <div class="at-sidebar-login">
+        {% include "ask_together/includes/sidebar.html" %}
+    </div>
+    <div class="at-sidebar-overlay"></div>
 {% endblock %}
