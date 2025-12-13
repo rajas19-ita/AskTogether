@@ -76,6 +76,10 @@
                 countEl.classList.remove('d-none')
             }
         })
+        .catch(err=>{
+            console.error(err)
+            alert('Something went wrong, Please try again.')
+        })
     }
     if('{{user.is_authenticated}}'=== 'True'){
         fetchUnreadNotificationsCount()

@@ -129,6 +129,10 @@
                 allPosts = data
                 renderPosts(data)
             })
+            .catch((err)=>{
+                console.error(err)
+                alert('Something went wrong, Please try again.')
+            })
         
         const renderPosts = (posts)=>{
             const container = document.getElementById('post_container')
