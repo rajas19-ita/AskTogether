@@ -140,7 +140,7 @@
                 const wrapper = document.createElement('div')
                 wrapper.className = `${index !== posts.length-1?'at-border-bottom':''} py-4 px-3 row g-0 justify-content-between`
                 wrapper.innerHTML = `
-                    <span class="px-3 py-1 rounded at-border rounded col-1 text-center">${post.type==='answer'?'A':'Q'}</span>
+                    <span class="px-1 px-md-3 py-1 rounded at-border rounded col-1 text-center align-self-start">${post.type==='answer'?'A':'Q'}</span>
                     <p class="col-8 mb-0">${post.title}</p>
                     <span class="datetime col-2" data-dt="${post.updated_at}">
                         ${new Date(post.updated_at).toLocaleString("en-US", {

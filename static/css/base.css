@@ -500,6 +500,12 @@ a {
   .at-brand-name {
     display: none;
   }
+  .at-content-container {
+    padding: 2rem 0.5rem;
+  }
+  .at-user-label {
+    display: none;
+  }
 }
 
 @media (max-width: 767px) {

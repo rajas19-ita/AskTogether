@@ -28,14 +28,14 @@
                                 {{question.description|safe}}
                             </div>
                             <div class="d-flex justify-content-end">
-                                <div class="d-flex align-items-center gap-2 at-bg-primary-100 rounded-1 px-2 py-1" >            
+                                <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 at-bg-primary-100 rounded-1 px-2 py-1" >            
                                     <div class="d-flex align-items-center gap-1 at-text-secondary small">
                                         <span class="">Asked</span>
                                         <span class="datetime" data-dt="{{ question.created_at|date:'c' }}">
                                             {{ question.created_at|date:"M d, Y H:i" }}
                                         </span>
                                     </div>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot at-user-label" viewBox="0 0 16 16">
                                         <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
                                     </svg>    
                                     <div class="d-flex align-items-center gap-1">
