@@ -506,6 +506,11 @@ a {
   .at-user-label {
     display: none;
   }
+  .at-avatar-profile {
+    width: 100px;
+    height: 120px;
+    object-fit: cover;
+  }
 }
 
 @media (max-width: 767px) {
