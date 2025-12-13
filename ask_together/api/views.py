@@ -16,6 +16,8 @@ from ask_together.services.notifications import (notify_answer_posted, notify_co
 from ask_together.presenters.answer_presenter import AnswerPresenter
 from django.template.loader import render_to_string
 import logging
+from rest_framework.views import exception_handler
+from rest_framework import status
 
 logger = logging.getLogger(__name__)
 
@@ -127,7 +129,6 @@ def create_comment(request):
 
 @api_view(['GET'])
 def get_posts(request, pk):
-    logger.info("get_posts called with user_id=%s", pk)
     try:  
         user = get_object_or_404(MyUser, pk=pk)
         
@@ -493,5 +494,3 @@ def get_notifications_count(request):
         'is_read':filters['is_read'],
         'count':notifications
     })
-    
-    

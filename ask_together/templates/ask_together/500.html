@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error{% endblock %}
+
+{% block content %}
+<main class="min-vh-100 d-flex justify-content-center align-items-center">
+    <div class="text-center">
+        <h1 class="display-3 fw-bold text-danger">500</h1>
+        <p class="fs-4 text-secondary">
+            Something went wrong on our side.
+        </p>
+        <p class="text-muted">
+            Please try again in a few minutes.
+        </p>
+
+        <a href="{% url 'ask_together:home' %}" class="at-btn at-btn-brand mt-3">
+            Go Home
+        </a>
+    </div>
+</main>
+{% endblock %}

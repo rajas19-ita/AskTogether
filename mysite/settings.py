@@ -259,3 +259,7 @@ LOGGING = {
     },
 }
 
+REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": "ask_together.api.exceptions.custom_exception_handler"
+}
+
