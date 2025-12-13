@@ -15,6 +15,9 @@ from ask_together.services.notifications import (notify_answer_posted, notify_co
                                                  notify_answer_upvote_milestone)
 from ask_together.presenters.answer_presenter import AnswerPresenter
 from django.template.loader import render_to_string
+import logging
+
+logger = logging.getLogger(__name__)
 
 @api_view(['POST'])
 @authentication_classes([SessionAuthentication])
@@ -124,37 +127,42 @@ def create_comment(request):
 
 @api_view(['GET'])
 def get_posts(request, pk):
-    user = get_object_or_404(MyUser, pk=pk)
-    
-    questions = Question.objects.filter(user=user).order_by('-updated_at')[:10]
-    answers = Answer.objects.filter(author=user).order_by('-updated_at')[:10]
-    items = []
+    logger.info("get_posts called with user_id=%s", pk)
+    try:  
+        user = get_object_or_404(MyUser, pk=pk)
         
-    for q in questions:
-        items.append({
-            "question_id": q.id,
-            "answer_id": None,
-            "type": "question",
-            "title": q.title,
-            "created_at": q.created_at,
-            "updated_at": q.updated_at,
-            "author": {"id": q.user.id, "username": q.user.username},
+        questions = Question.objects.filter(user=user).order_by('-updated_at')[:10]
+        answers = Answer.objects.filter(author=user).order_by('-updated_at')[:10]
+        items = []
+            
+        for q in questions:
+            items.append({
+                "question_id": q.id,
+                "answer_id": None,
+                "type": "question",
+                "title": q.title,
+                "created_at": q.created_at,
+                "updated_at": q.updated_at,
+                "author": {"id": q.user.id, "username": q.user.username},
+                })
+            
+        for a in answers:
+            items.append({
+                "question_id": a.question.id,
+                "answer_id": a.id,
+                "type": "answer",
+                "title": a.question.title,
+                "created_at": a.created_at,
+                "updated_at": a.updated_at,
+                "author": {"id": a.author.id, "username": a.author.username},
             })
         
-    for a in answers:
-        items.append({
-            "question_id": a.question.id,
-            "answer_id": a.id,
-            "type": "answer",
-            "title": a.question.title,
-            "created_at": a.created_at,
-            "updated_at": a.updated_at,
-            "author": {"id": a.author.id, "username": a.author.username},
-        })
-    
-    items.sort(key=lambda x: x['updated_at'], reverse=True)
-        
-    return Response(items[:10])
+        items.sort(key=lambda x: x['updated_at'], reverse=True)
+            
+        return Response(items[:10])
+    except Exception:
+        logger.exception("Error while fetching posts for user_id=%s", pk)
+        raise
 
 upvote_milestone = [5, 25, 50, 100, 500]
 

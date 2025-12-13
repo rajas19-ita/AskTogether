@@ -24,6 +24,10 @@ import requests as rq
 from django.core.files.base import ContentFile
 from ask_together.presenters.answer_presenter import AnswerPresenter
 from ask_together.presenters.question_presenter import QuestionPresenter
+import logging
+from django.http import HttpResponse
+
+logger = logging.getLogger(__name__)
 
 GOOGLE_CLIENT_CONFIG = settings.GOOGLE_CLIENT_CONFIG
 
