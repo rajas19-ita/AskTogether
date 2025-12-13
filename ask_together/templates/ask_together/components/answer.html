@@ -38,7 +38,9 @@
                 </svg>    
                 <div class="d-flex align-items-center gap-1">
                     <img class="at-avatar at-avatar-sm" src="{% if ctx.answer.author.profile_image %}{{ctx.answer.author.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"/>
-                    <p class="mb-0 at-text-brand-primary small">{{ctx.answer.author.username}}</p>
+                    <a href="{% url 'ask_together:user_profile' ctx.answer.author.id %}" class="text-decoration-none"> 
+                        <span class="mb-0 at-text-brand-primary small">{{ctx.answer.author.username}}</span>
+                    </a>
                 </div> 
             </div>
         </div>

@@ -40,7 +40,7 @@
                                     </svg>    
                                     <div class="d-flex align-items-center gap-1">
                                         <img class="at-avatar at-avatar-sm" src="{% if question.user.profile_image %}{{question.user.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"/>
-                                        <span class="mb-0 at-text-brand-primary small">{{question.user.username}}</span>
+                                        <a href="{% url 'ask_together:user_profile' question.user.id %}" class="mb-0 at-text-brand-primary small text-decoration-none">{{question.user.username}}</a>
                                     </div> 
                                 </div>        
                             </div>

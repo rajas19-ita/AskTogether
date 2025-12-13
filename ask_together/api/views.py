@@ -335,8 +335,8 @@ def vote_answer(request, pk):
 
 
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication])
-@permission_classes([IsAuthenticated])
+# @authentication_classes([SessionAuthentication])
+# @permission_classes([IsAuthenticated])
 def get_comments(request):
     try:
         limit = int(request.GET.get('limit',20))

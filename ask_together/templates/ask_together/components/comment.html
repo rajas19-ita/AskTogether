@@ -2,7 +2,7 @@
     <p class="mb-0 fs-6">
         {{comment.content}}
         <span class="d-inline-block">
-            <span class="at-text-brand-primary">- {{comment.user.username}}</span>
+            <a href="{% url 'ask_together:user_profile' comment.user.id %}" class="at-text-brand-primary text-decoration-none">- {{comment.user.username}}</a>
             <span class="datetime at-text-secondary small" data-dt="{{ comment.created_at|date:'c' }}">{{ comment.created_at|date:"M d, Y H:i" }}</span>
         </span>
     </p>
