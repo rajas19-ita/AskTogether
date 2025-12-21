@@ -1,4 +1,4 @@
-<div class="d-flex flex-column gap-2 align-items-center at-bg-primary-100 rounded-1">
+<div class="at-vote">
     {% if user.is_authenticated %}
         <button data-action="upvote"
                 class="at-btn-vote {{ type }}{{ id }}-vote-btn {% if user_vote == 1 %}active{% endif %}"
@@ -16,7 +16,7 @@
         </a>
     {% endif %}
 
-    <span id="{{ type }}{{ id }}_vote_count" class="fw-medium fs-4">
+    <span id="{{ type }}{{ id }}_vote_count" class="at-vote__count">
         {{ total_votes }}
     </span>
 

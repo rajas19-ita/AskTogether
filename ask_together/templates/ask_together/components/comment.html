@@ -1,9 +1,12 @@
-<div class="px-3 py-2 at-border-top">
-    <p class="mb-0 fs-6">
+<article class="at-comment">
+    <p class="at-comment__content">
         {{comment.content}}
-        <span class="d-inline-block">
-            <a href="{% url 'ask_together:user_profile' comment.user.id %}" class="at-text-brand-primary text-decoration-none">- {{comment.user.username}}</a>
-            <span class="datetime at-text-secondary small" data-dt="{{ comment.created_at|date:'c' }}">{{ comment.created_at|date:"M d, Y H:i" }}</span>
-        </span>
     </p>
-</div>
+    <footer class="at-comment__meta">
+        <a 
+            href="{% url 'ask_together:user_profile' comment.user.id %}" 
+            class="at-comment__author">- {{comment.user.username}}
+        </a>
+        <time class="at-comment__time datetime" data-dt="{{ comment.created_at|date:'c' }}">{{ comment.created_at|date:"M d, Y H:i" }}</time>
+    </footer>
+</article>

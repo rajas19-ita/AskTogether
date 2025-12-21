@@ -1,0 +1,66 @@
+.at-answer {
+  display: flex;
+  gap: var(--space-5);
+  padding: var(--space-5) 0;
+  border-bottom: 1px solid var(--search-border);
+}
+
+.at-answer__side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.at-answer__accepted-icon {
+  color: var(--color-success);
+}
+
+.at-answer__main {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.at-answer__content {
+  padding-bottom: var(--space-5);
+}
+
+.at-answer__meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: flex-start;
+  align-self: flex-end;
+}
+
+.at-answer__meta--author {
+  background-color: var(--color-primary-100);
+  padding: var(--space-2) var(--space-1);
+  border-radius: var(--radius-sm);
+}
+
+.at-answer__time {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-secondary);
+  font-size: var(--fs-sm);
+}
+
+.at-answer__author {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.at-answer__author-name {
+  font-size: var(--fs-sm);
+}
+
+@media (min-width: 786px) {
+  .at-answer__meta {
+    flex-direction: row;
+    align-items: center;
+  }
+}

@@ -1,0 +1,30 @@
+.at-comment {
+  padding: var(--space-2) var(--space-4);
+  border-top: 1px solid var(--search-border);
+}
+
+.at-comment__content {
+  display: inline-flex;
+}
+
+.at-comment__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-sm);
+}
+
+.at-comment__time {
+  color: var(--color-text-secondary);
+  font-size: var(--fs-sm);
+}
+
+.at-comments__list {
+  margin-top: var(--space-5);
+}
+
+.at-comments__form-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
