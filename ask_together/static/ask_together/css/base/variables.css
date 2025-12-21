@@ -1,0 +1,58 @@
+:root {
+  /* ======================
+     🎨 Color System
+  ======================= */
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-text-primary: #3c3c3c;
+  --color-text-secondary: #555a60;
+  --color-bg: #f9fafc;
+  --color-white: #ffffff;
+  --color-bg-muted: #e9ecef;
+  --color-border: #e2e8f0;
+  --color-danger: #ff3d00;
+  --color-success: rgb(25, 135, 84);
+  --color-heading: #333333;
+  --color-heading-dark: #1f1f1f;
+  --search-border: #ddd;
+  --search-placeholder: #888;
+  --color-primary-400: #92b1f5;
+  --color-primary-300: #a8c1f7;
+  --color-primary-200: #bed0f9;
+  --color-primary-100: #e9effd;
+
+  --color-focus: rgba(37, 99, 235, 0.4);
+
+  /* ======================
+     🔠 Typography
+  ======================= */
+  --font-heading: "Roboto", sans-serif;
+  --font-body: "Source Sans 3", sans-serif;
+
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.25rem;
+
+  --fs-h1: 1.75rem;
+  --fs-h2: 1.5rem;
+  --fs-h3: 1.25rem;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+
+  --line-height-base: 1.5;
+
+  --bp-sm: 576px;
+  --bp-md: 768px;
+  --bp-lg: 992px;
+  --bp-xl: 1200px;
+}

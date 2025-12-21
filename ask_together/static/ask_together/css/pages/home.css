@@ -1,0 +1,126 @@
+.at-home-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.at-home-hero__heading {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+  align-items: start;
+}
+
+.at-home-hero__icon {
+  margin-bottom: var(--space-2);
+  color: var(--color-heading-dark);
+}
+
+.at-home-hero__message {
+  font-size: var(--fs-md);
+  margin-left: var(--space-1);
+  color: var(--color-text-secondary);
+}
+
+.at-home-feed__header {
+  margin-bottom: var(--space-2);
+}
+
+.at-home-feed__stats {
+  display: flex;
+  align-items: center;
+  font-size: var(--fs-md);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-left: var(--space-1);
+}
+
+.at-question-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.at-question-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--search-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4) var(--space-5);
+}
+
+.at-question-card__title {
+  font-weight: 400;
+  margin-bottom: var(--space-1);
+  color: var(--color-primary);
+}
+
+.at-question-card__excerpt {
+  margin-bottom: var(--space-2);
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.at-question-card__footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  justify-content: space-between;
+}
+
+.at-question-card__stats {
+  display: flex;
+  align-items: center;
+  color: var(--color-text-secondary);
+  gap: var(--space-1);
+}
+
+.at-question-card__author {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: end;
+}
+
+.at-question-card__stat {
+  font-size: var(--fs-sm);
+  color: var(--color-text-secondary);
+}
+
+.at-question-card__stat.is-accepted {
+  color: var(--color-success);
+}
+
+.at-question-card__author-main {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.at-questioin-card__author-name {
+  font-size: var(--fs-sm);
+}
+
+.at-question-card__meta {
+  font-size: var(--fs-sm);
+  color: var(--color-text-secondary);
+}
+
+@media (min-width: 786px) {
+  .at-home-hero {
+    flex-direction: row;
+    gap: 0;
+  }
+
+  .at-home-hero__heading {
+    justify-content: start;
+  }
+
+  .at-question-card__footer {
+    flex-direction: row;
+  }
+}

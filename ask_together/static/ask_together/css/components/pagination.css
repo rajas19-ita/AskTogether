@@ -1,0 +1,21 @@
+.at-pagination {
+  display: flex;
+  justify-content: center;
+}
+
+.at-pagination__list {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.at-pagination__link {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--search-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+}

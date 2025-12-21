@@ -1,0 +1,92 @@
+.at-navbar {
+  border-bottom: 1px solid var(--search-border);
+}
+
+.navbar__container {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-4);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.at-navbar__left,
+.at-navbar__right,
+.at-auth {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.at-brand {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-family: var(--font-heading);
+}
+
+.at-brand__name {
+  font-size: var(--fs-xl);
+}
+
+.at-brand__logo {
+  width: 40px;
+}
+
+.at-brand__ask {
+  font-size: calc(var(--fs-xl) + 0.03rem);
+  color: var(--color-heading-dark);
+}
+
+.at-brand__together {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.at-search {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+}
+
+.at-search__input {
+  padding-left: calc(var(--space-3) + 1.5rem);
+}
+
+.at-search__icon {
+  position: absolute;
+  top: 50%;
+  left: var(--space-2);
+  transform: translateY(-50%);
+}
+
+.at-notification {
+  position: relative;
+  margin-right: var(--space-4);
+}
+
+.at-notification img {
+  width: 24px;
+}
+
+.at-notification__count {
+  position: absolute;
+  top: 0;
+  left: 55%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+
+  font-weight: 500;
+  font-size: var(--fs-xs);
+  color: white;
+  background-color: var(--color-danger);
+  border-radius: 50%;
+}
