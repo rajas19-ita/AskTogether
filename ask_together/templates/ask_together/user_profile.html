@@ -7,48 +7,53 @@
 
 {% block content %}
     {% include 'ask_together/includes/header.html' %}
-    <div class="container min-vh-100">  
-        <div class="at-layout"> 
+    <main>
+        <div class="layout">
             <div class="at-sidebar-wrapper">
                 {% include 'ask_together/includes/sidebar.html' %}
             </div>
             <div class="at-sidebar-overlay"></div>
-            <main class="at-content-container">
-                <div class="d-flex gap-4 mb-5 flex-wrap">
-                    <div>
-                        <img src="{% if object.profile_image %}{{object.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}" class="img-thumbnail at-avatar-profile" />
-                    </div>
-                    <div class="d-flex flex-column ml-4 flex-grow-1">
-                        <h2 class="fs-2 mb-0 fw-normal">{{object.username}}</h2>
+            <div class="at-content-container">
+                <header class="at-profile__header">
+                    <img src="{% if object.profile_image %}{{object.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}" class="img-thumbnail at-avatar-profile" />
+                    
+                    <div class="at-profile__identity">
+                        <h1 class="at-profile__name">{{object.username}}</h1>
                         {% if object.title %}
-                            <p class="at-text-secondary fs-3 mb-2">{{object.title}}</p>
+                            <p class="at-profile__title">{{object.title}}</p>
                         {% endif %}
-                        <div class="d-flex gap-2 mb-2 flex-wrap">
+                        <ul class="at-profile__links">
                             {% if object.website %}
-                                <a href="{{object.website}}" target="_blank">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-link-45deg at-text-secondary" viewBox="0 0 16 16">
-                                        <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
-                                        <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
-                                    </svg>
-                                </a>    
+                                <li>
+                                    <a href="{{object.website}}" target="_blank" class="at-profile__link">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+                                            <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
+                                            <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
+                                        </svg>
+                                    </a>    
+                                </li>
                             {% endif %}
                             {% if object.x_handle %}
-                                <a href="https://x.com/{{object.x_handle}}" target="_blank">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-twitter-x at-text-secondary" viewBox="0 0 16 16">
-                                        <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/>
-                                    </svg>
-                                </a>    
+                                <li>
+                                    <a href="https://x.com/{{object.x_handle}}" target="_blank" class="at-profile__link">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
+                                            <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/>
+                                        </svg>
+                                    </a>    
+                                </li>
                             {% endif %}
                             {% if object.github %}
-                                <a href="https://github.com/{{object.github}}" target="_blank" class="">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-github at-text-secondary" viewBox="0 0 16 16">
-                                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
-                                    </svg>
-                                </a>    
+                                <li>
+                                    <a href="https://github.com/{{object.github}}" target="_blank" class="at-profile__link">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
+                                            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
+                                        </svg>
+                                    </a>    
+                                </li>
                             {% endif %}
-                        </div>
+                        </ul>
                         {% if object.location %}
-                            <p class="mb-0 d-flex at-text-secondary gap-1 align-items-end">
+                            <p class="at-profile__location">
                                 <span>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-geo-alt-fill at-text-secondary" viewBox="0 0 16 16">
                                         <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
@@ -65,7 +70,7 @@
                             </a>
                         </div>
                     {% endif %}
-                </div>
+                </header>
                 <div class="d-flex flex-column flex-md-row gap-5">
                     <div class="d-flex flex-column flex-shrink-0">
                         <h3 class="fs-5 fw-normal">Stats</h3>
@@ -112,9 +117,9 @@
                         </div>
                     </div>
                 </div>
-            </main>
+            </div>
         </div>
-    </div>
+    </main>
     <script>
         let allPosts = []
         fetch("{% url 'ask_together:get_posts' object.id %}")
