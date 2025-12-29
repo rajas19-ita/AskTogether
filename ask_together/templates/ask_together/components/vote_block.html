@@ -1,5 +1,5 @@
 <div class="at-vote">
-    {% if user.is_authenticated %}
+    {% if request_user.is_authenticated %}
         <button data-action="upvote"
                 class="at-btn-vote {{ type }}{{ id }}-vote-btn {% if user_vote == 1 %}active{% endif %}"
                 onClick="handleVote('{{ type }}', {{ id }}, 'upvote', this)">
@@ -20,7 +20,7 @@
         {{ total_votes }}
     </span>
 
-    {% if user.is_authenticated %}
+    {% if request_user.is_authenticated %}
         <button data-action="downvote"
                 class="at-btn-vote {{ type }}{{ id }}-vote-btn {% if user_vote == -1 %}active{% endif %}"
                 onClick="handleVote('{{ type }}', {{ id }}, 'downvote', this)">
