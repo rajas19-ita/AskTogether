@@ -11,28 +11,22 @@
     </p>
     <footer class="at-question-card__footer">
         <div class="at-question-card__stats">
-            {% if question.answers.exists %}
-                {% if question.accepted_answer %}
-                    <span class="at-question-card__stat is-accepted">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
-                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
-                        </svg> {{question.answers.count}} answers
-                    </span>
-                {% else %}
-                    <span class="at-question-card__stat">
-                        {{question.answers.count}} answers
-                    </span>
-                {% endif %}
-            {% else  %}
+            {% if question.accepted_answer_id %}
+                <span class="at-question-card__stat is-accepted">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+                    </svg> {{question.answers_count}} answers
+                </span>
+            {% else %}
                 <span class="at-question-card__stat">
-                    0 answers
+                    {{question.answers_count}} answers
                 </span>
             {% endif %}
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
                 <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
             </svg>
             <span class="at-question-card__stat">
-                {{question.votes.count}} votes
+                {{question.total_votes}} votes
             </span>
         </div>
         <div class="at-question-card__author">

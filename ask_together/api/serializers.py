@@ -6,7 +6,7 @@ from ask_together.utils import sanitize_html
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyUser
-        fields = ['id', 'username']
+        fields = ['id', 'username', "profile_image"]
 
 class AnswerSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True) 

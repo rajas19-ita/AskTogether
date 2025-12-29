@@ -5,7 +5,7 @@
         {% endfor %}
     </div>
     <div class="at-comments__actions d-flex gap-4">
-        {% if user.is_authenticated %}
+        {% if request_user.is_authenticated %}
             <button data-btn="show" id="{{type}}{{id}}_comment_btn" class="at-btn-text-comment small" 
             onClick="handleCommentFormDisplay('{{type}}',{{id}},this)">Add a comment</button>
         {% else %}

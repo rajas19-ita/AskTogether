@@ -6,7 +6,7 @@ from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, 
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetCompleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
-from .models import Question, MyUser, Answer
+from .models import Question, MyUser, Answer, Comment, Vote
 from django.db.models import Sum
 from django.core.paginator import Paginator
 from django.views import View
@@ -26,6 +26,9 @@ from ask_together.presenters.answer_presenter import AnswerPresenter
 from ask_together.presenters.question_presenter import QuestionPresenter
 import logging
 from django.http import HttpResponse
+from django.db.models import ExpressionWrapper, F,IntegerField, Count, Prefetch, Value, Subquery, OuterRef
+from django.db.models.functions import Coalesce
+from .services.queries import answer_base_qs, with_user_vote, with_comments
 
 logger = logging.getLogger(__name__)
 
@@ -38,14 +41,35 @@ class HomePageView(TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        questions = Question.objects.all().order_by('-created_at') 
+        questions =  (Question.objects
+            .order_by("-created_at")
+            .select_related("user")
+            .only(
+                "id",
+                "title",
+                "description",
+                "upvotes",
+                "downvotes",
+                "created_at",
+                "accepted_answer_id",
+                "user__id",
+                "user__username",
+                "user__profile_image"
+            )
+            .annotate(
+                total_votes=ExpressionWrapper(
+                    F("upvotes") - F("downvotes"),
+                    output_field=IntegerField(),
+                ),
+                answers_count=Count("answers", distinct=True),
+            ))
         
         paginator = Paginator(questions, 5)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         
         context['page_obj'] = page_obj
-        context["question_count"] = Question.objects.count()
+        context["question_count"] = paginator.count
         context["answer_count"]= Answer.objects.count()
         context["user_count"]= MyUser.objects.count()
         
@@ -100,6 +124,46 @@ class QuestionDetailView(DetailView):
     template_name='ask_together/question_detail.html'
     model = Question
     
+    def get_queryset(self):
+        qs = (Question.objects
+            .select_related("user")
+            .only(
+                "id",
+                "title",
+                "description",
+                "created_at",
+                "accepted_answer_id",
+                "user__id",
+                "user__username",
+                "user__profile_image"
+            )
+            .annotate(
+                total_votes =ExpressionWrapper(
+                    F("upvotes") - F("downvotes"),
+                    output_field=IntegerField(),
+                ))
+            )
+        
+        user = self.request.user
+        
+        if user.is_authenticated:
+            user_vote = Vote.objects.filter(question=OuterRef('pk'), user=user).values('value')[:1]
+            
+            qs = qs.annotate(
+                user_vote = Coalesce(
+                    Subquery(user_vote),
+                    Value(0),
+                    output_field=IntegerField()
+                )
+            )
+        else:
+           qs = qs.annotate(
+               user_vote = Value(0,output_field=IntegerField())
+           ) 
+           
+        return qs 
+    
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
@@ -108,10 +172,17 @@ class QuestionDetailView(DetailView):
         answer_form = AnswerForm()
         context['answer_form'] = answer_form
 
-        question_presenter = QuestionPresenter(question, request)
+        question_presenter = QuestionPresenter(question)
         context.update(question_presenter.to_context())
         
-        answers = question.answers.order_by('-created_at')
+        answers = (
+            answer_base_qs()
+            .filter(question=question)
+        )                  
+        answers = with_user_vote(answers, request.user)
+        answers = with_comments(answers)   
+        answers = answers.order_by('-created_at')
+        
         paginator = Paginator(answers, 10)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
@@ -124,6 +195,7 @@ class QuestionDetailView(DetailView):
             
         page_obj.object_list = presenter_list
         context['answers'] = page_obj
+        context['answer_count'] = paginator.count
                 
         return context
     

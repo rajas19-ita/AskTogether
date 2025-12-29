@@ -20,7 +20,7 @@
                         <h1 class="at-question__title">{{question.title}}</h1>
                     </header> 
                     <div class="at-question__body ">
-                        {% include 'ask_together/components/vote_block.html' with type='question' id=question.id total_votes=total_votes  user_vote=user_vote %}
+                        {% include 'ask_together/components/vote_block.html' with type='question' id=question.id total_votes=total_votes  user_vote=user_vote request_user=request.user %}
                         
                         <div class="at-question__content">
                             <div class="at-rich-content">
@@ -28,7 +28,7 @@
                             </div>
                             <footer class="at-question__meta">          
                                 <span class="at-question__time ">
-                                    <span >Asked</span>
+                                    <span>Asked</span>
                                     <time class="datetime" data-dt="{{ question.created_at|date:'c' }}">
                                         {{ question.created_at|date:"M d, Y H:i" }}
                                     </time>
@@ -41,13 +41,13 @@
                                     <a href="{% url 'ask_together:user_profile' question.user.id %}" class="at-question__author-name">{{question.user.username}}</a>
                                 </span>    
                             </footer>
-                            {% include 'ask_together/components/comments.html' with type="question" id=question.id first_comments=first_comments user=user has_more_comments=has_more_comments last_comment_id=last_comment_id %}
+                            {% include 'ask_together/components/comments.html' with type="question" id=question.id first_comments=first_comments request_user=request.user has_more_comments=has_more_comments last_comment_id=last_comment_id %}
                         </div>
                     </div>
                 </article>
                 <section class="at-answers">
                     <header class="at-answers__header">
-                        <h3 id="answer_count">{{question.answers.count}} Answer{{question.answers.count|pluralize}}</h3>
+                        <h3 id="answer_count">{{answer_count}} Answer{{answer_count|pluralize}}</h3>
                     </header>
                     {% if answers %}
                         {% include 'ask_together/components/pagination.html' with page_obj=answers only %}
@@ -79,14 +79,14 @@
                 </section>
             </div>
         </div>
-    <main>
+    </main>
 {% endblock %}
 {% block script_block %}
     <script>
         formatUTCtoLocal()
 
         const formEl = document.getElementById("answer_form");
-        let acceptedAnswer = {% if question.accepted_answer %}{{question.accepted_answer.id}}{% else %}null{% endif %}
+        let acceptedAnswer = {{ question.accepted_answer_id|default:"null" }};
 
         const handleSubmit = (e)=>{
             e.preventDefault()
