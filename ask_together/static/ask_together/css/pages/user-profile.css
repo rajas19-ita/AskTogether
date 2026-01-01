@@ -42,3 +42,138 @@
   gap: var(--space-1);
   align-items: flex-end;
 }
+
+.at-profile__body {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-6) + 16px);
+}
+
+.at-profile__stats {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.at-profile-stats__title,
+.at-profile-about__title,
+.at-profile-posts__title {
+  font-size: var(--fs-h3);
+  font-weight: normal;
+}
+
+.at-profile-stats__list {
+  width: 100%;
+  max-width: 220px;
+
+  list-style-type: none;
+  border: 1px solid var(--search-border);
+  display: flex;
+  justify-content: space-around;
+  gap: var(--space-5);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+}
+
+.at-profile-stats__list li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.at-profile-stats__value {
+  font-size: var(--fs-h2);
+}
+
+.at-profile-stats__label {
+  font-size: var(--fs-md);
+  color: var(--color-text-secondary);
+}
+
+.at-profile__main {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.at-profile-about {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--space-5);
+}
+
+.at-profile-about__title {
+  font-size: var(--fs-h3);
+  font-weight: normal;
+}
+
+.at-profile-about__empty {
+  border: 1px solid var(--search-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-tertiary);
+  padding: calc(var(--space-6) + 16px) var(--space-5);
+  text-align: center;
+}
+
+.at-profile-posts {
+  display: flex;
+  flex-direction: column;
+}
+
+.at-profile-posts__filters {
+  display: flex;
+  border: 1px solid var(--search-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+  gap: var(--space-2);
+}
+
+.at-profile-posts__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  margin-bottom: var(--space-2);
+}
+
+.at-profile-posts__list {
+  border: 1px solid var(--search-border);
+  border-radius: var(--radius-md);
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.at-profile-posts__item {
+  padding: var(--space-5) var(--space-4);
+  display: grid;
+  grid-template-columns: 1fr 6fr 2fr;
+}
+
+.at-profile-posts__item--border {
+  border-bottom: 1px solid var(--search-border);
+}
+
+.at-profile-posts__link{
+  
+}
+
+.at-profile-posts__type {
+  padding: var(--space-1);
+  border: 1px solid var(--search-border);
+  border-radius: var(--radius-md);
+  justify-self: center;
+}
+
+@media (min-width: 786px) {
+  .at-profile__body {
+    flex-direction: row;
+  }
+
+  .at-profile-stats__list {
+    flex-direction: column;
+  }
+
+  .at-profile-posts__type {
+    padding: var(--space-1) var(--space-3);
+  }
+}
