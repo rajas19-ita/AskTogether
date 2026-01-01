@@ -71,52 +71,53 @@
                         </div>
                     {% endif %}
                 </header>
-                <div class="d-flex flex-column flex-md-row gap-5">
-                    <div class="d-flex flex-column flex-shrink-0">
-                        <h3 class="fs-5 fw-normal">Stats</h3>
-                        <div class="rounded border p-3 d-flex flex-md-column justify-content-around gap-4" style="width:100%;max-width:220px">
-                            <div class="d-flex flex-column align-items-center">
-                                <p class="mb-0 fs-4">{{object.questions.count}}</p>
-                                <p class="at-text-secondary fs-6 mb-0">questions</p>
-                            </div>
-                            <div class="d-flex flex-column align-items-center">
-                                <p class="mb-0 fs-4">{{object.answers.count}}</p>
-                                <p class="at-text-secondary fs-6 mb-0">answers</p>
-                            </div>  
-                        </div>
-                    </div>
-                    <div class="d-flex flex-column flex-grow-1">
+                <section class="at-profile__body">
+                    <aside class="at-profile-stats">
+                        <h2 class="at-profile-stats__title">Stats</h2>
+                        <ul class="at-profile-stats__list">
+                            <li >
+                                <span class="at-profile-stats__value">{{object.questions.count}}</span>
+                                <span class="at-profile-stats__label ">questions</span>
+                            </li>
+                            <li>
+                                <span class="at-profile-stats__value">{{object.answers.count}}</span>
+                                <span class="at-profile-stats__label">answers</span>
+                            </li>  
+                        </ul>
+                    </aside>
+                    <section class="at-profile__main">
                         {% if object.about|striptags %}
-                            <div class="d-flex flex-column mb-4">
-                                <h3 class="fs-5 fw-normal">About</h3>
+                            <section class="at-profile-about">
+                                <h2 class="at-profile-about__title">About</h2>
                                 <div class="at-rich-content">
                                     {{object.about|safe}}
                                 </div>
-                            </div>
+                            </section>
                         {% elif request.user == object %}
-                            <div class="d-flex flex-column mb-4 ">
-                                <h3 class="fs-5 fw-normal">About</h3>
-                                <div class="border rounded bg-body-tertiary py-5 px-4 row g-0">
-                                    <p class="m-auto text-center col-8">Your about section is currently blank. Would you like to add one? <a href="{% url 'ask_together:user_profile_edit' %}">Edit Profile</a></p>
-                                </div>
-                            </div>
+                            <section class="at-profile-about">
+                                <h2 class="at-profile-about__title">About</h2>
+                                <p class="at-profile-about__empty">
+                                    Your about section is currently blank. Would you like to add one? 
+                                    <a href="{% url 'ask_together:user_profile_edit' %}">Edit Profile</a>
+                                </p>
+                            </section>
                         {% endif %}
-                        <div class="d-flex flex-column">
-                            <div class="mb-2 d-flex justify-content-between align-items-end">
-                                <h3 class="fs-5 fw-normal">Latest Posts</h3>
-                                <div class="d-flex at-border rounded p-2 gap-2">
+                        <section class="at-profile-posts">
+                            <header class="at-profile-posts__header">
+                                <h2 class="at-profile-posts__title">Latest Posts</h2>
+                                <div class="at-profile-posts__filters">
                                     <button class="lpost-filter-btn at-btn at-btn-sm at-btn-outline-secondary active" onClick="filterPosts('all',this)">All</button>
                                     <button class="lpost-filter-btn at-btn at-btn-sm at-btn-outline-secondary" onClick="filterPosts('question',this)">Questions</button>
                                     <button class="lpost-filter-btn at-btn at-btn-sm at-btn-outline-secondary" onClick="filterPosts('answer',this)">Answers</button>
                                 </div>
-                            </div>    
+                            </header>    
                             
                             
-                            <div id="post_container" class="at-border rounded">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                            <ul id="post_container" class="at-profile-posts__list">
+                            </ul>
+                        </section>
+                    </section>
+                </section>
             </div>
         </div>
     </main>
@@ -143,21 +144,25 @@
             const container = document.getElementById('post_container')
 
             container.innerHTML = "";
-            
+
+            const url ="{% url 'ask_together:question_detail' 0 %}"
 
             posts.forEach((post,index)=>{
-                const wrapper = document.createElement('div')
-                wrapper.className = `${index !== posts.length-1?'at-border-bottom':''} py-4 px-3 row g-0 justify-content-between`
+                const wrapper = document.createElement('li')
                 wrapper.innerHTML = `
-                    <span class="px-1 px-md-3 py-1 rounded at-border rounded col-1 text-center align-self-start">${post.type==='answer'?'A':'Q'}</span>
-                    <p class="col-8 mb-0">${post.title}</p>
-                    <span class="datetime col-2" data-dt="${post.updated_at}">
-                        ${new Date(post.updated_at).toLocaleString("en-US", {
-                            year: "numeric",
-                            month: "short",   
-                            day: "numeric",
-                        })}
-                    </span>
+                    <article class="at-profile-posts__item ${index !== posts.length-1?'at-profile-posts__item--border':''}">
+                        <span class="at-profile-posts__type">${post.type==='answer'?'A':'Q'}</span>
+                        <a href="${url.replace('0',post.question_id)}" class="at-profile-posts__link">
+                            ${post.title}
+                        </a>
+                        <time class="datetime" data-dt="${post.updated_at}">
+                            ${new Date(post.updated_at).toLocaleString("en-US", {
+                                year: "numeric",
+                                month: "short",   
+                                day: "numeric",
+                            })}
+                        </time>
+                    </article>
                 `
                 container.appendChild(wrapper)
             })
