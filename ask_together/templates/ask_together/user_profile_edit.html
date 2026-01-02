@@ -7,20 +7,22 @@
 
 {% block content %}
     {% include 'ask_together/includes/header.html' %}
-    <div class="container min-vh-100">  
-        <div class="at-layout"> 
+    <main>
+        <div class="layout">
             <div class="at-sidebar-wrapper">
                 {% include 'ask_together/includes/sidebar.html' %}
             </div>
             <div class="at-sidebar-overlay"></div>
-            <main class="at-content-container">
-                    <h1 class="pb-2 at-border-bottom mb-3 fs-4 ps-1">Edit Profile</h1>
-                    <form method="post" action="{% url 'ask_together:user_profile_edit' %}" enctype="multipart/form-data" class=" d-flex flex-column gap-4 pt-2 px-3">
-                        {% csrf_token %}
-                        <div class="d-flex flex-column gap-4">  
-                            <div class="position-relative align-self-start">
+            <div class="at-content-container">
+                <h1 class="at-profile-edit__header">Edit Profile</h1>
+                <form method="post" action="{% url 'ask_together:user_profile_edit' %}" enctype="multipart/form-data" class="at-profile-form">
+                    {% csrf_token %}
+                    <fieldset class="at-profile-form__section">
+                        <legend class="at-form-section__title">Profile</legend>
+                        <div class="at-profile-form__grid">
+                            <div class="at-edit-avatar">
                                 <img id="profile_image" src="{% if object.profile_image %}{{object.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}" class="img-thumbnail at-avatar-profile"/>
-                                <div class="position-absolute d-flex gap-2" style="top:5px;right:5px">
+                                <div class="at-edit-avatar__actions">
                                     <label for="id_profile_image" class="at-btn at-btn-sm at-btn-outline-secondary " >
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
                                             <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
@@ -33,84 +35,79 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="d-flex flex-column gap-4 flex-grow-1">
-                                <div class="d-flex flex-column">
-                                    <label for="id_username" class=" fw-semibold fs-6">Username</label>
-                                    <div class="w-100" style="max-width:250px">
-                                        <input type="text" name="username" value="{{object.username}}" maxlength="150" id="id_username" disabled="" class="at-form-input">
-                                    </div>    
+                            <div class="at-profile-form__fields">
+                                <div class="at-form-field at-form-field--sm ">
+                                    <label for="id_username" class="at-form-label">Username</label>
+                                    <input type="text" name="username" value="{{object.username}}" maxlength="150" id="id_username" readonly aria-readonly="true" class="at-form-input">
                                 </div>
-                                <div class="d-flex flex-column">
-                                    <label for="id_title" class="fw-semibold fs-6">Title</label>
-                                    <div class="d-flex flex-column w-100" style="max-width:400px">
-                                        <input type="text" name="title" value="{{form.title.value|default:""}}" maxlength="150" id="id_title" class="at-form-input">
-                                        {% for error in form.title.errors %}
-                                            <p class="text-danger mb-0">{{error}}</p>
-                                        {% endfor %}
-                                    </div>    
+                                <div class="at-form-field at-form-field--md">
+                                    <label for="id_title" class="at-form-label">Title</label>
+                                    <input type="text" name="title" value="{{form.title.value|default:""}}" maxlength="150" id="id_title" class="at-form-input">
+                                    {% for error in form.title.errors %}
+                                        <p class="at-form-error">{{error}}</p>
+                                    {% endfor %}  
                                 </div>
-                                <div class="d-flex flex-column">
-                                    <label for="id_location" class=" fw-semibold fs-6">Location</label>
-                                    <div class="d-flex flex-column w-100" style="max-width:250px">
-                                        <input type="text" name="location" value="{{form.location.value|default:""}}" maxlength="150" id="id_location" class="at-form-input">
-                                        {% for error in form.location.errors %}
-                                            <p class="text-danger mb-0">{{error}}</p>
-                                        {% endfor %}
-                                    </div>    
-                                </div>
-                            </div>
-    
-                        </div>
-    
-                        <input type="file" name="profile_image" accept="image/*" id="id_profile_image" class=" d-none">
-    
-    
-    
-                        <div class="d-flex flex-column">
-                            <label for="id_about" class="fw-semibold fs-6 mb-1">About</label>
-                            {{form.about}}
-                            {% for error in form.about.errors %}
-                                <p class="text-danger mb-0">{{error}}</p>
-                            {% endfor %}
-                        </div>
-    
-                        <div class="d-flex flex-column">
-                            <h3 class="fs-4 form-label" >Links</h3>
-                            <div class="p-4 rounded d-flex at-border gap-4 justify-content-around flex-wrap" >
-                                <div class="d-flex flex-column flex-grow-1">
-                                    <label for="id_website" class=" fw-semibold fs-6 mb-1">Website</label>
-                                    <input type="url" name="website" value="{{form.website.value|default:""}}" maxlength="200" id="id_website" class="at-form-input">
-                                    {% for error in form.website.errors %}
-                                        <p class="text-danger mb-0">{{error}}</p>
-                                    {% endfor %}
-                                </div>
-            
-                                <div class="d-flex flex-column flex-grow-1">
-                                    <label for="id_github" class=" fw-semibold fs-6 mb-1">Github</label>
-                                    <input type="text" name="github" value="{{form.github.value|default:""}}" maxlength="100" id="id_github" class="at-form-input">
-                                    {% for error in form.github.errors %}
-                                        <p class="text-danger mb-0">{{error}}</p>
-                                    {% endfor %}
-                                </div>
-            
-                                <div class="d-flex flex-column flex-grow-1">
-                                    <label for="id_x_handle" class=" fw-semibold fs-6 mb-1">X handle</label>
-                                    
-                                    <input type="text" name="x_handle" value="{{form.x_handle.value|default:""}}" maxlength="100" id="id_x_handle" class="at-form-input">
-                                    {% for error in form.x_handle.errors %}
-                                        <p class="text-danger mb-0">{{error}}</p>
+                                <div class="at-form-field at-form-field--sm">
+                                    <label for="id_location" class="at-form-label">Location</label>
+                                    <input type="text" name="location" value="{{form.location.value|default:""}}" maxlength="150" id="id_location" class="at-form-input">
+                                    {% for error in form.location.errors %}
+                                        <p class="at-form-error">{{error}}</p>
                                     {% endfor %}
                                 </div>
                             </div>
                         </div>
-                        <button type="submit" class="at-btn at-btn-brand fw-normal align-self-start mt-1">Save Changes</button>
-                        {% for error in form.non_field_errors %}
-                            <p class="text-danger mb-0">{{error}}</p>
+                    </fieldset> 
+            
+                    <input type="file" name="profile_image" accept="image/*" id="id_profile_image" class=" d-none">
+                 
+
+                    <fieldset class="at-profile-form__section at-profile-form__section--single">
+                        <legend class="at-form-section__title">About</legend>
+                        {{form.about}}
+
+                        {% for error in form.about.errors %}
+                            <p class="at-form-error">{{error}}</p>
                         {% endfor %}
-                    </form>
-            </main>
+                    </fieldset>
+                    
+            
+                    <fieldset class="at-profile-form__section">
+                        <legend class="at-form-section__title">Links</legend>
+                        <div class="at-links-section" >
+                            <div class="at-form-field">
+                                <label for="id_website" class="at-form-label">Website</label>
+                                <input type="url" name="website" value="{{form.website.value|default:""}}" maxlength="200" id="id_website" class="at-form-input">
+                                {% for error in form.website.errors %}
+                                    <p class="at-form-error">{{error}}</p>
+                                {% endfor %}
+                            </div>
+            
+                            <div class="at-form-field">
+                                <label for="id_github" class="at-form-label">Github</label>
+                                <input type="text" name="github" value="{{form.github.value|default:""}}" maxlength="100" id="id_github" class="at-form-input">
+                                {% for error in form.github.errors %}
+                                    <p class="at-form-error">{{error}}</p>
+                                {% endfor %}
+                            </div>
+            
+                            <div class="at-form-field">
+                                <label for="id_x_handle" class="at-form-label">X handle</label>
+                                
+                                <input type="text" name="x_handle" value="{{form.x_handle.value|default:""}}" maxlength="100" id="id_x_handle" class="at-form-input">
+                                {% for error in form.x_handle.errors %}
+                                    <p class="at-form-error">{{error}}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </fieldset>
+                    <button type="submit" class="at-btn at-btn-brand fw-normal align-self-start mt-1">Save Changes</button>
+                    {% for error in form.non_field_errors %}
+                        <p class="at-form-error">{{error}}</p>
+                    {% endfor %}
+                </form>
+            </div>
         </div>
-    </div>
+    </main>
     <script>
         const profileImage = document.getElementById('profile_image')
         const profileImgInput = document.getElementById('id_profile_image')
