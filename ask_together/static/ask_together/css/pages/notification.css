@@ -1,0 +1,21 @@
+.at-notifications__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.at-notifications__title {
+  font-size: var(--fs-h3);
+  margin-left: var(--space-2);
+}
+
+.at-tabs {
+  display: flex;
+  gap: var(--space-3);
+}
+
+@media (min-width: 786px) {
+  .at-notifications__title {
+    margin-left: 0;
+  }
+}
