@@ -8,37 +8,45 @@
 
 {% block content %}
     {% include 'ask_together/includes/header.html' %}
-    <div class="container min-vh-100">
-        <div class="at-layout">
+    <main>
+        <div class="layout">
             <div class="at-sidebar-wrapper">
                 {% include 'ask_together/includes/sidebar.html' %}
             </div>
             <div class="at-sidebar-overlay"></div>
-            <main class="pb-4 px-md-4 flex-grow-1 d-flex flex-column">
-                <div class="w-100 d-flex flex-column gap-3 ps-sm-5" style="max-width:650px">
-                    <h1 class="fs-3 pt-4 ms-2 ms-md-0">Notifications</h1>
-                    <div class="tabs">
+            <div class="at-content-container">
+                <header class="at-notifications__header">
+                    <h1 class="at-notifications__title">Notifications</h1>
+                    <div class="at-tabs" role="tablist" aria-label="Notification tabs">
                         <button class="at-btn at-btn-text at-btn-tabs active" data-type="unread" onClick="switchTab(this)">Unread</button>
                         <button class="at-btn at-btn-text at-btn-tabs" data-type="read" onClick="switchTab(this)">Read</button>
                     </div>
-                    <div class=" at-tab-content active" id="unread_notifications">
-                        <p class="text-center at-text-secondary d-none" id="no_unread_msg">
-                            No Unread Notifications
-                        </p>
-                        <img src={% static 'ask_together/img/loading_gif.gif' %} class="align-self-center d-none" id="unread_loading_gif" style=""/>
-                        <button class="at-btn at-btn-text d-none" id="load_more_unread" onClick="loadMoreNotifications(this, 'unread')">Load More</button>
-                    </div> 
-                    <div class=" at-tab-content" id="read_notifications">
-                        <p class="text-center at-text-secondary d-none" id="no_read_msg">
-                            No Read Notifications
-                        </p>
-                        <img src={% static 'ask_together/img/loading_gif.gif' %} class="align-self-center d-none" id="read_loading_gif" style=""/>
-                        <button class="at-btn at-btn-text d-none" id="load_more_read" onClick="loadMoreNotifications(this, 'read')">Load More</button>
-                    </div>     
+                </header>
+                <div class=" at-tab-content active" id="unread_notifications">
+                    <p class="text-center at-text-secondary d-none" id="no_unread_msg">
+                        No Unread Notifications
+                    </p>
+                    <img src={% static 'ask_together/img/loading_gif.gif' %} class="align-self-center d-none" id="unread_loading_gif" style=""/>
+                    <button class="at-btn at-btn-text d-none" id="load_more_unread" onClick="loadMoreNotifications(this, 'unread')">Load More</button>
+                </div> 
+                <div class=" at-tab-content" id="read_notifications">
+                    <p class="text-center at-text-secondary d-none" id="no_read_msg">
+                        No Read Notifications
+                    </p>
+                    <img src={% static 'ask_together/img/loading_gif.gif' %} class="align-self-center d-none" id="read_loading_gif" style=""/>
+                    <button class="at-btn at-btn-text d-none" id="load_more_read" onClick="loadMoreNotifications(this, 'read')">Load More</button>
+                </div>     
+            </div>
+        </div>
+    </main>
+    {% comment %} <div class="container min-vh-100">
+        <div class="at-layout">
+            <main class="pb-4 px-md-4 flex-grow-1 d-flex flex-column">
+                <div class="w-100 d-flex flex-column gap-3 ps-sm-5" style="max-width:650px">
                 </div>
             </main>
         </div>
-    </div>
+    </div> {% endcomment %}
 {% endblock %}
 
 {% block script_block %}
