@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
+from django.contrib.postgres.search import SearchVector, SearchVectorField
+from django.contrib.postgres.indexes import GinIndex
 
 # Create your models here.
 
@@ -23,6 +25,10 @@ class MyUser(AbstractUser):
 class Question(models.Model):
     title = models.CharField(max_length=200,blank=False, null=False)
     description = models.TextField()
+    description_text = models.TextField(
+        blank=True,
+        null=True
+    )
     user = models.ForeignKey(
         MyUser,
         on_delete=models.SET_NULL,
@@ -41,6 +47,19 @@ class Question(models.Model):
     accepted_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    search_vector = models.GeneratedField(
+        expression=(
+            SearchVector("title", config="english", weight="A") +
+            SearchVector("description_text",config="english", weight="B")
+        ),
+        output_field=SearchVectorField(),
+        db_persist=True,
+    )
+    
+    class Meta:
+        indexes = [
+            GinIndex(fields=["search_vector"]),
+        ]
     
 
 class Answer(models.Model):

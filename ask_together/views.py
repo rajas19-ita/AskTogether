@@ -93,6 +93,9 @@ class QuestionCreateView(LoginRequiredMixin, CreateView):
     
     def form_valid(self, form):
         form.instance.user = self.request.user
+        
+        form.instance.description_text = form.cleaned_data["description_text"]
+        
         return super().form_valid(form)
     
     
