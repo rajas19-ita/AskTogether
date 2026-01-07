@@ -53,23 +53,47 @@
                 </section>
                 <section class="at-home-feed" >  
                     <header class="at-home-feed__header">
-                        <h2 class="at-home-feed__title">Top Questions</h2>
-                        <div class="at-home-feed__stats">
-                            <span>
-                                {{question_count|intcomma}} questions
-                            </span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
-                                <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
-                            </svg>
-                            <span>
-                                {{answer_count|intcomma}} answers
-                            </span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
-                                <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
-                            </svg>
-                            <span>
-                                {{user_count|intcomma}} users
-                            </span>
+                        <h2 class="at-home-feed__title">{% if active_filter == "latest" %}Latest{% elif active_filter == "unanswered" %}Unanswered{% else %}Top{% endif %} Questions</h2>
+                        <div class="d-flex justify-content-between">
+                            <div class="at-home-feed__stats">
+                                <span>
+                                    {{question_count|intcomma}} questions
+                                </span>
+                                {% comment %} <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                    <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                </svg>
+                                <span>
+                                    {{answer_count|intcomma}} answers
+                                </span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                    <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                </svg>
+                                <span>
+                                    {{user_count|intcomma}} users
+                                </span> {% endcomment %}
+                            </div>
+                            <nav class="at-home-feed__filters">
+                                <a
+                                    href="?filter=latest"
+                                    class="filter-btn {% if active_filter == 'latest' %}active{% endif %}"
+                                >
+                                    Latest
+                                </a>
+    
+                                <a
+                                    href="?filter=unanswered"
+                                    class="filter-btn {% if active_filter == 'unanswered' %}active{% endif %}"
+                                >
+                                    Unanswered
+                                </a>
+    
+                                <a
+                                    href="?filter=top"
+                                    class="filter-btn {% if active_filter == 'top' %}active{% endif %}"
+                                >
+                                    Most Upvoted
+                                </a>
+                            </nav>
                         </div>
                     </header>              
                                             
@@ -78,7 +102,7 @@
                             {% include 'ask_together/components/question-card.html' with question=question only %}
                         {% endfor%}
                     </section>
-                    {% include 'ask_together/components/pagination.html' with page_obj=page_obj only %}
+                    {% include 'ask_together/components/pagination.html' with page_obj=page_obj  %}
                 </section>
             </div>
         </div>

@@ -29,6 +29,7 @@ from django.http import HttpResponse
 from django.db.models import ExpressionWrapper, F,IntegerField, Count, Prefetch, Value, Subquery, OuterRef
 from django.db.models.functions import Coalesce
 from .services.queries import answer_base_qs, with_user_vote, with_comments
+from django.http import QueryDict
 
 logger = logging.getLogger(__name__)
 
@@ -41,8 +42,9 @@ class HomePageView(TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
         questions =  (Question.objects
-            .order_by("-created_at")
+            # .order_by("-created_at")
             .select_related("user")
             .only(
                 "id",
@@ -64,6 +66,15 @@ class HomePageView(TemplateView):
                 answers_count=Count("answers", distinct=True),
             ))
         
+        filter_type = self.request.GET.get("filter", "latest")
+        
+        if filter_type == "unanswered":
+            questions = questions.filter(answers__isnull=True).order_by("-created_at")
+        elif filter_type == "top":
+            questions = questions.order_by("-total_votes","-created_at")
+        else:
+            questions = questions.order_by("-created_at")
+        
         paginator = Paginator(questions, 5)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
@@ -72,6 +83,12 @@ class HomePageView(TemplateView):
         context["question_count"] = paginator.count
         context["answer_count"]= Answer.objects.count()
         context["user_count"]= MyUser.objects.count()
+        context["active_filter"] = filter_type
+        
+        params = self.request.GET.copy()
+        params.pop("page", None)
+
+        context["query_string"] = params.urlencode()
         
         return context
     

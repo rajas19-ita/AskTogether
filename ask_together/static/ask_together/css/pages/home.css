@@ -110,6 +110,28 @@
   color: var(--color-text-secondary);
 }
 
+.filter-btn {
+  position: relative;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b5563;
+  text-decoration: none;
+  border-radius: 6px 6px 0 0;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.filter-btn:hover {
+  color: #111827;
+  background-color: #f9fafb;
+}
+
+.filter-btn.active {
+  color: #2563eb;
+  background-color: #eff6ff;
+  border-bottom: 2px solid #2563eb;
+}
+
 @media (min-width: 786px) {
   .at-home-hero {
     flex-direction: row;
