@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Search Page
+{% endblock %}
+
+{% block content %}
+    {% include 'ask_together/includes/header.html' %}
+    <main>
+        <div class="layout">
+            <div class="at-sidebar-wrapper">
+                {% include 'ask_together/includes/sidebar.html' %}
+            </div>
+            <div class="at-sidebar-overlay"></div>
+            <div class="at-content-container">
+                <h1>Search Result</h1>
+                <p>Showing results for: {{search_query}}</p>
+                <div>
+                    {% for question in search_result %}
+                        <div class="border rounded p-2">
+                            <h3>{{question.title}}</h3>
+                            <p>{{question.description_text|truncatewords:30}}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+    </main>
+{% endblock %}

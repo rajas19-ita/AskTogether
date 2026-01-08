@@ -26,6 +26,8 @@ from ask_together.presenters.answer_presenter import AnswerPresenter
 from ask_together.presenters.question_presenter import QuestionPresenter
 import logging
 from django.http import HttpResponse
+from django.contrib.postgres.search import SearchQuery, SearchRank
+from django.db.models import F
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +52,33 @@ class HomePageView(TemplateView):
         context["user_count"]= MyUser.objects.count()
         
         return context
+    
+class SearchPageView(TemplateView):
+    template_name = 'ask_together/search_result.html'
+    
+    def get_context_data(self,**kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        q = self.request.GET.get('q',"").strip()
+        
+        results = []
+        if q:
+            query = SearchQuery(q, config="english")
+            
+            results = (
+                Question.objects
+                .annotate(
+                    rank=SearchRank(F("search_vector"), query)
+                )
+                .filter(search_vector=query)
+                .order_by("-rank","-created_at")
+            )
+        
+        context['search_query'] = q
+        context["search_result"] = results
+        
+        return context
+        
     
 class NotificationsView(TemplateView):
     template_name='ask_together/notifications.html'
