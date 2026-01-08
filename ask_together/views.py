@@ -30,6 +30,7 @@ from django.db.models import ExpressionWrapper, F,IntegerField, Count, Prefetch,
 from django.db.models.functions import Coalesce
 from .services.queries import answer_base_qs, with_user_vote, with_comments
 from django.contrib.postgres.search import SearchQuery, SearchRank
+from django.http import QueryDict
 
 logger = logging.getLogger(__name__)
 
@@ -90,15 +91,42 @@ class SearchPageView(TemplateView):
             
             results = (
                 Question.objects
+                .select_related("user")
+                .only(
+                    "id",
+                    "title",
+                    "description",
+                    "upvotes",
+                    "downvotes",
+                    "created_at",
+                    "accepted_answer_id",
+                    "user__id",
+                    "user__username",
+                    "user__profile_image"
+                )
                 .annotate(
+                    total_votes=ExpressionWrapper(
+                        F("upvotes") - F("downvotes"),
+                        output_field=IntegerField(),
+                    ),
+                    answers_count=Count("answers", distinct=True),
                     rank=SearchRank(F("search_vector"), query)
                 )
                 .filter(search_vector=query)
                 .order_by("-rank","-created_at")
             )
+            
+        paginator = Paginator(results, 5)
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        
+        params = self.request.GET.copy()
+        params.pop('page',None)
         
         context['search_query'] = q
-        context["search_result"] = results
+        context["search_result"] = page_obj
+        context['question_count'] = paginator.count
+        context['query_string'] = params.urlencode()
         
         return context
         

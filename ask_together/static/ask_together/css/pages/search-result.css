@@ -1,0 +1,15 @@
+.at-search__header {
+  margin-bottom: var(--space-5);
+}
+
+.at-search__message {
+  font-size: var(--fs-md);
+  color: var(--color-text-secondary);
+}
+
+.at-search__stats {
+  font-size: var(--fs-md);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-2);
+}

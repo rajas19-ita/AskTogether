@@ -13,18 +13,27 @@
             </div>
             <div class="at-sidebar-overlay"></div>
             <div class="at-content-container">
-                <h1>Search Result</h1>
-                <p>Showing results for: {{search_query}}</p>
-                <div>
+                <header class="at-search__header">
+                    <h1 class="at-search__title">Search Results</h1>
+                    <p class="at-search__message">Showing results for: {{search_query}}</p>
+                </header>
+                <span class="at-search__stats">{{question_count}} question{{question_count|pluralize}}</span>
+                <section class="at-question-list">
                     {% for question in search_result %}
-                        <div class="border rounded p-2">
-                            <h3>{{question.title}}</h3>
-                            <p>{{question.description_text|truncatewords:30}}</p>
-                        </div>
-                    {% endfor %}
-                </div>
-
+                        {% include 'ask_together/components/question-card.html' with question=question only %}
+                    {% endfor%}
+                </section>
+                {% include 'ask_together/components/pagination.html' with page_obj=search_result %}
             </div>
         </div>
     </main>
+{% endblock %}
+{% block script_block %}
+    <script>
+        document.querySelectorAll('.datetime').forEach(el => {
+            const dt = el.dataset.dt;
+            el.textContent = `${timeAgo(dt)}`;
+        });
+        
+    </script>
 {% endblock %}
