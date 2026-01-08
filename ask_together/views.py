@@ -81,8 +81,6 @@ class HomePageView(TemplateView):
         
         context['page_obj'] = page_obj
         context["question_count"] = paginator.count
-        context["answer_count"]= Answer.objects.count()
-        context["user_count"]= MyUser.objects.count()
         context["active_filter"] = filter_type
         
         params = self.request.GET.copy()
