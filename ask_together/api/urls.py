@@ -8,6 +8,7 @@ urlpatterns = [
     path("answers/<int:pk>/vote/", views.vote_answer, name="vote_answer"),
     path("comments/create/", views.create_comment, name="comment_create"),
     path("questions/<int:pk>/accept/", views.accept_answer, name="answer_accept"),
+    path("questions/<int:pk>/save/",views.save_question, name="save_question"),
     path("comments/", views.get_comments, name="get_comments"),
     path("check-username/", views.check_username, name="check_username"),
     path('notifications/', views.get_notifications, name="get_notifications"),

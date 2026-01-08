@@ -75,7 +75,7 @@
                                             
                     <section class="at-question-list">
                         {% for question in page_obj %}
-                            {% include 'ask_together/components/question-card.html' with question=question only %}
+                            {% include 'ask_together/components/question-card.html' with question=question saved_ids=saved_ids only %}
                         {% endfor%}
                     </section>
                     {% include 'ask_together/components/pagination.html' with page_obj=page_obj only %}
@@ -90,6 +90,41 @@
             const dt = el.dataset.dt;
             el.textContent = `${timeAgo(dt)}`;
         });
+
+        const saveQuestion = (button, id)=>{
+            const wasSaved = button.classList.contains("at-bookmark-btn--saved")
+            const url = `{% url 'ask_together:save_question' 0 %}`.replace('0',`${id}`)
+            const method = wasSaved ? "DELETE":"POST"
+
+            button.classList.toggle("at-bookmark-btn--saved", !wasSaved)
+            button.disabled=true
+            
+            fetch(url,{
+                    method,
+                    headers:{
+                        'X-CSRFToken': "{{csrf_token}}"  
+                    }
+                })
+                .then(res =>{
+                    if(res.ok){
+                        return res.json()
+                    }else{
+                        return res.json().then((err)=> {throw err})
+                    }
+                })
+                .then(data => {
+                    button.classList.toggle("at-bookmark-btn--saved", data.saved)
+                    alert(data.saved===true?"question saved":"question removed from saved")
+                })
+                .catch(err => {
+                    button.classList.toggle("at-bookmark-btn--saved", wasSaved)
+                    alert("Some error occurred")
+                })
+                .finally(() => {
+                    button.disabled = false
+                })
+            
+        }
         
     </script>
 {% endblock %}

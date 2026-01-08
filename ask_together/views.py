@@ -6,7 +6,7 @@ from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, 
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetCompleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
-from .models import Question, MyUser, Answer, Comment, Vote
+from .models import Question, MyUser, Answer, Comment, Vote, SavedQuestion
 from django.db.models import Sum
 from django.core.paginator import Paginator
 from django.views import View
@@ -64,6 +64,11 @@ class HomePageView(TemplateView):
                 answers_count=Count("answers", distinct=True),
             ))
         
+        saved_ids = set(
+            SavedQuestion.objects.filter(user=self.request.user).values_list('question_id', flat=True)
+        )
+        print(saved_ids)
+        
         paginator = Paginator(questions, 5)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
@@ -72,6 +77,7 @@ class HomePageView(TemplateView):
         context["question_count"] = paginator.count
         context["answer_count"]= Answer.objects.count()
         context["user_count"]= MyUser.objects.count()
+        context["saved_ids"] = saved_ids
         
         return context
     
