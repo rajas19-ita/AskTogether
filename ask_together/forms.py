@@ -3,6 +3,8 @@ from .models import MyUser, Question, Answer
 from django import forms
 from django_summernote.widgets import SummernoteWidget
 from .utils import sanitize_html
+from django.utils.html import strip_tags
+from bs4 import BeautifulSoup
 
 
 class LoginForm(AuthenticationForm):
@@ -64,7 +66,13 @@ class QuestionForm(forms.ModelForm):
         }
             
     def clean_description(self):
-        return sanitize_html(self.cleaned_data.get("description",""))
+        html = self.cleaned_data.get("description","")
+        
+        soup = BeautifulSoup(html, "html.parser")
+        
+        self.cleaned_data['description_text'] = soup.get_text(separator=" ", strip=True)
+        
+        return sanitize_html(html)
         
         
 class UserUpdateForm(forms.ModelForm):

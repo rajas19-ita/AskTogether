@@ -12,7 +12,7 @@ a {
   max-width: 1320px;
   display: flex;
   margin-inline: auto;
-  min-height: 100%;
+  min-height: 100vh;
 }
 
 .header {
@@ -351,7 +351,6 @@ pre {
   background-color: #f8f9fa;
 }
 
-
 .at-hamburger {
   display: none;
 }
@@ -371,7 +370,6 @@ pre {
   .at-search-box {
     margin-right: 1rem !important;
   }
-  
 }
 
 @media (max-width: 991px) {
