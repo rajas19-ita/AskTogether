@@ -20,7 +20,7 @@
                 <span class="at-search__stats">{{question_count}} question{{question_count|pluralize}}</span>
                 <section class="at-question-list">
                     {% for question in search_result %}
-                        {% include 'ask_together/components/question-card.html' with question=question only %}
+                        {% include 'ask_together/components/question-card.html' with question=question request_user=request.user %}
                     {% endfor%}
                 </section>
                 {% include 'ask_together/components/pagination.html' with page_obj=search_result %}

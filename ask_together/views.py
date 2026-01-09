@@ -45,7 +45,6 @@ class HomePageView(TemplateView):
         context = super().get_context_data(**kwargs)
         
         questions =  (Question.objects
-            # .order_by("-created_at")
             .select_related("user")
             .only(
                 "id",
@@ -95,8 +94,12 @@ class HomePageView(TemplateView):
         
         context['page_obj'] = page_obj
         context["question_count"] = Question.objects.count()
-        context["answer_count"]= Answer.objects.count()
-        context["user_count"]= MyUser.objects.count()
+        context["active_filter"] = filter_type
+        
+        params = self.request.GET.copy()
+        params.pop("page", None)
+
+        context["query_string"] = params.urlencode()
         
         return context
     
@@ -265,59 +268,6 @@ class QuestionCreateView(LoginRequiredMixin, CreateView):
 class QuestionDetailView(DetailView):
     template_name='ask_together/question_detail.html'
     model = Question
-
-
-    def get_queryset(self):
-        qs = (Question.objects
-            .select_related("user")
-            .only(
-                "id",
-                "title",
-                "description",
-                "created_at",
-                "accepted_answer_id",
-                "user__id",
-                "user__username",
-                "user__profile_image"
-            )
-            .annotate(
-                total_votes =ExpressionWrapper(
-                    F("upvotes") - F("downvotes"),
-                    output_field=IntegerField(),
-                ))
-            )
-        
-        user = self.request.user
-        
-        # USER VOTE ANNOTATION
-        if user.is_authenticated:
-            user_vote = Vote.objects.filter(question=OuterRef('pk'), user=user).values('value')[:1]
-            
-            qs = qs.annotate(
-                user_vote = Coalesce(
-                    Subquery(user_vote),
-                    Value(0),
-                    output_field=IntegerField()
-                )
-            )
-        else:
-           qs = qs.annotate(
-               user_vote = Value(0,output_field=IntegerField())
-           )
-        
-        if user.is_authenticated:
-            saved_qs = SavedQuestion.objects.filter(
-                user=user,
-                question = OuterRef("pk")
-            )
-            qs = qs.annotate(is_saved=Exists(saved_qs))
-        else:
-            qs = qs.annotate(
-                is_saved = Value(False, output_field=BooleanField())
-            ) 
-           
-        return qs 
-    
     
     def get_queryset(self):
         qs = (Question.objects
