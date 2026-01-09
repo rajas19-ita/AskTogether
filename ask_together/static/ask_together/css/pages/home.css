@@ -76,11 +76,11 @@
   display: none;
 }
 
-.at-bookmark-btn--saved .at-bookmark-icon--outline {
+.at-bookmark-btn[data-saved="true"] .at-bookmark-icon--outline {
   display: none;
 }
 
-.at-bookmark-btn--saved .at-bookmark-icon--fill {
+.at-bookmark-btn[data-saved="true"] .at-bookmark-icon--fill {
   display: inline;
 }
 

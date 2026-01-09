@@ -13,6 +13,8 @@
         <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
         
         <link rel="stylesheet" href="{% static 'ask_together/css/main.css' %}"/>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
         
         {% block css_block %}{% endblock %}
 
@@ -21,6 +23,7 @@
     <body>
         {% block content %}
         {% endblock %}
+        <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
         <script>
             function formatUTCtoLocal(root=document, selector = ".datetime") {
@@ -60,6 +63,50 @@
                 }
                 return 'just now';
             }
+
+            const saveQuestion = (button, id)=>{
+                const wasSaved = button.dataset.saved === "true"
+                const url = `{% url 'ask_together:save_question' 0 %}`.replace('0',`${id}`)
+                const method = wasSaved ? "DELETE":"POST"
+
+                button.dataset.saved = (!wasSaved).toString()
+                button.disabled=true
+                var notyf = new Notyf({
+                    position: {
+                        x:'center',
+                        y:'top'
+                    }
+                })
+
+                fetch(url,{
+                        method,
+                        headers:{
+                            'X-CSRFToken': "{{csrf_token}}"  
+                        }
+                    })
+                    .then(res =>{
+                        if(res.ok){
+                            return res.json()
+                        }else{
+                            return res.json().then((err)=> {throw err})
+                        }
+                    })
+                    .then(data => {
+                        button.dataset.saved = data.saved.toString()
+           
+                        notyf.success(data.saved===true?"Question Saved":"Question Unsaved")
+                    })
+                    .catch(err => {
+                        button.dataset.saved = wasSaved.toString()
+
+                        notyf.error("Some error occurred")
+                    })
+                    .finally(() => {
+                        button.disabled = false
+                    })
+                
+            }
+
         </script>
 
         <script>
@@ -86,5 +133,7 @@
         </script>
 
         {% block script_block %}{% endblock %}
+
+        
     </body>
 </html>

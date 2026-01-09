@@ -71,6 +71,29 @@
   margin-bottom: var(--space-2);
 }
 
+.at-qbookmark-btn {
+  background: transparent;
+  color: var(--color-text-secondary);
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.at-qbookmark-btn:active {
+  transform: scale(0.97);
+}
+
+.at-qbookmark-icon--fill {
+  display: none;
+}
+
+.at-qbookmark-btn[data-saved="true"] .at-qbookmark-icon--outline {
+  display: none;
+}
+
+.at-qbookmark-btn[data-saved="true"] .at-qbookmark-icon--fill {
+  display: inline;
+}
+
 @media (min-width: 786px) {
   .at-question__meta {
     flex-direction: row;

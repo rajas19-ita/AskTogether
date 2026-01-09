@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Saved Questions
+{% endblock %}
+
+{% block content %}
+    {% include 'ask_together/includes/header.html' %}
+    <main>
+        <div class="layout">
+            <div class="at-sidebar-wrapper">
+                {% include 'ask_together/includes/sidebar.html' %}
+            </div>
+            <div class="at-sidebar-overlay"></div>
+            <div class="at-content-container">
+                <h1 class="at-saved__title">Saved Questions</h1>
+                <span class="at-saved__stats">{{question_count}} question{{question_count|pluralize}}</span>
+                <section class="at-question-list">
+                    {% for question in saved_questions %}
+                        {% include 'ask_together/components/question-card.html' with question=question request_user=user only %}
+                    {% endfor%}
+                </section>
+                {% include 'ask_together/components/pagination.html' with page_obj=saved_questions %}
+            </div>
+        </div>
+    </main>
+{% endblock %}
+{% block script_block %}
+    <script>
+        document.querySelectorAll('.datetime').forEach(el => {
+            const dt = el.dataset.dt;
+            el.textContent = `${timeAgo(dt)}`;
+        });
+        
+    </script>
+{% endblock %}

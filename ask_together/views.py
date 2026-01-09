@@ -26,7 +26,7 @@ from ask_together.presenters.answer_presenter import AnswerPresenter
 from ask_together.presenters.question_presenter import QuestionPresenter
 import logging
 from django.http import HttpResponse
-from django.db.models import ExpressionWrapper, F,IntegerField, Count, Prefetch, Value, Subquery, OuterRef
+from django.db.models import ExpressionWrapper, F,IntegerField, Count, Prefetch, Value, Subquery, OuterRef, Exists, BooleanField
 from django.db.models.functions import Coalesce
 from .services.queries import answer_base_qs, with_user_vote, with_comments
 
@@ -64,10 +64,18 @@ class HomePageView(TemplateView):
                 answers_count=Count("answers", distinct=True),
             ))
         
-        saved_ids = set(
-            SavedQuestion.objects.filter(user=self.request.user).values_list('question_id', flat=True)
-        )
-        print(saved_ids)
+        user = self.request.user
+        
+        if user.is_authenticated:
+            saved_qs = SavedQuestion.objects.filter(
+                user=user,
+                question = OuterRef("pk")
+            )
+            questions = questions.annotate(is_saved=Exists(saved_qs))
+        else:
+            questions = questions.annotate(
+                is_saved = Value(False, output_field=BooleanField())
+            )
         
         paginator = Paginator(questions, 5)
         page_number = self.request.GET.get('page')
@@ -77,9 +85,55 @@ class HomePageView(TemplateView):
         context["question_count"] = paginator.count
         context["answer_count"]= Answer.objects.count()
         context["user_count"]= MyUser.objects.count()
-        context["saved_ids"] = saved_ids
         
         return context
+    
+class SavedQuestionsView(LoginRequiredMixin, TemplateView):
+    login_url = reverse_lazy('ask_together:login')
+    template_name='ask_together/saved_questions.html'
+    
+    
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+    
+        saved_questions = (
+                    Question.objects
+                    .filter(saved_by__user=self.request.user)
+                    .select_related("user")
+                    .only(
+                        "id",
+                        "title",
+                        "description",
+                        "upvotes",
+                        "downvotes",
+                        "created_at",
+                        "accepted_answer_id",
+                        "user__id",
+                        "user__username",
+                        "user__profile_image"
+                    )
+                    .annotate(
+                        total_votes=ExpressionWrapper(
+                            F("upvotes") - F("downvotes"),
+                            output_field=IntegerField(),
+                        ),
+                        answers_count=Count("answers", distinct=True),
+                        is_saved=Value(True, output_field=BooleanField()),   
+                    )
+                    .order_by("-saved_by__saved_at")
+                    
+                )
+                
+        paginator = Paginator(saved_questions, 5)
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        
+        context["saved_questions"] = page_obj
+        context['question_count'] = paginator.count
+        
+        
+        return context
+        
     
 class NotificationsView(TemplateView):
     template_name='ask_together/notifications.html'
@@ -152,6 +206,7 @@ class QuestionDetailView(DetailView):
         
         user = self.request.user
         
+        # USER VOTE ANNOTATION
         if user.is_authenticated:
             user_vote = Vote.objects.filter(question=OuterRef('pk'), user=user).values('value')[:1]
             
@@ -166,6 +221,18 @@ class QuestionDetailView(DetailView):
            qs = qs.annotate(
                user_vote = Value(0,output_field=IntegerField())
            ) 
+           
+        # IS_SAVED ANNOTATION
+        if user.is_authenticated:
+            saved_qs = SavedQuestion.objects.filter(
+                user=user,
+                question = OuterRef("pk")
+            )
+            qs = qs.annotate(is_saved=Exists(saved_qs))
+        else:
+            qs = qs.annotate(
+                is_saved = Value(False, output_field=BooleanField())
+            )
            
         return qs 
     
