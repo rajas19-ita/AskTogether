@@ -18,6 +18,7 @@ from django.template.loader import render_to_string
 import logging
 from rest_framework.views import exception_handler
 from rest_framework import status
+from ask_together.services.queries import answer_base_qs
 
 logger = logging.getLogger(__name__)
 
@@ -29,15 +30,17 @@ def create_answer(request):
     if serializer.is_valid():   
         answer = serializer.save(author=request.user)
         
-        if answer.author != answer.question.user:        
+        question = Question.objects.only(
+            "id", "user_id", "accepted_answer_id"
+        ).get(id=answer.question_id)
+        
+        if answer.author.id != question.user_id:        
             notify_answer_posted(answer)
         
         presenter = AnswerPresenter(
             answer=answer, 
             request=request, 
-            question=answer.question, 
-            user_vote=0, 
-            skip_comments=True
+            question=question
         )
         
         html = render_to_string(
