@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from .serializers import AnswerSerializer, CommentSerializer, NotificationSerializer
-from ask_together.models import Question, Answer, MyUser, Vote, Comment, Notification
+from ask_together.models import Question, Answer, MyUser, Vote, Comment, Notification, SavedQuestion
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.utils import timezone
@@ -129,6 +129,27 @@ def create_comment(request):
         
         return Response({"comment":serializer.data, "html":html}, status=201)
     return Response(serializer.errors, status=400)
+
+@api_view(['POST', 'DELETE'])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def save_question(request,pk):
+    question = get_object_or_404(Question,id=pk)
+    
+    if request.method == "POST":
+        SavedQuestion.objects.get_or_create(
+            user = request.user,
+            question = question
+        )
+        return Response({"saved":True})
+    
+    if request.method == "DELETE":
+        SavedQuestion.objects.filter(
+            user = request.user,
+            question = question
+        ).delete()
+        return Response({"saved":False})
+    
 
 @api_view(['GET'])
 def get_posts(request, pk):

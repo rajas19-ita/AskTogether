@@ -140,3 +140,22 @@ class Notification(models.Model):
     
     class Meta:
         ordering = ['-created_at']
+        
+        
+class SavedQuestion(models.Model):
+    user = models.ForeignKey(
+        MyUser,
+        on_delete=models.CASCADE,
+        related_name='saved_questions'
+    )
+    
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        related_name='saved_by'
+    )
+    
+    saved_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ("user", "question")

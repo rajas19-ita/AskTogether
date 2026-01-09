@@ -54,9 +54,42 @@
   padding: var(--space-4) var(--space-5);
 }
 
+.at-question-card__header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-1);
+}
+
+.at-bookmark-btn {
+  display: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  transition: all 0.15s ease;
+  padding: 0.2rem 0.6rem;
+}
+
+.at-bookmark-btn:active {
+  transform: scale(0.97);
+}
+
+.at-bookmark-icon--fill {
+  display: none;
+}
+
+.at-bookmark-btn[data-saved="true"] .at-bookmark-icon--outline {
+  display: none;
+}
+
+.at-bookmark-btn[data-saved="true"] .at-bookmark-icon--fill {
+  display: inline;
+}
+
+.at-question-card:hover .at-bookmark-btn {
+  display: inline;
+}
+
 .at-question-card__title {
   font-weight: 400;
-  margin-bottom: var(--space-1);
   color: var(--color-primary);
 }
 

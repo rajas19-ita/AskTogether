@@ -9,6 +9,7 @@ urlpatterns = [
     path("logout/", views.UserLogoutView.as_view(), name="logout"),
     path("search/", views.SearchPageView.as_view(), name="search"),
     path("notifications/", views.NotificationsView.as_view(), name="notifications"),
+    path("saved-questions/", views.SavedQuestionsView.as_view(),name="saved_questions"),
     path("questions/create/",views.QuestionCreateView.as_view(), name='question_create'),
     path("questions/<int:pk>/", views.QuestionDetailView.as_view(), name='question_detail'),
     path("users/<int:pk>/", views.UserDetailView.as_view(), name='user_profile'),

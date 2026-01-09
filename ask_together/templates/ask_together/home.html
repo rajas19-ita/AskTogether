@@ -87,7 +87,7 @@
                                             
                     <section class="at-question-list">
                         {% for question in page_obj %}
-                            {% include 'ask_together/components/question-card.html' with question=question only %}
+                            {% include 'ask_together/components/question-card.html' with question=question request_user=user only %}
                         {% endfor%}
                     </section>
                     {% include 'ask_together/components/pagination.html' with page_obj=page_obj  %}
@@ -102,6 +102,7 @@
             const dt = el.dataset.dt;
             el.textContent = `${timeAgo(dt)}`;
         });
+
         
     </script>
 {% endblock %}
