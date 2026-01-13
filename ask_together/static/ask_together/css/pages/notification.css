@@ -14,6 +14,62 @@
   gap: var(--space-3);
 }
 
+.at-empty-state {
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.at-loader {
+  align-self: center;
+  width: 40px;
+}
+
+.at-tab-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 700px;
+}
+
+.at-notification-card {
+  display: grid;
+  grid-template-columns: 0.8fr 8fr;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-2);
+  border: 1px solid var(--color-border);
+}
+
+.at-notification-card__icon {
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  margin-top: var(--space-1);
+}
+
+.at-notification__badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: var(--fs-sm);
+}
+
+.at-notification__content {
+  display: flex;
+  flex-direction: column;
+}
+
+.at-notification__message {
+  font-family: var(--font-heading);
+  font-size: var(--fs-md);
+}
+
+.at-notification__time {
+  color: var(--color-text-secondary);
+  font-size: var(--fs-sm);
+}
+
 @media (min-width: 786px) {
   .at-notifications__title {
     margin-left: 0;

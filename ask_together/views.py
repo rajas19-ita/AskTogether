@@ -93,7 +93,7 @@ class HomePageView(TemplateView):
         page_obj = paginator.get_page(page_number)
         
         context['page_obj'] = page_obj
-        context["question_count"] = Question.objects.count()
+        context["question_count"] = paginator.count
         context["active_filter"] = filter_type
         
         params = self.request.GET.copy()
@@ -228,6 +228,22 @@ class UserLoginView(LoginView):
     def get_success_url(self):
         next_url = self.request.GET.get('next') or self.request.POST.get('next')
         return next_url or reverse('ask_together:home')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        SSRC_MESSAGES = {
+            "ask_question": "You must be logged in to ask a question.",
+            "vote": "You must be logged in to vote.",
+            "add_comment": "You must be logged in to add a comment.",
+            "post_answer": "You must be logged in to post an answer.",
+        }
+
+        ssrc = self.request.GET.get("ssrc")
+        info_message = SSRC_MESSAGES.get(ssrc)
+        context['info_message'] = info_message
+        
+        return context
 
 
 class SignUpView(CreateView):

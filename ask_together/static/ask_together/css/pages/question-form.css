@@ -1,0 +1,38 @@
+.at-ask {
+  background-color: #f8f9fa;
+}
+
+.at-ask__title {
+  margin-bottom: var(--space-1);
+  font-weight: 500;
+  padding-left: var(--space-1);
+}
+
+.at-ask-card {
+  padding: var(--space-4);
+  background-color: white;
+  border-radius: var(--radius-lg);
+}
+
+.at-ask-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.at-ask-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.at-ask-form__label {
+  font-weight: 600;
+  font-size: var(--fs-md);
+  margin-bottom: -5px;
+}
+
+.at-form-required {
+  color: var(--color-danger);
+}
+

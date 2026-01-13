@@ -95,284 +95,286 @@
 {% endblock %}
 {% block script_block %}
     <script>
-        formatUTCtoLocal()
-
-        const formEl = document.getElementById("answer_form");
-        let acceptedAnswer = {{ question.accepted_answer_id|default:"null" }};
-
-        const handleSubmit = (e)=>{
-            e.preventDefault()
-
-            const answer = formEl.querySelector('#id_content').value
-            const csrfToken = formEl.querySelector('[name=csrfmiddlewaretoken]').value
-
-            fetch("{% url 'ask_together:answer_create' %}",{
-                method:'POST',
-                headers:{
-                    'Content-Type':"application/json",
-                    'X-CSRFToken': csrfToken
-                },
-                body: JSON.stringify({content:answer, question: {{question.id}}})
-            })
-            .then(res =>{
-                if(res.ok){
-                    return res.json()
-                }else{
-                    return res.json().then((err)=> {throw err})
-                }
-            })
-            .then(data =>{
-                //remove form error on success and reset form
-                formEl.querySelector('.at-error-msg')?.remove()
-                formEl.reset()
-                const iframe = document.getElementById("id_content_iframe");
-                const editable = iframe.contentDocument.querySelector('.note-editable')
-                if(editable){
-                    editable.innerHTML = ''
-                }
-
-                //update answer count
-                const countEl = document.getElementById("answer_count");
-                if (countEl) {
-                    let current = parseInt(countEl.textContent);
-                    if (!isNaN(current)) {
-                        let newCount = current + 1;
-                        countEl.textContent = `${newCount} Answer${newCount !== 1 ? 's' : ''}`;
-                    }
-                }
-
-                //add answer to UI
-                addAnswerToUI(data.html)                
-            }) 
-            .catch(err =>{
-                const p = document.createElement('p')
-                p.className = 'at-error-msg text-danger mb-1';
-                if(err.content){
-                    p.textContent = err.content[0]
-                }else{
-                    p.textContent = 'some error occurred'  
-                }
-                formEl.appendChild(p)
-            })   
-        } 
-
-        const addAnswerToUI = (answer)=>{
-            const container = document.getElementById("answer_container");
-            container.insertAdjacentHTML("beforeend", answer);
-            formatUTCtoLocal(container) 
-        }
-
-        formEl.addEventListener("submit",handleSubmit)
-
-        const handleVote = (type, id, action, button)=>{
-            let actionMap = {upvote:1, downvote:-1}
-            let value = actionMap[action]
-
-            if (button.classList.contains('active')){
-                action = 'remove'
-            }
-            
-            const csrfToken = formEl.querySelector('[name=csrfmiddlewaretoken]').value
-
-            let url = type==='question' ? `{% url 'ask_together:vote_question' 0 %}`.replace('0',`${id}`):
-                                         `{% url 'ask_together:vote_answer' 0 %}`.replace('0',`${id}`)
-
-            
-            fetch(`${url}`,{
-                method:'POST',
-                headers:{
-                    'Content-Type':"application/json",
-                    'X-CSRFToken':csrfToken
-                },
-                body:JSON.stringify({action})
-            })
-            .then(res =>{
-                if(res.ok){
-                    return res.json()
-                }else{
-                    return res.json().then((err)=> {throw err})
-                }
-            })
-            .then(data=>{
-                let activeAction = ''
-                document.querySelectorAll(`.${type+id}-vote-btn`).forEach((btn)=>{
-                    if(btn.classList.contains('active')){
-                        activeAction = btn.dataset.action
-                        btn.classList.remove('active')
+        document.addEventListener("DOMContentLoaded",()=>{
+            formatUTCtoLocal()
+    
+            const formEl = document.getElementById("answer_form");
+            let acceptedAnswer = {{ question.accepted_answer_id|default:"null" }};
+    
+            const handleSubmit = (e)=>{
+                e.preventDefault()
+    
+                const answer = formEl.querySelector('#id_content').value
+                const csrfToken = formEl.querySelector('[name=csrfmiddlewaretoken]').value
+    
+                fetch("{% url 'ask_together:answer_create' %}",{
+                    method:'POST',
+                    headers:{
+                        'Content-Type':"application/json",
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({content:answer, question: {{question.id}}})
+                })
+                .then(res =>{
+                    if(res.ok){
+                        return res.json()
+                    }else{
+                        return res.json().then((err)=> {throw err})
                     }
                 })
-                spanEl = document.getElementById(`${type+id}_vote_count`)
-                let vote_count = parseInt(spanEl.innerHTML)
-
-
-                if(action === 'remove'){
-                    vote_count -= value
-                }else{
-                    button.classList.add('active')
-                    if(activeAction){
-                        vote_count -= actionMap[activeAction]
+                .then(data =>{
+                    //remove form error on success and reset form
+                    formEl.querySelector('.at-error-msg')?.remove()
+                    formEl.reset()
+                    const iframe = document.getElementById("id_content_iframe");
+                    const editable = iframe.contentDocument.querySelector('.note-editable')
+                    if(editable){
+                        editable.innerHTML = ''
                     }
-                    vote_count += value
-                }
-
-                spanEl.innerHTML = vote_count
-            })
-            .catch(err =>{
-                console.error(err)
-                alert('Something went wrong, Please try again.')
-            }) 
-
-        }
-
-        const handleCommentFormDisplay = (type, id, button)=>{
-            let btnType = button.dataset.btn
-            let commentForm = document.getElementById(`${type+id}_comment_form`)
-            if(btnType === "show"){
-                button.classList.add('d-none')
-                commentForm.classList.remove('d-none')
-            }else{
-                commentForm.reset()
-                commentForm.querySelector(`#${type+id}_comment_error`)?.remove()
-                document.getElementById(`${type+id}_comment_btn`).classList.remove('d-none')
-                commentForm.classList.add('d-none')
+    
+                    //update answer count
+                    const countEl = document.getElementById("answer_count");
+                    if (countEl) {
+                        let current = parseInt(countEl.textContent);
+                        if (!isNaN(current)) {
+                            let newCount = current + 1;
+                            countEl.textContent = `${newCount} Answer${newCount !== 1 ? 's' : ''}`;
+                        }
+                    }
+    
+                    //add answer to UI
+                    addAnswerToUI(data.html)                
+                }) 
+                .catch(err =>{
+                    const p = document.createElement('p')
+                    p.className = 'at-error-msg text-danger mb-1';
+                    if(err.content){
+                        p.textContent = err.content[0]
+                    }else{
+                        p.textContent = 'some error occurred'  
+                    }
+                    formEl.appendChild(p)
+                })   
+            } 
+    
+            const addAnswerToUI = (answer)=>{
+                const container = document.getElementById("answer_container");
+                container.insertAdjacentHTML("beforeend", answer);
+                formatUTCtoLocal(container) 
             }
-        }
-
-        const handleCommentSubmit = (e, type, id, form)=>{
-            e.preventDefault()
-            let content = document.getElementById(`${type+id}_comment_content`).value
-            
-            const csrfToken = formEl.querySelector('[name=csrfmiddlewaretoken]').value
-            
-            fetch(`{% url 'ask_together:comment_create' %}`,{
-                method:'POST',
-                headers:{
-                    'Content-Type':"application/json",
-                    'X-CSRFToken':csrfToken
-                },
-                body:JSON.stringify({
-                    content:content.trim(),
-                    [type]:id
+    
+            formEl.addEventListener("submit",handleSubmit)
+    
+            const handleVote = (type, id, action, button)=>{
+                let actionMap = {upvote:1, downvote:-1}
+                let value = actionMap[action]
+    
+                if (button.classList.contains('active')){
+                    action = 'remove'
+                }
+                
+                const csrfToken = formEl.querySelector('[name=csrfmiddlewaretoken]').value
+    
+                let url = type==='question' ? `{% url 'ask_together:vote_question' 0 %}`.replace('0',`${id}`):
+                                             `{% url 'ask_together:vote_answer' 0 %}`.replace('0',`${id}`)
+    
+                
+                fetch(`${url}`,{
+                    method:'POST',
+                    headers:{
+                        'Content-Type':"application/json",
+                        'X-CSRFToken':csrfToken
+                    },
+                    body:JSON.stringify({action})
                 })
-            })
-            .then(res =>{
-                if(res.ok){
-                    return res.json()
-                }else{
-                    return res.json().then((err)=> {throw err})
-                }
-            })
-            .then(data=>{
-                form.querySelector(`#${type+id}_comment_error`)?.remove()
-                form.reset()
-                addCommentToUi(data.html, type, id)
-                document.getElementById(`${type+id}_comment_btn`).classList.remove('d-none')
-                form.classList.add('d-none')
-            })
-            .catch(err=>{
-                const p = document.createElement('p')
-                p.id = `${type+id}_comment_error`
-                p.className = ' text-danger mb-1';
-                if(err.content){
-                    p.textContent = err.content[0]
-                }else{
-                    p.textContent = 'some error occurred'  
-                }
-                form.appendChild(p)
-            })
-
-        }   
-
-        const addCommentToUi = (comment,type,id)=>{
-            const container = document.getElementById(`${type+id}_comments_container`)
-            container.insertAdjacentHTML("beforeend", comment);
-            formatUTCtoLocal(container)                           
-        }
-
-        const handleAcceptedAnswer = (id, button)=>{
-            const csrfToken = formEl.querySelector('[name=csrfmiddlewaretoken]').value
-
-            const url = "{% url 'ask_together:answer_accept' question.id %}"
-
-            let method, body = null;
-
-            if (acceptedAnswer === id){
-                method = "DELETE"
-            }else{
-                method = "POST"
-                body = JSON.stringify({answer:id})
+                .then(res =>{
+                    if(res.ok){
+                        return res.json()
+                    }else{
+                        return res.json().then((err)=> {throw err})
+                    }
+                })
+                .then(data=>{
+                    let activeAction = ''
+                    document.querySelectorAll(`.${type+id}-vote-btn`).forEach((btn)=>{
+                        if(btn.classList.contains('active')){
+                            activeAction = btn.dataset.action
+                            btn.classList.remove('active')
+                        }
+                    })
+                    spanEl = document.getElementById(`${type+id}_vote_count`)
+                    let vote_count = parseInt(spanEl.innerHTML)
+    
+    
+                    if(action === 'remove'){
+                        vote_count -= value
+                    }else{
+                        button.classList.add('active')
+                        if(activeAction){
+                            vote_count -= actionMap[activeAction]
+                        }
+                        vote_count += value
+                    }
+    
+                    spanEl.innerHTML = vote_count
+                })
+                .catch(err =>{
+                    console.error(err)
+                    alert('Something went wrong, Please try again.')
+                }) 
+    
             }
-
-            fetch(url,{
-                method,
-                headers:{
-                    'X-CSRFToken': csrfToken,
-                    ...(body && {'Content-Type':'application/json'})
-                },
-                ...(body && { body })
-            })
-            .then((res)=>res.ok?res.json():res.json().then((err)=>{throw err}))
-            .then(data=>{
-                const prev = acceptedAnswer
-                acceptedAnswer = data.accepted_answer
-
-                if (prev !== null && prev !== id) {
-                    updateAcceptedAnswerUI(prev, false);
-                }
-
-                updateAcceptedAnswerUI(id, acceptedAnswer === id);
-            })
-            .catch(err=>{
-                console.error(err)
-                alert('Something went wrong, Please try again.')
-            })
-        }
-
-        function updateAcceptedAnswerUI(answerId, isAccepted) {
-            const btn = document.getElementById(`answer${answerId}_acc_btn`);
-            if (!btn) return;
-
-            btn.querySelectorAll("svg").forEach(svg => {
-                const accepted = svg.dataset.accepted === "true";
-                if (accepted === isAccepted) {
-                    svg.classList.remove("d-none");
-                } else {
-                    svg.classList.add("d-none");
-                }
-            });
-        }
-
-
-        const fetchMoreComments = (type, id, button)=>{
-            const csrfToken = formEl.querySelector('[name=csrfmiddlewaretoken]').value
-            const last_id = button.dataset.lastCommentId
-
-            fetch(`{% url 'ask_together:get_comments' %}?${type==="question"?'question_id':'answer_id'}=${id}&last_id=${last_id}`,{
-                method:'GET',
-                headers:{
-                    'X-CSRFToken': csrfToken
-                }
-            })
-            .then(res =>{
-                if(res.ok){
-                    return res.json()
-                }else{
-                    return res.json().then((err)=> {throw err})
-                }
-            })
-            .then(data =>{
-                data.comments.forEach((comment)=>addCommentToUi(comment.html, type, id))
-                button.dataset.lastCommentId = data.last_id
-                if(!data.has_more){
+    
+            const handleCommentFormDisplay = (type, id, button)=>{
+                let btnType = button.dataset.btn
+                let commentForm = document.getElementById(`${type+id}_comment_form`)
+                if(btnType === "show"){
                     button.classList.add('d-none')
+                    commentForm.classList.remove('d-none')
+                }else{
+                    commentForm.reset()
+                    commentForm.querySelector(`#${type+id}_comment_error`)?.remove()
+                    document.getElementById(`${type+id}_comment_btn`).classList.remove('d-none')
+                    commentForm.classList.add('d-none')
                 }
-
-            })
-            .catch(err => {
-                console.error(err)
-                alert('Something went wrong, Please try again.')
-            })
-        }
+            }
+    
+            const handleCommentSubmit = (e, type, id, form)=>{
+                e.preventDefault()
+                let content = document.getElementById(`${type+id}_comment_content`).value
+                
+                const csrfToken = formEl.querySelector('[name=csrfmiddlewaretoken]').value
+                
+                fetch(`{% url 'ask_together:comment_create' %}`,{
+                    method:'POST',
+                    headers:{
+                        'Content-Type':"application/json",
+                        'X-CSRFToken':csrfToken
+                    },
+                    body:JSON.stringify({
+                        content:content.trim(),
+                        [type]:id
+                    })
+                })
+                .then(res =>{
+                    if(res.ok){
+                        return res.json()
+                    }else{
+                        return res.json().then((err)=> {throw err})
+                    }
+                })
+                .then(data=>{
+                    form.querySelector(`#${type+id}_comment_error`)?.remove()
+                    form.reset()
+                    addCommentToUi(data.html, type, id)
+                    document.getElementById(`${type+id}_comment_btn`).classList.remove('d-none')
+                    form.classList.add('d-none')
+                })
+                .catch(err=>{
+                    const p = document.createElement('p')
+                    p.id = `${type+id}_comment_error`
+                    p.className = ' text-danger mb-1';
+                    if(err.content){
+                        p.textContent = err.content[0]
+                    }else{
+                        p.textContent = 'some error occurred'  
+                    }
+                    form.appendChild(p)
+                })
+    
+            }   
+    
+            const addCommentToUi = (comment,type,id)=>{
+                const container = document.getElementById(`${type+id}_comments_container`)
+                container.insertAdjacentHTML("beforeend", comment);
+                formatUTCtoLocal(container)                           
+            }
+    
+            const handleAcceptedAnswer = (id, button)=>{
+                const csrfToken = formEl.querySelector('[name=csrfmiddlewaretoken]').value
+    
+                const url = "{% url 'ask_together:answer_accept' question.id %}"
+    
+                let method, body = null;
+    
+                if (acceptedAnswer === id){
+                    method = "DELETE"
+                }else{
+                    method = "POST"
+                    body = JSON.stringify({answer:id})
+                }
+    
+                fetch(url,{
+                    method,
+                    headers:{
+                        'X-CSRFToken': csrfToken,
+                        ...(body && {'Content-Type':'application/json'})
+                    },
+                    ...(body && { body })
+                })
+                .then((res)=>res.ok?res.json():res.json().then((err)=>{throw err}))
+                .then(data=>{
+                    const prev = acceptedAnswer
+                    acceptedAnswer = data.accepted_answer
+    
+                    if (prev !== null && prev !== id) {
+                        updateAcceptedAnswerUI(prev, false);
+                    }
+    
+                    updateAcceptedAnswerUI(id, acceptedAnswer === id);
+                })
+                .catch(err=>{
+                    console.error(err)
+                    alert('Something went wrong, Please try again.')
+                })
+            }
+    
+            function updateAcceptedAnswerUI(answerId, isAccepted) {
+                const btn = document.getElementById(`answer${answerId}_acc_btn`);
+                if (!btn) return;
+    
+                btn.querySelectorAll("svg").forEach(svg => {
+                    const accepted = svg.dataset.accepted === "true";
+                    if (accepted === isAccepted) {
+                        svg.classList.remove("d-none");
+                    } else {
+                        svg.classList.add("d-none");
+                    }
+                });
+            }
+    
+    
+            const fetchMoreComments = (type, id, button)=>{
+                const csrfToken = formEl.querySelector('[name=csrfmiddlewaretoken]').value
+                const last_id = button.dataset.lastCommentId
+    
+                fetch(`{% url 'ask_together:get_comments' %}?${type==="question"?'question_id':'answer_id'}=${id}&last_id=${last_id}`,{
+                    method:'GET',
+                    headers:{
+                        'X-CSRFToken': csrfToken
+                    }
+                })
+                .then(res =>{
+                    if(res.ok){
+                        return res.json()
+                    }else{
+                        return res.json().then((err)=> {throw err})
+                    }
+                })
+                .then(data =>{
+                    data.comments.forEach((comment)=>addCommentToUi(comment.html, type, id))
+                    button.dataset.lastCommentId = data.last_id
+                    if(!data.has_more){
+                        button.classList.add('d-none')
+                    }
+    
+                })
+                .catch(err => {
+                    console.error(err)
+                    alert('Something went wrong, Please try again.')
+                })
+            }
+        })
 
     </script>
 {% endblock %}

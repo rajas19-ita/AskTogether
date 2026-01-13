@@ -1,18 +1,17 @@
 {% load static %}
+{% load icon_tags %}
 
 <header class="header">
     <nav class="at-navbar">
         <div class="navbar__container"> 
             <div class="at-navbar__left">
                 {% if request.resolver_match.url_name != 'question_create' %}
-                    <button class="at-btn at-btn-text at-hamburger">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
-                        </svg>
+                    <button class="at-btn at-btn--transparent at-btn-hamburger" type="button" aria-label="Open Sidebar">
+                       {% icon 'bi-list' 'at-icon' %}
                     </button>
                 {% endif %}
                 <a href="{% url 'ask_together:home' %}" class="at-brand">
-                    <img src="{% static 'ask_together/img/logo_b.png' %}" class="at-brand__logo"/>
+                    <img src="{% static 'ask_together/img/logo_b.png' %}" class="at-brand__logo" alt="AskTogether"/>
                     <span class="at-brand__name">
                         <span class="at-brand__ask">Ask</span><span class="at-brand__together">Together</span>
                     </span>
@@ -23,25 +22,30 @@
                     <input type="text" name="q" class="at-form-input at-search__input" placeholder="Search..." >
                 </form>
                 <span class="at-search__icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search text-secondary mb-1"  viewBox="0 0 16 16">
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                    </svg>
+                    {% icon 'bi-search' 'at-icon at-search-icon' %}
                 </span>
             </div>
             <div class="at-navbar__right">
                 {% if user.is_authenticated %}
                     <a class="at-notification" href="{% url 'ask_together:notifications' %}">
-                        <img class="" src="{% static 'ask_together/img/bell.png'  %}"/>
-                        <span class="at-notification__count" id="header_notification_count"></span>
+                        <img class="" src="{% static 'ask_together/img/bell.png'  %}" alt="Notifications"/>
+                        <span class="at-notification__count at-hidden" id="header_notification_count"></span>
                     </a>
                 
                     <a href="{% url 'ask_together:user_profile' request.user.id %}">
-                        <img class="at-avatar at-avatar-md at-avatar-ring" src="{% if request.user.profile_image %}{{request.user.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"/>
+                        <img 
+                            class="at-avatar at-avatar-md at-avatar-ring" 
+                            src="{% if request.user.profile_image %}
+                                {{request.user.profile_image.url}}
+                                {% else %}
+                                {% static 'ask_together/img/default_profile.jpg' %}
+                                {% endif %}" 
+                        />
                     </a>
                    
                 {% else %}
-                    <div class="at-auth at-nav-login" >
-                        <a href="{% url 'ask_together:login' %}" class="at-font-roboto at-btn at-btn-text">Login</a>
+                    <div class="at-auth" >
+                        <a href="{% url 'ask_together:login' %}" class="at-btn at-btn-text">Login</a>
                         <a href="{% url 'ask_together:signup' %}" class="at-btn at-btn-brand">Sign up</a>
                     </div>
                 {% endif %}
@@ -50,37 +54,18 @@
     </nav>
 </header>
 {% block script_block %}
-<script>
-    document.querySelector('.at-hamburger')?.addEventListener('click', () => {
-        let sidebar = document.querySelector('.at-sidebar')
-        let overlay = document.querySelector('.at-sidebar-overlay');
-        sidebar.classList.toggle('open');
-        overlay.classList.toggle('active');
-    });
+    <script>
+        document.addEventListener("DOMContentLoaded",()=>{
+            document.querySelector('.at-btn-hamburger')?.addEventListener('click', () => {
+                let sidebar = document.querySelector('.at-sidebar')
+                let overlay = document.querySelector('.at-sidebar-overlay');
+                sidebar?.classList.toggle('open');
+                overlay?.classList.toggle('active');
+            });
 
-    const fetchUnreadNotificationsCount = ()=>{
-        fetch(`{% url 'ask_together:get_notifications_count' %}?is_read=false`)
-        .then(res =>{
-                    if(res.ok){
-                        return res.json()
-                    }else{
-                        return res.json().then((err)=> {throw err})
-                    }
-            })
-        .then(data=>{
-            if(data.count !== 0){
-                let countEl = document.getElementById('header_notification_count')
-                countEl.innerHTML = data.count
-                countEl.classList.remove('d-none')
-            }
-        })
-        .catch(err=>{
-            console.error(err)
-            alert('Something went wrong, Please try again.')
-        })
-    }
-    if('{{user.is_authenticated}}'=== 'True'){
-        fetchUnreadNotificationsCount()
-    }
-</script>
+            {% if user.is_authenticated %}
+                fetchUnreadNotificationsCount(`{% url 'ask_together:get_notifications_count' %}?is_read=false`)
+            {% endif %}
+        })  
+    </script>
 {% endblock %}

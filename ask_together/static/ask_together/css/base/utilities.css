@@ -16,3 +16,15 @@
 .p-3 {
   padding: var(--space-3);
 }
+
+.at-hidden {
+  display: none !important;
+}
+
+.text-uppercase {
+  text-transform: uppercase;
+}
+
+.text-center {
+  text-align: center;
+}

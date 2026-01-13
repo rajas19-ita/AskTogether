@@ -1,0 +1,54 @@
+.at-login-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: auto;
+  width: 100%;
+  max-width: 400px;
+}
+
+.at-login__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.at-login__logo {
+  width: 60px;
+}
+
+.at-login__title {
+  font-size: var(--fs-h3);
+  margin-top: var(--space-1);
+}
+
+.at-separator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.at-separator__line {
+  flex-grow: 1;
+  border-top: 1px solid var(--color-border);
+}
+
+.at-separator__text {
+  font-size: var(--fs-h3);
+}
+
+.icon-google {
+  width: 32px;
+  height: 32px;
+}
+
+.at-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.at-login-form__label {
+  font-size: var(--fs-md);
+  color: var(--color-heading-dark);
+}

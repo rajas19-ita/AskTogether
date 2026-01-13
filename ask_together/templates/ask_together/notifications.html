@@ -18,35 +18,65 @@
                 <header class="at-notifications__header">
                     <h1 class="at-notifications__title">Notifications</h1>
                     <div class="at-tabs" role="tablist" aria-label="Notification tabs">
-                        <button class="at-btn at-btn-text at-btn-tabs active" data-type="unread" onClick="switchTab(this)">Unread</button>
-                        <button class="at-btn at-btn-text at-btn-tabs" data-type="read" onClick="switchTab(this)">Read</button>
+                        <button 
+                            class="at-btn at-btn-text at-btn-tabs active" 
+                            data-type="unread" 
+                            aria-selected="true"
+                            aria-controls="unread-panel"
+                            onClick="switchTab(this)">
+                            Unread
+                        </button>
+                        <button 
+                            class="at-btn at-btn-text at-btn-tabs" 
+                            aria-selected="false"
+                            aria-controls="read-panel"
+                            data-type="read"
+                            onClick="switchTab(this)"
+                            >
+                            Read
+                        </button>
                     </div>
                 </header>
-                <div class=" at-tab-content active" id="unread_notifications">
-                    <p class="text-center at-text-secondary d-none" id="no_unread_msg">
+                <section class=" at-tab-content active" id="unread_panel" role="tabpanel">
+                    <p class="at-empty-state d-none" id="no_unread_msg">
                         No Unread Notifications
                     </p>
-                    <img src={% static 'ask_together/img/loading_gif.gif' %} class="align-self-center d-none" id="unread_loading_gif" style=""/>
-                    <button class="at-btn at-btn-text d-none" id="load_more_unread" onClick="loadMoreNotifications(this, 'unread')">Load More</button>
-                </div> 
-                <div class=" at-tab-content" id="read_notifications">
-                    <p class="text-center at-text-secondary d-none" id="no_read_msg">
+                    <img 
+                        src={% static 'ask_together/img/loading_gif.gif' %}
+                        alt="Loading"
+                        class="at-loader d-none" 
+                        id="unread_loading_gif" 
+                    />
+                    <button 
+                        class="at-btn at-btn-text d-none" 
+                        id="load_more_unread" 
+                        onClick="loadMoreNotifications(this, 'unread')">
+                        Load More
+                    </button>
+                </section> 
+                <section 
+                    class="at-tab-content" 
+                    id="read_panel" 
+                    role="tabpanel"
+                    hidden>
+                    <p class="at-empty-state d-none" id="no_read_msg">
                         No Read Notifications
                     </p>
-                    <img src={% static 'ask_together/img/loading_gif.gif' %} class="align-self-center d-none" id="read_loading_gif" style=""/>
-                    <button class="at-btn at-btn-text d-none" id="load_more_read" onClick="loadMoreNotifications(this, 'read')">Load More</button>
-                </div>     
+                    <img 
+                        src={% static 'ask_together/img/loading_gif.gif' %} 
+                        alt="Loading"
+                        class="at-loader d-none" 
+                        id="read_loading_gif"/>
+                    <button 
+                        class="at-btn at-btn-text d-none" 
+                        id="load_more_read" 
+                        onClick="loadMoreNotifications(this, 'read')">
+                        Load More
+                    </button>
+                </section>     
             </div>
         </div>
     </main>
-    {% comment %} <div class="container min-vh-100">
-        <div class="at-layout">
-            <main class="pb-4 px-md-4 flex-grow-1 d-flex flex-column">
-                <div class="w-100 d-flex flex-column gap-3 ps-sm-5" style="max-width:650px">
-                </div>
-            </main>
-        </div>
-    </div> {% endcomment %}
 {% endblock %}
 
 {% block script_block %}
@@ -62,19 +92,28 @@
     const switchTab = (button)=>{
         let type = button.dataset.type
 
-        tabs.forEach((btn)=>btn.classList.remove('active'))
-        tabContents.forEach((tabC=>tabC.classList.remove('active')))
+        tabs.forEach((btn)=>{
+            btn.classList.remove('active')
+            btn.ariaSelected = "false"
+        })
+        tabContents.forEach((tabC)=>{
+            tabC.classList.remove('active')
+            tabC.hidden = true
+        })
 
 
         button.classList.add('active')
-        document.getElementById(`${type}_notifications`).classList.add('active')
+        button.ariaSelected = "true" 
+        const panel = document.getElementById(`${type}_panel`) 
+        panel.classList.add('active')
+        panel.hidden = false
     }
 
     const notificationSVG = (notification)=>{
         switch(notification.event_type){
             case 'ANSWER_POSTED':
                 return `
-                    <div class="col-1 d-flex justify-content-center align-self-start mt-1">
+                    <div class="at-notification-card__icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                             <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                             <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
@@ -83,27 +122,25 @@
             case 'COMMENT_ON_QUESTION':
             case 'COMMENT_ON_ANSWER':
                 return `
-                    <div class="col-1 d-flex justify-content-center align-self-start mt-2">    
+                    <div class="at-notification-card__icon mt-2">    
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-chat-left" viewBox="0 0 16 16">
                             <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
                         </svg>
                     </div>`
             case 'ANSWER_SELECTED':
                 return `
-                    <div class="col-1 d-flex justify-content-center align-self-start mt-1">
+                    <div class="at-notification-card__icon mt-1">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="34" height="34" viewBox="0 0 20 20" class="">
                             <path d="M8.294 16.998c-.435 0-.847-.203-1.111-.553L3.61 11.724a1.392 1.392 0 0 1 .27-1.951 1.392 1.392 0 0 1 1.953.27l2.351 3.104 5.911-9.492a1.396 1.396 0 0 1 1.921-.445c.653.406.854 1.266.446 1.92L9.478 16.34a1.39 1.39 0 0 1-1.12.656c-.022.002-.042.002-.064.002z"/>
                         </svg>
                     </div>`
             case 'UPVOTE_MILESTONE':
                 return `
-                    <div class="col-1 d-flex justify-content-center align-self-start mt-1">
-                        <div class="d-flex flex-column align-items-center">
+                    <div class="at-notification__badge mt-1">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
                                 <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
                             </svg>
-                            <span class="fw-bold small" >${notification.upvotes}</span>
-                        </div>
+                            <span>${notification.upvotes}</span>
                     </div>`
         }
     }
@@ -128,30 +165,29 @@
     
     }
     const addNotificationToUI = (notification, type)=>{
-        const container = document.getElementById(`${type}_notifications`)
+        const container = document.getElementById(`${type}_panel`)
 
-        const wrapper = document.createElement('div')
-        wrapper.className = "px-2 py-2 row border g-0 gap-2 rounded-1"
+        const wrapper = document.createElement('article')
+        wrapper.className = "at-notification-card"
 
         wrapper.innerHTML = `
                 ${notificationSVG(notification)}
-                <div class="col-9 d-flex flex-column">
-                    <p class="at-font-roboto fs-6 mb-0">
-                        <a href=${'{% url "ask_together:question_detail" 0 %}'.replace('0',notification.question.id)} target="_blank" class="text-decoration-none">
+                <div class="at-notification__content">
+                    <p class="at-notification__message">
+                        <a href=${'{% url "ask_together:question_detail" 0 %}'.replace('0',notification.question.id)} target="_blank">
                             ${notification.message}
                         </a>
                     </p>
-                    <span class="at-text-secondary small" data-dt="${notification.created_at}">
+                    <time class="at-notification__time" data-dt="${notification.created_at}">
                         ${timeAgo(notification.created_at)}
-                    </span>
+                    </time>
                 </div>
         `
         container.appendChild(wrapper)
     }
 
     const renderReadNotifications = (data)=>{
-        const container = document.getElementById(`read_notifications`)
-
+        const container = document.getElementById(`read_panel`)
         data.forEach((notification)=>addNotificationToUI(notification, 'read'))
 
         let loadMoreBtn = document.getElementById('load_more_read')
@@ -165,8 +201,9 @@
     }
 
     const renderUnreadNotifications = (data)=>{
-        const container = document.getElementById(`unread_notifications`)
-        
+        const container = document.getElementById(`unread_panel`)
+        console.log('unread_panel', container)
+
         data.forEach((notification)=>addNotificationToUI(notification, 'unread'))
         let loadMoreBtn = document.getElementById('load_more_unread')
         if(data.length){
@@ -206,10 +243,10 @@
     const loadMoreNotifications  = (button, type)=>{
         button.classList.add('d-none')
         if(type==='read'){ 
-            document.getElementById(`${type}_notifications`).append(readLoadingGif)
+            document.getElementById(`${type}_panel`).append(readLoadingGif)
             readLoadingGif.classList.remove('d-none')
         }else{
-            document.getElementById(`${type}_notifications`).append(unreadLoadingGif)
+            document.getElementById(`${type}_panel`).append(unreadLoadingGif)
             unreadLoadingGif.classList.remove('d-none')
         }
         fetchNotifications(type, type==='read'?nextRead:nextUnread)

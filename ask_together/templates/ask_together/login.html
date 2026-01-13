@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load icon_tags %}
 
 {% block title %}
     login
@@ -7,82 +8,75 @@
 
 {% block content %}
   {% include 'ask_together/includes/header.html' %}
-    <main class=" min-vh-100" >
-      <div class="container">
-        <div class="d-flex min-vh-100 flex-column align-items-center mt-5 row">
-          <div class="d-flex flex-column mb-7 mt-3 col-9 col-md-6 col-xl-3 gap-3">
-            {% if request.GET.ssrc == 'ask_question' %}
-                <div class="alert alert-info text-center mb-0">
-                    You must be logged in to ask a question.
-                </div>
-            {% elif request.GET.ssrc == 'vote' %}
-                <div class="alert alert-info text-center mb-0">
-                    You must be logged in to vote.
-                </div>
-            {% elif request.GET.ssrc == 'add_comment' %}
-                <div class="alert alert-info text-center mb-0">
-                    You must be logged in to add a comment.
-                </div>
-            {% elif request.GET.ssrc == 'post_answer' %}
-                <div class="alert alert-info text-center mb-0">
-                    You must be logged in to post an answer.
-                </div>
-            {% endif %}
-            {% if messages %}
-                <div class=" alert alert-danger text-center mb-0">
-                  <ul class="list-unstyled mb-0">
-                    {% for message in messages %}
-                    <li class="text-decoration-none">{{message}}</li>
-                    {% endfor %}
-                  </ul>
-                </div>
-            {% endif %}
-            {% if form.non_field_errors %}
-              <div class=" alert alert-danger text-center">
-                  <p class="mb-0">Invalid username/password</p>
-              </div>
-            {% endif %}
-
-            <div class="d-flex flex-column gap-1">
-                <img src="{% static 'ask_together/img/logo_b.png' %}" style="width:60px;"/>
-                <h2 class="fs-3 mt-1">Sign-In</h2>
+    <main>
+        <div class="layout">
+            <div class="at-sidebar-wrapper">
+                {% include 'ask_together/includes/sidebar.html' %}
             </div>
-            <a class="at-btn at-btn-google" href="{% url 'ask_together:google_login' %}">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="32px" height="32px"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
-                Continue with google
-            </a>
-            <div class="d-flex align-items-center gap-2">
-                <div class="flex-grow-1 border-top"></div>
-                    <span class="fs-5">or</span>
-                <div class="flex-grow-1 border-top"></div>
-            </div>
-            <form method="post" action="{% url 'ask_together:login' %}" class="d-flex flex-column gap-3">
-                {% csrf_token %}
-                <div class="d-flex flex-column">
-                    <label for="email" class="fs-6 at-heading-color-dark ">Email</label>
-                    <input type="email" name="username" id="email" maxlength="254" required="" placeholder="Enter Email" class="at-form-input">
-                </div>
+            <div class="at-sidebar-overlay"></div>
+            <div class="at-content-container">
+                <div class="at-login-card">
+                    {% if info_message %}
+                        <div class="at-alert at-alert--info text-center mb-0">{{ info_message }}</div>
+                    {% endif %}
                 
-                <div class="d-flex flex-column mb-2">
-                    <label for="id_password" class="fs-6 at-heading-color-dark ">Password</label>
-                    <input type="password" name="password" autocomplete="current-password" required="" id="id_password" placeholder="Enter Password"
-                    class="at-form-input">
-                </div>
-  
-                {% if request.GET.next %}
-                  <input type="hidden" name="next" value="{{ request.GET.next }}">
-                {% endif %}
-                
-                <button type="submit" class="at-btn at-btn-brand at-btn-lg text-uppercase">Login</button>
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class=" at-alert text-center">
+                                {{message}}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            <div class=" at-alert text-center">
+                                {{error}}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+        
+                    <header class="at-login__header">
+                        <img src="{% static 'ask_together/img/logo_b.png' %}" class="at-login__logo" alt="AskTogether"/>
+                        <h1 class="at-login__title">Sign-In</h1>
+                    </header>
+                    <a class="at-btn at-btn-google" href="{% url 'ask_together:google_login' %}">
+                        {% icon 'icon-google' 'icon-google' %}
+                        Continue with google
+                    </a>
+                    <div class="at-separator">
+                        <span class="at-separator__line " aria-hidden="true"></span>
+                        <span class="at-separator__text ">or</span>
+                        <span class="at-separator__line" aria-hidden="true"></span>
+                    </div>
+                    <form method="post" action="{% url 'ask_together:login' %}" class="at-login-form">
+                        {% csrf_token %}
+                        <div class="">
+                            <label for="email" class="at-login-form__label">Email</label>
+                            <input type="email" name="username" id="email" maxlength="254" required="" placeholder="Enter Email" class="at-form-input">
+                            {% for error in form.username.errors %}
+                                <p class="at-form-error">{{error}}</p>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-2">
+                            <label for="id_password" class="at-login-form__label ">Password</label>
+                            <input type="password" name="password" autocomplete="current-password" required="" id="id_password" placeholder="Enter Password"
+                            class="at-form-input">
+                            {% for error in form.password.errors %}
+                                <p class="at-form-error">{{error}}</p>
+                            {% endfor %}
+                        </div>
             
-                <p class="mb-0 ">Don't have an account? <a href="{% url 'ask_together:signup' %}" class="at-text-brand-primary">Sign up</a></p>
-            </form> 
-          </div>
-        </div>    
-      </div>
+                        {% if request.GET.next %}
+                            <input type="hidden" name="next" value="{{ request.GET.next }}">
+                        {% endif %}
+                        
+                        <button type="submit" class="at-btn at-btn-brand at-btn--lg text-uppercase">Login</button>
+                    
+                        <p>Don't have an account? <a href="{% url 'ask_together:signup' %}">Sign up</a></p>
+                    </form> 
+                </div>
+            </div>
+        </div>
     </main>
-    <div class="at-sidebar-login">
-        {% include "ask_together/includes/sidebar.html" %}
-    </div>
-    <div class="at-sidebar-overlay"></div>
 {% endblock %}
