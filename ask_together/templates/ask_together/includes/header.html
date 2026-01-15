@@ -35,11 +35,7 @@
                     <a href="{% url 'ask_together:user_profile' request.user.id %}">
                         <img 
                             class="at-avatar at-avatar-md at-avatar-ring" 
-                            src="{% if request.user.profile_image %}
-                                {{request.user.profile_image.url}}
-                                {% else %}
-                                {% static 'ask_together/img/default_profile.jpg' %}
-                                {% endif %}" 
+                            src="{% if request.user.profile_image %}{{request.user.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}" 
                         />
                     </a>
                    

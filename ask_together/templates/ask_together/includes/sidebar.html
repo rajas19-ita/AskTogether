@@ -19,7 +19,9 @@
     <nav class="at-sidebar__nav" aria-label="Main">
         <ul class="at-sidebar__list">
             <li>
-                <a class="at-sidebar__link {% if request.resolver_match.url_name == 'home' %}is-active{% endif %}" href="{% url 'ask_together:home' %}" >
+                <a class="at-sidebar__link {% if request.resolver_match.url_name == 'home' %}is-active{% endif %}" href="{% url 'ask_together:home' %}" 
+                    {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}
+                >
                     {% icon 'bi-house' 'icon-house' %}
                     <span>Home</span>
                 </a>
@@ -30,19 +32,21 @@
                 {% else %}
                     {% url 'ask_together:login' as bookmark_url %}
                 {% endif %}
-                <a class="at-sidebar__link {% if request.resolver_match.url_name == 'saved_questions' %}is-active{% endif %}" href="{{bookmark_url}}">
+                <a class="at-sidebar__link {% if request.resolver_match.url_name == 'saved_questions' %}is-active{% endif %}" href="{{bookmark_url}}"
+                    {% if request.resolver_match.url_name == 'saved_questions' %}aria-current="page"{% endif %}
+                >
                     {% icon 'bi-bookmark' 'icon-bookmark' %}
                     <span>Saves</span>
                 </a>
             </li>
             <li>
-                <a class="at-sidebar__link {% if request.resolver_match.url_name == 'users' %}is-active{% endif %}">
+                <a class="at-sidebar__link {% if request.resolver_match.url_name == 'users' %}is-active{% endif %}" href="#">
                     {% icon 'bi-people' 'icon-people' %}          
                     <span>Users</span>   
                 </a>
             </li>
             <li>
-                <a class="at-sidebar__link {% if request.resolver_match.url_name == 'leaderboard' %}is-active{% endif %}">
+                <a class="at-sidebar__link {% if request.resolver_match.url_name == 'leaderboard' %}is-active{% endif %}" href="#">
                     {% icon 'bi-trophy' 'icon-trophy' %}
                     <span>Leaderboard</span>
                 </a>
@@ -53,7 +57,9 @@
         <nav aria-label="Account">
             <ul class="at-sidebar__list">
                 <li>
-                    <a class="at-sidebar__link {% if request.resolver_match.url_name == 'user_profile' %}is-active{% endif %}"  href="{% url 'ask_together:user_profile' request.user.id %}">
+                    <a class="at-sidebar__link {% if request.resolver_match.url_name == 'user_profile' %}is-active{% endif %}"  href="{% url 'ask_together:user_profile' request.user.id %}"
+                        {% if request.resolver_match.url_name == 'user_profile' %}aria-current="page"{% endif %}
+                    >
                         {% icon 'bi-person' 'icon-person' %}
                         <span class="">Profile</span>
                     </a>

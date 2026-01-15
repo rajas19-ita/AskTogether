@@ -56,6 +56,10 @@ function saveQuestion(button) {
   const method = wasSaved ? "DELETE" : "POST";
 
   button.dataset.saved = (!wasSaved).toString();
+  button.setAttribute(
+    "aria-label",
+    wasSaved ? "Save question" : "Unsave question"
+  );
   button.disabled = true;
 
   fetch(url, {
@@ -75,6 +79,10 @@ function saveQuestion(button) {
     })
     .then((data) => {
       button.dataset.saved = data.saved.toString();
+      button.setAttribute(
+        "aria-label",
+        !data.saved ? "Save question" : "Unsave question"
+      );
 
       notyfCenter.success(
         data.saved === true ? "Question Saved" : "Question Unsaved"
@@ -82,6 +90,10 @@ function saveQuestion(button) {
     })
     .catch((err) => {
       button.dataset.saved = wasSaved.toString();
+      button.setAttribute(
+        "aria-label",
+        wasSaved ? "Unsave question" : "Save question"
+      );
 
       notyfCenter.error("Some error occurred");
     })

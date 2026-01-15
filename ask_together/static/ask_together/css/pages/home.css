@@ -20,6 +20,12 @@
   color: var(--color-heading-dark);
 }
 
+.icon-stars {
+  width: 26px;
+  height: 26px;
+  fill: currentColor;
+}
+
 .at-home-hero__message {
   font-size: var(--fs-md);
   margin-left: var(--space-1);
@@ -28,6 +34,11 @@
 
 .at-home-feed__header {
   margin-bottom: var(--space-2);
+}
+
+.at-home-feed__meta {
+  display: flex;
+  justify-content: space-between;
 }
 
 .at-home-feed__stats {
@@ -74,6 +85,14 @@
 
 .at-bookmark-icon--fill {
   display: none;
+}
+
+.bookmark-icon,
+.icon-check,
+.icon-dot {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
 }
 
 .at-bookmark-btn[data-saved="true"] .at-bookmark-icon--outline {
@@ -146,23 +165,23 @@
 .filter-btn {
   position: relative;
   padding: 8px 14px;
-  font-size: 14px;
+  font-size: var(--fs-sm);
   font-weight: 500;
-  color: #4b5563;
+  color: var(--color-text-tertiary);
   text-decoration: none;
   border-radius: 6px 6px 0 0;
   transition: color 0.15s ease, background-color 0.15s ease;
 }
 
 .filter-btn:hover {
-  color: #111827;
-  background-color: #f9fafb;
+  color: var(--color-text-strong);
+  background-color: var(--color-surface-hover);
 }
 
 .filter-btn.active {
-  color: #2563eb;
-  background-color: #eff6ff;
-  border-bottom: 2px solid #2563eb;
+  color: var(--color-primary);
+  background-color: var(--color-filter-active-bg);
+  border-bottom: 2px solid var(--color-primary);
 }
 
 @media (min-width: 786px) {

@@ -6,6 +6,9 @@
   --color-primary-dark: #1d4ed8;
   --color-text-primary: #3c3c3c;
   --color-text-secondary: #555a60;
+  --color-text-tertiary: #4b5563;
+  --color-text-strong: #111827;
+  --color-surface-hover: #f9fafb;
   --color-heading: #333333;
   --color-heading-dark: #1f1f1f;
   --color-white: #ffffff;
@@ -15,6 +18,7 @@
   --color-alert-border: #f1aeb5;
   --color-alert-text: #58151c;
   --color-alert-bg: #f8d7da;
+  --color-filter-active-bg: #eff6ff;
   --color-bg-muted: #e9ecef;
   --color-bg: #f9fafc;
   --color-bg-tertiary: #f8f9fa;

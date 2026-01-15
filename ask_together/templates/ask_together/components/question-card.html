@@ -1,4 +1,5 @@
 {% load static %}
+{% load icon_tags %}
 
 <article class="at-question-card">
     <header class="at-question-card__header">
@@ -9,20 +10,16 @@
         </h3>
         
         {% if request_user.is_authenticated %}
-        {{csrf_token}}
             <button 
                 onClick="saveQuestion(this)"
                 data-id="{{question.id}}"
                 data-url="{% url 'ask_together:save_question' question.id %}"
-                data-saved="{{is_saved|yesno:'true,false'}}" 
+                data-saved="{{question.is_saved|yesno:'true,false'}}"
+                aria-label="{% if question.is_saved %}Unsave{% else %}Save{% endif %} question"
                 class="at-btn at-bookmark-btn " 
             >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark at-bookmark-icon--outline" viewBox="0 0 16 16">
-                    <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
-                </svg>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark-fill at-bookmark-icon--fill" viewBox="0 0 16 16">
-                    <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2"/>
-                </svg>
+                {% icon 'card-bookmark-outline' 'bookmark-icon at-bookmark-icon--outline' %}
+                {% icon 'card-bookmark-fill' 'bookmark-icon at-bookmark-icon--fill' %}
             </button>
         {% endif %}
     </header>
@@ -33,18 +30,15 @@
         <div class="at-question-card__stats">
             {% if question.accepted_answer_id %}
                 <span class="at-question-card__stat is-accepted">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
-                        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
-                    </svg> {{question.answers_count}} answers
+                    {% icon 'bi-check-lg' 'icon-check' %}
+                    {{question.answers_count}} answers
                 </span>
             {% else %}
                 <span class="at-question-card__stat">
                     {{question.answers_count}} answers
                 </span>
             {% endif %}
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
-                <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
-            </svg>
+            {% icon 'bi-dot' 'icon-dot' %}
             <span class="at-question-card__stat">
                 {{question.total_votes}} votes
             </span>
