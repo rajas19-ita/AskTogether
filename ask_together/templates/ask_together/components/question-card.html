@@ -45,16 +45,17 @@
         </div>
         <div class="at-question-card__author">
             <div class="at-question-card__author-main">
-                <img class="at-avatar at-avatar-sm" src="{% if question.user.profile_image %}{{question.user.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"/>
+                <img class="at-avatar at-avatar-sm" src="{% if question.user.profile_image %}{{question.user.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"
+                alt="{{question.user.username}} profile" loading="lazy"/>
                 <a class="at-question-card__author-name"href="{% url 'ask_together:user_profile' question.user.id %}">
                     {{question.user.username}}
                 </a>
             </div>
             <div class="at-question-card__meta">
                 <span>asked</span>
-                <span class="datetime" data-dt="{{ question.created_at|date:'c' }}">
+                <time class="datetime" datetime="{{question.created_at|date:'c'}}" data-dt="{{ question.created_at|date:'c' }}">
                     {{ question.created_at|date:"M d, Y H:i" }}
-                </span>
+                </time>
             </div>
         </div>
     </footer>

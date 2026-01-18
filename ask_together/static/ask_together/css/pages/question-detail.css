@@ -17,6 +17,12 @@
   padding-top: var(--space-5);
 }
 
+.at-question__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
 .at-question__content {
   display: flex;
   flex-direction: column;

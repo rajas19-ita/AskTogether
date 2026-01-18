@@ -6,8 +6,16 @@
     </div>
     <div class="at-comments__actions d-flex gap-4">
         {% if request_user.is_authenticated %}
-            <button data-btn="show" id="{{type}}{{id}}_comment_btn" class="at-btn-text-comment small" 
-            onClick="handleCommentFormDisplay('{{type}}',{{id}},this)">Add a comment</button>
+            <button 
+                id="{{type}}{{id}}_comment_btn" 
+                class="at-btn-text-comment small" 
+                data-comment-form-display 
+                data-btn="show" 
+                data-type="{{type}}"
+                data-id = "{{id}}"
+            >
+                Add a comment
+            </button>
         {% else %}
             <a href="{% url 'ask_together:login' %}?ssrc=add_comment" class="at-text-brand-primary text-decoration-none small">
                 Add a comment
