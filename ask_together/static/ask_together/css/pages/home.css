@@ -92,8 +92,7 @@
 }
 
 .bookmark-icon,
-.icon-check,
-.icon-dot {
+.icon-check {
   width: 16px;
   height: 16px;
   fill: currentColor;
@@ -174,7 +173,9 @@
   color: var(--color-text-tertiary);
   text-decoration: none;
   border-radius: 6px 6px 0 0;
-  transition: color 0.15s ease, background-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
 }
 
 .filter-btn:hover {

@@ -55,7 +55,7 @@ ul {
   font-weight: normal;
 }
 
-.at-btn--xs{
+.at-btn--xs {
   padding: 0.25rem 0.5rem;
 }
 
@@ -81,6 +81,14 @@ ul {
   color: var(--color-primary-dark) !important;
 }
 
+.at-btn-text--comment {
+  letter-spacing: -0.1px;
+  font-weight: 400;
+  padding: 0;
+  font-size: var(--fs-sm);
+  color: var(--color-primary);
+}
+
 .at-btn-brand {
   color: var(--color-white);
   background-color: var(--color-primary);
@@ -100,7 +108,9 @@ ul {
   border-radius: var(--radius-md);
   background-color: var(--color-white);
   cursor: pointer;
-  transition: box-shadow 0.2s, transform 0.1s;
+  transition:
+    box-shadow 0.2s,
+    transform 0.1s;
   text-decoration: none;
 }
 
@@ -115,6 +125,12 @@ ul {
 .at-icon {
   width: 24px;
   height: 24px;
+  fill: currentColor;
+}
+
+.icon-dot {
+  width: 16px;
+  height: 16px;
   fill: currentColor;
 }
 
@@ -134,7 +150,9 @@ ul {
   padding: var(--space-2) var(--space-3);
 
   outline: none;
-  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  transition:
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .at-form-input::placeholder {
@@ -230,14 +248,6 @@ ul {
   font-weight: normal;
 }
 
-.at-btn-text-comment {
-  color: var(--color-primary);
-  border: none;
-  padding: 0;
-  margin: 0;
-  background-color: transparent;
-}
-
 .at-btn-tabs::after {
   content: "";
   display: block;
@@ -321,17 +331,6 @@ ul {
   display: flex;
 }
 
-
-
-
-
-.at-btn-plain {
-  background-color: transparent;
-  padding: 0;
-  font-weight: 400;
-}
-
-
 .at-content-container {
   flex: 1;
   padding: 2rem;
@@ -360,7 +359,6 @@ pre {
   word-break: break-word !important;
 }
 
-
 @media (min-width: 1200px) {
   .at-btn-hamburger {
     display: none;
@@ -383,9 +381,6 @@ pre {
   }
   .at-content-container {
     padding: 2rem 0.5rem;
-  }
-  .at-user-label {
-    display: none;
   }
   .at-avatar-profile {
     width: 100px;

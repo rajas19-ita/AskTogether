@@ -53,6 +53,10 @@
   color: var(--color-text-secondary);
 }
 
+.label-dot {
+  display: none;
+}
+
 .at-question__author {
   display: flex;
   align-items: center;
@@ -75,6 +79,34 @@
 .at-answer-form__label {
   font-size: var(--fs-xl);
   margin-bottom: var(--space-2);
+}
+
+.icon-accept {
+  width: 40px;
+  height: 40px;
+}
+
+.icon-accept--true {
+  fill: var(--color-success);
+}
+
+.icon-accept--false {
+  fill: var(--search-placeholder);
+  opacity: 50;
+}
+
+.at-btn-accept[data-accepted="True"] .icon-accept--false {
+  display: none;
+}
+
+.at-btn-accept[data-accepted="False"] .icon-accept--true {
+  display: none;
+}
+
+.icon-qbookmark {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
 }
 
 .at-qbookmark-btn {
@@ -104,5 +136,9 @@
   .at-question__meta {
     flex-direction: row;
     align-items: center;
+  }
+
+  .label-dot {
+    display: block;
   }
 }

@@ -4,11 +4,11 @@
             {% include 'ask_together/components/comment.html' with comment=comment only %}
         {% endfor %}
     </div>
-    <div class="at-comments__actions d-flex gap-4">
+    <div class="at-comments__actions">
         {% if request_user.is_authenticated %}
             <button 
                 id="{{type}}{{id}}_comment_btn" 
-                class="at-btn-text-comment small" 
+                class="at-btn at-btn-text at-btn-text--comment" 
                 data-comment-form-display 
                 data-btn="show" 
                 data-type="{{type}}"
@@ -17,20 +17,44 @@
                 Add a comment
             </button>
         {% else %}
-            <a href="{% url 'ask_together:login' %}?ssrc=add_comment" class="at-text-brand-primary text-decoration-none small">
+            <a href="{% url 'ask_together:login' %}?ssrc=add_comment" class="at-comments__link">
                 Add a comment
             </a>
         {% endif %}
         {% if has_more_comments %}
-            <button  class="at-btn-text-comment small" data-last-comment-id="{{last_comment_id}}"  onClick="fetchMoreComments('{{type}}', {{id}},this)">Show more comments</button>
+            <button  
+                class="at-btn at-btn-text at-btn-text--comment" 
+                data-last-comment-id="{{last_comment_id}}"
+                data-fetch-comments
+                data-type="{{type}}"
+                data-id="{{id}}" 
+                data-url = "{% url 'ask_together:get_comments' %}" 
+            >
+                Show more comments
+            </button>
         {% endif %}
     </div>
-    <form id="{{type}}{{id}}_comment_form" class="d-none" onSubmit="handleCommentSubmit(event, '{{type}}', {{id}}, this)">
-        <textarea name="content" id="{{type}}{{id}}_comment_content" class="w-100 p-2 at-form-input"></textarea>
+    <form 
+        id="{{type}}{{id}}_comment_form" 
+        class="at-hidden" 
+        data-comment-form
+        data-type="{{type}}"
+        data-id="{{id}}"
+        data-url="{% url 'ask_together:comment_create' %}"
+    >
+        <textarea name="content" id="{{type}}{{id}}_comment_content" class="at-form-input"></textarea>
         <div class="at-comments__form-actions">
             <button class="at-btn at-btn-brand at-btn-sm" type="submit">Add Comment</button>
-            <button class="at-btn-text-comment small" type="button" data-btn="cancel"
-            onClick="handleCommentFormDisplay('{{type}}',{{id}},this)">Cancel</button>
+            <button 
+                class="at-btn at-btn-text at-btn-text--comment" 
+                type="button"
+                data-cancel-comment 
+                data-btn="cancel"
+                data-type="{{type}}"
+                data-id="{{id}}"
+            >
+                Cancel
+            </button>
         </div>    
     </form>
 </section>

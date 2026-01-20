@@ -28,3 +28,12 @@
   gap: var(--space-2);
   margin-top: var(--space-1);
 }
+
+.at-comments__actions {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.at-comments__link {
+  font-size: var(--fs-sm);
+}
