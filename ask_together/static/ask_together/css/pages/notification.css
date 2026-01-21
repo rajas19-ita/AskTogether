@@ -24,13 +24,6 @@
   width: 40px;
 }
 
-.at-tab-content {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 700px;
-}
-
 .at-notification-card {
   display: grid;
   grid-template-columns: 0.8fr 8fr;

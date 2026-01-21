@@ -22,6 +22,20 @@
   margin-bottom: var(--space-2);
 }
 
+.icon-link {
+  width: 26px;
+  height: 26px;
+  fill: currentColor;
+}
+
+.icon-twitter,
+.icon-github,
+.icon-location {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
 .at-profile__links {
   list-style-type: none;
   margin: 0;

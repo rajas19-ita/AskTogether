@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load icon_tags %}
 
 {% block title %}
     Edit Profile
@@ -21,17 +22,18 @@
                         <legend class="at-form-section__title">Profile</legend>
                         <div class="at-profile-form__grid">
                             <div class="at-edit-avatar">
-                                <img id="profile_image" src="{% if object.profile_image %}{{object.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}" class="img-thumbnail at-avatar-profile"/>
+                                <img id="profile_image" src="{% if object.profile_image %}{{object.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}" class="at-avatar-profile"/>
                                 <div class="at-edit-avatar__actions">
                                     <label for="id_profile_image" class="at-btn at-btn-sm at-btn-outline-secondary " >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
-                                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
-                                        </svg>
+                                        {% icon 'bi-pencil' 'at-icon at-icon--sm' %}
                                     </label>
-                                    <button type="button" class="at-btn at-btn-sm at-btn-outline-secondary d-none" id="clear_img_change">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-                                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-                                        </svg>
+                                    <button 
+                                        type="button" 
+                                        class="at-btn at-btn-sm at-btn-outline-secondary at-hidden" 
+                                        id="clear_img_change"
+                                        data-img-src="{% if object.profile_image %}{{object.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}" 
+                                        data-clear-img>
+                                        {% icon 'bi-clear' 'at-icon at-icon--sm' %}
                                     </button>
                                 </div>
                             </div>
@@ -58,7 +60,7 @@
                         </div>
                     </fieldset> 
             
-                    <input type="file" name="profile_image" accept="image/*" id="id_profile_image" class=" d-none">
+                    <input type="file" name="profile_image" accept="image/*" id="id_profile_image" class=" at-hidden">
                  
 
                     <fieldset class="at-profile-form__section at-profile-form__section--single">
@@ -100,7 +102,7 @@
                             </div>
                         </div>
                     </fieldset>
-                    <button type="submit" class="at-btn at-btn-brand fw-normal align-self-start mt-1">Save Changes</button>
+                    <button type="submit" class="at-btn at-btn-brand align-self-start">Save Changes</button>
                     {% for error in form.non_field_errors %}
                         <p class="at-form-error">{{error}}</p>
                     {% endfor %}
@@ -108,30 +110,7 @@
             </div>
         </div>
     </main>
-    <script>
-        const profileImage = document.getElementById('profile_image')
-        const profileImgInput = document.getElementById('id_profile_image')
-        const clearImgChange = document.getElementById('clear_img_change')
-
-        profileImgInput.addEventListener('change',(e)=>{
-            const selectedFile =  profileImgInput.files[0]
-            const reader = new FileReader()
-
-            reader.onload = function(e){
-                profileImage.setAttribute('src',e.target.result)
-                clearImgChange.classList.remove('d-none')
-            }
-            reader.readAsDataURL(selectedFile)
-        })
-
-        clearImgChange.addEventListener('click',()=>{
-            if('{{object.profile_image}}'){
-                profileImage.src = '{% if object.profile_image %}{{object.profile_image.url}}{% endif %}'
-            }else {
-                profileImage.src = "{% static 'ask_together/img/default_profile.jpg' %}"
-            }
-            profileImgInput.value = ""
-            clearImgChange.classList.add('d-none')
-        })
-    </script>
+{% endblock %}
+{% block script_block %}
+    <script src="{% static 'ask_together/js/user-profile-edit.js' %}" defer></script>
 {% endblock %}

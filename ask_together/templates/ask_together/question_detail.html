@@ -106,6 +106,7 @@
     </main>
 {% endblock %}
 {% block script_block %}
+    <script src="{% static 'ask_together/js/question-detail.js' %}" defer></script>
     <script>
         document.addEventListener("DOMContentLoaded",()=>{
             formatUTCtoLocal()    

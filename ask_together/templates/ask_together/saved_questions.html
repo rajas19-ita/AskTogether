@@ -27,10 +27,11 @@
 {% endblock %}
 {% block script_block %}
     <script>
-        document.querySelectorAll('.datetime').forEach(el => {
-            const dt = el.dataset.dt;
-            el.textContent = `${timeAgo(dt)}`;
-        });
-        
+        document.addEventListener("DOMContentLoaded",()=>{
+            document.querySelectorAll('.datetime').forEach(el => {
+                const dt = el.dataset.dt;
+                el.textContent = `${timeAgo(dt)}`;
+            });
+        })
     </script>
 {% endblock %}

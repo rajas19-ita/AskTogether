@@ -1,0 +1,50 @@
+.account-setup {
+  justify-content: center;
+}
+
+.account-setup__card {
+  align-self: center;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.account-setup__logo {
+  width: 60px;
+}
+
+.account-setup__title {
+  font-size: var(--fs-h2);
+  margin-top: var(--space-1);
+}
+
+.account-setup__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.account-setup__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.account-setup__label {
+  font-size: var(--fs-md);
+  color: var(--color-text-secondary);
+}
+
+.acount-setup__message {
+  margin-top: var(--space-1);
+  font-size: var(--fs-md);
+}
+
+.account-setup__message--success {
+  color: var(--color-success);
+}
+
+.account-setup__message--danger {
+  color: var(--color-danger);
+}
