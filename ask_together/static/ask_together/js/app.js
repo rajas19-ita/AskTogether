@@ -50,101 +50,92 @@ const notyfCenter = new Notyf({
   },
 });
 
-function saveQuestion(button) {
+function setSavedUI(button, saved) {
+  button.dataset.saved = String(saved);
+  button.setAttribute(
+    "aria-label",
+    saved ? "Unsave Question" : "Save Question",
+  );
+}
+
+async function pJson(res) {
+  let data = null;
+  if (res.ok) {
+    data = await res.json();
+  } else {
+    const err = await res.json();
+    throw err;
+  }
+  return data;
+}
+
+async function saveQuestion(button) {
+  if (button.disabled) return;
+
   const wasSaved = button.dataset.saved === "true";
   const url = button.dataset.url;
   const method = wasSaved ? "DELETE" : "POST";
 
-  button.dataset.saved = (!wasSaved).toString();
-  button.setAttribute(
-    "aria-label",
-    wasSaved ? "Save question" : "Unsave question"
-  );
   button.disabled = true;
 
-  fetch(url, {
-    method,
-    headers: {
-      "X-CSRFToken": getCSRFToken(),
-    },
-  })
-    .then((res) => {
-      if (res.ok) {
-        return res.json();
-      } else {
-        return res.json().then((err) => {
-          throw err;
-        });
-      }
-    })
-    .then((data) => {
-      button.dataset.saved = data.saved.toString();
-      button.setAttribute(
-        "aria-label",
-        !data.saved ? "Save question" : "Unsave question"
-      );
-
-      notyfCenter.success(
-        data.saved === true ? "Question Saved" : "Question Unsaved"
-      );
-    })
-    .catch((err) => {
-      button.dataset.saved = wasSaved.toString();
-      button.setAttribute(
-        "aria-label",
-        wasSaved ? "Unsave question" : "Save question"
-      );
-
-      notyfCenter.error("Some error occurred");
-    })
-    .finally(() => {
-      button.disabled = false;
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: {
+        "X-CSRFToken": getCSRFToken(),
+      },
     });
+
+    const data = await pJson(res);
+
+    setSavedUI(button, data.saved);
+    notyfCenter.success(data.saved ? "Question Saved" : "Question Unsaved");
+  } catch (err) {
+    setSavedUI(button, wasSaved);
+    notyfCenter.error("Some error occurred");
+  } finally {
+    button.disabled = false;
+  }
 }
 
-function fetchUnreadNotificationsCount(url) {
-  fetch(url)
-    .then((res) => {
-      if (res.ok) {
-        return res.json();
-      } else {
-        return res.json().then((err) => {
-          throw err;
-        });
-      }
-    })
-    .then((data) => {
-      if (data.count !== 0) {
-        let countEl = document.getElementById("header_notification_count");
-        countEl.innerHTML = data.count;
-        countEl.classList.remove("at-hidden");
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-    });
+async function fetchUnreadNotificationsCount(url) {
+  try {
+    const res = await fetch(url);
+
+    const data = await pJson(res);
+
+    if (data.count <= 0) return;
+
+    let countEl = document.getElementById("header_notification_count");
+
+    countEl.textContent = String(data.count);
+    countEl.classList.remove("at-hidden");
+  } catch (err) {
+    console.error(err);
+  }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const sidebar = document.querySelector(".at-sidebar");
-  const overlay = document.querySelector(".at-sidebar-overlay");
+// sidebar close
 
-  sidebar?.addEventListener("click", (e) => {
-    if (e.target.closest("a")) {
-      sidebar?.classList.remove("open");
-      overlay?.classList.remove("active");
-    }
-  });
+const sidebar = document.querySelector(".at-sidebar");
+const overlay = document.querySelector(".at-sidebar-overlay");
+const closeBtn = document.querySelector(".at-sidebar-close");
 
-  overlay?.addEventListener("click", () => {
-    sidebar?.classList.remove("open");
-    overlay.classList.remove("active");
-  });
+function closeSidebar() {
+  sidebar?.classList.remove("open");
+  overlay?.classList.remove("active");
+}
 
-  document
-    .querySelector(".at-sidebar-close")
-    ?.addEventListener("click", (e) => {
-      sidebar?.classList.remove("open");
-      overlay?.classList.remove("active");
-    });
+sidebar?.addEventListener("click", (e) => {
+  if (e.target.closest("a")) closeSidebar;
+});
+overlay?.addEventListener("click", closeSidebar);
+closeBtn?.addEventListener("click", closeSidebar);
+
+document.addEventListener("click", (e) => {
+  const saveBtn = e.target.closest("[data-save]");
+
+  if (saveBtn) {
+    saveQuestion(saveBtn, saveBtn.dataset.id);
+  }
 });

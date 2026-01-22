@@ -1,124 +1,131 @@
-const addAnswerToUI = (answer) => {
+const formEl = document.getElementById("answer_form");
+
+function addAnswerToUI(answer) {
   const container = document.getElementById("answer_container");
   container.insertAdjacentHTML("beforeend", answer);
   formatUTCtoLocal(container);
-};
+}
 
-const handleSubmit = (e) => {
-  e.preventDefault();
+function removeFormError(formEl) {
+  formEl.querySelector(".at-error-msg")?.remove();
+}
 
-  const formEl = e.target;
-
-  const answer = formEl.querySelector("#id_content").value;
-
-  fetch(`${formEl.dataset.url}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRFToken": getCSRFToken(),
-    },
-    body: JSON.stringify({
-      content: answer,
-      question: parseInt(formEl.dataset.id),
-    }),
-  })
-    .then((res) => {
-      if (res.ok) {
-        return res.json();
-      } else {
-        return res.json().then((err) => {
-          throw err;
-        });
-      }
-    })
-    .then((data) => {
-      //remove form error on success and reset form
-      formEl.querySelector(".at-error-msg")?.remove();
-      formEl.reset();
-      const iframe = document.getElementById("id_content_iframe");
-      const editable = iframe.contentDocument.querySelector(".note-editable");
-      if (editable) {
-        editable.innerHTML = "";
-      }
-
-      //update answer count
-      const countEl = document.getElementById("answer_count");
-      if (countEl) {
-        let current = parseInt(countEl.textContent);
-        if (!isNaN(current)) {
-          let newCount = current + 1;
-          countEl.textContent = `${newCount} Answer${newCount !== 1 ? "s" : ""}`;
-        }
-      }
-
-      //add answer to UI
-      addAnswerToUI(data.html);
-    })
-    .catch((err) => {
-      const p = document.createElement("p");
-      p.className = "at-error-msg text-danger mb-1";
-      if (err.content) {
-        p.textContent = err.content[0];
-      } else {
-        p.textContent = "some error occurred";
-      }
-      formEl.appendChild(p);
-    });
-};
-
-const handleVote = (type, id, action, button) => {
-  let actionMap = { upvote: 1, downvote: -1 };
-  let value = actionMap[action];
-
-  if (button.classList.contains("active")) {
-    action = "remove";
+function clearSummernote() {
+  const iframe = document.getElementById("id_content_iframe");
+  const editable = iframe.contentDocument.querySelector(".note-editable");
+  if (editable) {
+    editable.innerHTML = "";
   }
+}
 
-  fetch(`${button.dataset.url}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRFToken": getCSRFToken(),
-    },
-    body: JSON.stringify({ action }),
-  })
-    .then((res) => {
-      if (res.ok) {
-        return res.json();
-      } else {
-        return res.json().then((err) => {
-          throw err;
-        });
-      }
-    })
-    .then((data) => {
-      let activeAction = "";
-      document.querySelectorAll(`.${type + id}-vote-btn`).forEach((btn) => {
-        if (btn.classList.contains("active")) {
-          activeAction = btn.dataset.action;
-          btn.classList.remove("active");
-        }
-      });
-      spanEl = document.getElementById(`${type + id}_vote_count`);
-      let vote_count = parseInt(spanEl.innerHTML);
+function showFormError(formEl, message) {
+  removeFormError(formEl);
 
-      if (action === "remove") {
-        vote_count -= value;
-      } else {
-        button.classList.add("active");
-        if (activeAction) {
-          vote_count -= actionMap[activeAction];
-        }
-        vote_count += value;
-      }
+  const p = document.createElement("p");
+  p.className = "at-error-msg at-form-error mb-1";
+  p.textContent = message;
+  formEl.appendChild(p);
+}
 
-      spanEl.innerHTML = vote_count;
-    })
-    .catch((err) => {
-      console.error(err);
-      alert("Something went wrong, Please try again.");
+function incrementAnswerCount() {
+  const countEl = document.getElementById("answer_count");
+  if (!countEl) return;
+
+  let current = parseInt(countEl.textContent);
+
+  if (isNaN(current)) return;
+
+  let newCount = current + 1;
+  countEl.textContent = `${newCount} Answer${newCount !== 1 ? "s" : ""}`;
+}
+
+async function handleAnswerSubmit(e) {
+  try {
+    e.preventDefault();
+
+    const url = formEl.dataset.url;
+    const questionId = Number.parseInt(formEl.dataset.id, 10);
+    const value = formEl.querySelector("#id_content").value;
+    const answer = value?.trim() ?? "";
+
+    if (!answer) {
+      showFormError(formEl, "Answer cannot be empty");
+      return;
+    }
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCSRFToken(),
+      },
+      body: JSON.stringify({
+        content: answer,
+        question: questionId,
+      }),
     });
-};
+
+    const data = await pJson(res);
+
+    removeFormError(formEl);
+    formEl.reset();
+    clearSummernote();
+
+    incrementAnswerCount();
+    addAnswerToUI(data.html);
+  } catch (err) {
+    const msg = err?.content?.[0] || "Some error occurred";
+    showFormError(formEl, msg);
+  }
+}
+
+async function handleVote(type, id, action, button) {
+  try {
+    const url = button.dataset.url;
+    const actionMap = { upvote: 1, downvote: -1 };
+    const value = actionMap[action];
+  
+    if (button.classList.contains("active")) {
+      action = "remove";
+    }
+  
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCSRFToken(),
+      },
+      body: JSON.stringify({ action }),
+    });
+  
+    const data = await pJson(res);
+  
+    let activeAction = "";
+    document.querySelectorAll(`.${type + id}-vote-btn`).forEach((btn) => {
+      if (btn.classList.contains("active")) {
+        activeAction = btn.dataset.action;
+        btn.classList.remove("active");
+      }
+    });
+    spanEl = document.getElementById(`${type + id}_vote_count`);
+    let vote_count = parseInt(spanEl.innerHTML);
+  
+    if (action === "remove") {
+      vote_count -= value;
+    } else {
+      button.classList.add("active");
+      if (activeAction) {
+        vote_count -= actionMap[activeAction];
+      }
+      vote_count += value;
+    }
+  
+    spanEl.innerHTML = vote_count;
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong, Please try again.");
+  }
+}
 
 const handleCommentFormDisplay = (type, id, button) => {
   let btnType = button.dataset.btn;
@@ -353,6 +360,6 @@ document.addEventListener("submit", (e) => {
   const answerForm = e.target.closest("[data-answer-form]");
 
   if (answerForm) {
-    handleSubmit(e);
+    handleAnswerSubmit(e);
   }
 });
