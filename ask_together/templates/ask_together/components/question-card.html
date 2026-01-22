@@ -47,7 +47,7 @@
             <div class="at-question-card__author-main">
                 <img class="at-avatar at-avatar-sm" src="{% if question.user.profile_image %}{{question.user.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}"
                 alt="{{question.user.username}} profile" loading="lazy"/>
-                <a class="at-question-card__author-name"href="{% url 'ask_together:user_profile' question.user.id %}">
+                <a class="at-question-card__author-name" href="{% url 'ask_together:user_profile' question.user.id %}">
                     {{question.user.username}}
                 </a>
             </div>

@@ -1,0 +1,23 @@
+.error__card {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 400px;
+}
+
+.error__title {
+  color: var(--color-danger-dark);
+  font-size: calc(1.525rem + 3.3vw);
+  font-weight: 700;
+}
+
+.error__message {
+  color: var(--color-text-secondary);
+  font-size: var(--fs-xl);
+  text-align: center;
+}
+
+.error__message--sm {
+  font-size: var(--fs-md);
+}

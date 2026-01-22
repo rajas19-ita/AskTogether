@@ -17,19 +17,18 @@ h6 {
   font-family: var(--font-heading);
   line-height: 1.3;
   color: var(--color-heading-dark);
+  font-weight: 500;
+  margin: 0;
 }
 
 h1 {
   font-size: var(--fs-h1);
-  margin-bottom: 0;
 }
 h2 {
   font-size: var(--fs-h2);
-  margin-bottom: 0;
 }
 h3 {
   font-size: var(--fs-h3);
-  margin-bottom: 0;
 }
 
 p {

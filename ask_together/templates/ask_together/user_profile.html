@@ -21,44 +21,46 @@
                 data-question-url="{% url 'ask_together:question_detail' 0 %}"
             >
                 <header class="at-profile__header">
-                    <img src="{% if object.profile_image %}{{object.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}" class=" at-avatar-profile" />
-                    
-                    <div class="at-profile__identity">
-                        <h1 class="at-profile__name">{{object.username}}</h1>
-                        {% if object.title %}
-                            <p class="at-profile__title">{{object.title}}</p>
-                        {% endif %}
-                        <ul class="at-profile__links">
-                            {% if object.website %}
-                                <li>
-                                    <a href="{{object.website}}" target="_blank" class="at-profile__link">
-                                        {% icon 'bi-link-45deg' 'icon-link' %}
-                                    </a>    
-                                </li>
+                    <div class="at-profile__card">
+                        <img src="{% if object.profile_image %}{{object.profile_image.url}}{% else %}{% static 'ask_together/img/default_profile.jpg' %}{% endif %}" class=" at-avatar-profile" />
+                        
+                        <div class="at-profile__identity">
+                            <h1 class="at-profile__name">{{object.username}}</h1>
+                            {% if object.title %}
+                                <p class="at-profile__title">{{object.title}}</p>
                             {% endif %}
-                            {% if object.x_handle %}
-                                <li>
-                                    <a href="https://x.com/{{object.x_handle}}" target="_blank" class="at-profile__link">
-                                        {% icon 'bi-twitter-x' 'icon-twitter' %}
-                                    </a>    
-                                </li>
+                            <ul class="at-profile__links">
+                                {% if object.website %}
+                                    <li>
+                                        <a href="{{object.website}}" target="_blank" class="at-profile__link">
+                                            {% icon 'bi-link-45deg' 'icon-link' %}
+                                        </a>    
+                                    </li>
+                                {% endif %}
+                                {% if object.x_handle %}
+                                    <li>
+                                        <a href="https://x.com/{{object.x_handle}}" target="_blank" class="at-profile__link">
+                                            {% icon 'bi-twitter-x' 'icon-twitter' %}
+                                        </a>    
+                                    </li>
+                                {% endif %}
+                                {% if object.github %}
+                                    <li>
+                                        <a href="https://github.com/{{object.github}}" target="_blank" class="at-profile__link">
+                                            {% icon 'bi-github' 'icon-github' %}
+                                        </a>    
+                                    </li>
+                                {% endif %}
+                            </ul>
+                            {% if object.location %}
+                                <p class="at-profile__location">
+                                    <span>
+                                        {% icon 'bi-geo-alt-fill' 'icon-location' %}
+                                    </span>
+                                    {{object.location}}
+                                </p>
                             {% endif %}
-                            {% if object.github %}
-                                <li>
-                                    <a href="https://github.com/{{object.github}}" target="_blank" class="at-profile__link">
-                                        {% icon 'bi-github' 'icon-github' %}
-                                    </a>    
-                                </li>
-                            {% endif %}
-                        </ul>
-                        {% if object.location %}
-                            <p class="at-profile__location">
-                                <span>
-                                    {% icon 'bi-geo-alt-fill' 'icon-location' %}
-                                </span>
-                                {{object.location}}
-                            </p>
-                        {% endif %}
+                        </div>
                     </div>
                     {% if request.user.id == object.id %}
                         <div>

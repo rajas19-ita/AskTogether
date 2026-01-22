@@ -217,7 +217,8 @@ class SearchPageView(TemplateView):
         return context
         
     
-class NotificationsView(TemplateView):
+class NotificationsView(LoginRequiredMixin,TemplateView):
+    login_url = reverse_lazy('ask_together:login')
     template_name='ask_together/notifications.html'
     
     

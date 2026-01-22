@@ -41,6 +41,7 @@
 }
 
 .at-brand__name {
+  display: none;
   font-size: var(--fs-xl);
 }
 
@@ -70,9 +71,11 @@
 
 .at-search__icon {
   position: absolute;
-  top: 50%;
+  top: 0;
+  bottom: 0;
   left: var(--space-2);
-  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
 }
 
 .at-search-icon {
@@ -107,6 +110,12 @@
   color: white;
   background-color: var(--color-danger);
   border-radius: 50%;
+}
+
+@media (min-width: 1024px) {
+  .at-brand__name {
+    display: block;
+  }
 }
 
 @media (min-width: 1200px) {

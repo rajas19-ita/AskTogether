@@ -14,6 +14,7 @@
   --color-white: #ffffff;
   --color-border: #ddd;
   --color-danger: #ff3d00;
+  --color-danger-dark: #dc3545;
   --color-primary-400: #92b1f5;
   --color-alert-border: #f1aeb5;
   --color-alert-text: #58151c;
@@ -52,6 +53,7 @@
   --space-4: 16px;
   --space-5: 24px;
   --space-6: 32px;
+  --space-7: 48px;
 
   --radius-sm: 4px;
   --radius-md: 6px;

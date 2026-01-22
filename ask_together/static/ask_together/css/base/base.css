@@ -49,12 +49,6 @@ ul {
   padding: 0.5rem 1.25rem;
 }
 
-.at-btn-sm {
-  font-size: 0.825rem;
-  padding: 0.35rem 0.75rem;
-  font-weight: normal;
-}
-
 .at-btn--xs {
   padding: 0.25rem 0.5rem;
 }
@@ -183,65 +177,6 @@ ul {
   --color-alert-border: #9eeaf9;
 }
 
-.at-heading-color {
-  color: var(--color-heading) !important;
-}
-
-.at-heading-color-dark {
-  color: var(--color-heading-dark) !important;
-}
-
-.at-bg-primary-300 {
-  background-color: var(--color-primary-300) !important;
-}
-.at-bg-primary-200 {
-  background-color: var(--color-primary-200) !important;
-}
-
-.at-bg-primary-100 {
-  background-color: var(--color-primary-100) !important;
-}
-
-.at-border-primary-300 {
-  border-color: var(--color-primary-300) !important;
-}
-
-.at-text-body-color {
-  color: var(--color-text-primary) !important;
-}
-
-.at-text-secondary {
-  color: var(--color-text-secondary) !important;
-}
-
-.at-font-sourcesans3 {
-  font-family: var(--font-family-body) !important;
-}
-
-.at-font-roboto {
-  font-family: var(--font-family-heading) !important;
-}
-
-.at-text-brand-primary {
-  color: var(--color-primary) !important;
-}
-
-.at-text-brand-primary-dark {
-  color: var(--color-primary-dark) !important;
-}
-
-.at-border {
-  border: 1px solid var(--color-border);
-}
-
-.at-border-bottom {
-  border-bottom: 1px solid var(--color-border);
-}
-
-.at-border-top {
-  border-top: 1px solid var(--color-border);
-}
-
 .at-btn-sm {
   font-size: 0.825rem;
   padding: 0.35rem 0.75rem;
@@ -337,17 +272,13 @@ ul {
 
 .at-content-container {
   flex: 1;
-  padding: 2rem;
+  padding: 1.5rem 1rem;
   max-width: 980px;
   margin: 0 auto;
 }
 
 .at-rich-content img {
   max-width: 100% !important;
-}
-
-.mb-7 {
-  margin-bottom: 5rem !important;
 }
 
 pre pre {
@@ -363,38 +294,25 @@ pre {
   word-break: break-word !important;
 }
 
+@media (min-width: 576px) {
+}
+
+@media (min-width: 768px) {
+  .at-content-container {
+    padding: 1.5rem;
+  }
+}
+
 @media (min-width: 1200px) {
   .at-btn-hamburger {
     display: none;
   }
 }
 
-@media (max-width: 1199px) {
-  .at-nav-login {
-    display: none !important;
-  }
-
-  .at-search-box {
-    margin-right: 1rem !important;
-  }
-}
-
 @media (max-width: 991px) {
-  .at-brand-name {
-    display: none;
-  }
-  .at-content-container {
-    padding: 2rem 0.5rem;
-  }
   .at-avatar-profile {
     width: 100px;
     height: 120px;
     object-fit: cover;
   }
-}
-
-@media (max-width: 767px) {
-}
-
-@media (max-width: 575px) {
 }
