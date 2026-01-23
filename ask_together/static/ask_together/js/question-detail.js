@@ -79,16 +79,33 @@ async function handleAnswerSubmit(e) {
   }
 }
 
-async function handleVote(type, id, action, button) {
-  try {
-    const url = button.dataset.url;
-    const actionMap = { upvote: 1, downvote: -1 };
-    const value = actionMap[action];
-  
-    if (button.classList.contains("active")) {
-      action = "remove";
+function setButtonsDisabled(buttons, disabled) {
+  buttons.forEach((btn) => {
+    btn.disabled = disabled;
+  });
+}
+
+function applyVoteUI({ type, id, buttons, user_vote, score }) {
+  buttons.forEach((btn) => {
+    btn.classList.remove("active");
+    if (user_vote === 1 && btn.dataset.action === "upvote") {
+      btn.classList.add("active");
+    } else if (user_vote === -1 && btn.dataset.action === "downvote") {
+      btn.classList.add("active");
     }
-  
+  });
+
+  const spanEl = document.getElementById(`${type + id}_vote_count`);
+  spanEl.textContent = score;
+}
+
+async function handleVote(type, id, action, button) {
+  const url = button.dataset.url;
+  const voteBtnA = document.querySelectorAll(`.${type + id}-vote-btn`);
+
+  try {
+    setButtonsDisabled(voteBtnA, true);
+
     const res = await fetch(url, {
       method: "POST",
       headers: {
@@ -97,155 +114,143 @@ async function handleVote(type, id, action, button) {
       },
       body: JSON.stringify({ action }),
     });
-  
+
     const data = await pJson(res);
-  
-    let activeAction = "";
-    document.querySelectorAll(`.${type + id}-vote-btn`).forEach((btn) => {
-      if (btn.classList.contains("active")) {
-        activeAction = btn.dataset.action;
-        btn.classList.remove("active");
-      }
+
+    applyVoteUI({
+      type,
+      id,
+      buttons: voteBtnA,
+      user_vote: data.user_vote,
+      score: data.upvotes - data.downvotes,
     });
-    spanEl = document.getElementById(`${type + id}_vote_count`);
-    let vote_count = parseInt(spanEl.innerHTML);
-  
-    if (action === "remove") {
-      vote_count -= value;
-    } else {
-      button.classList.add("active");
-      if (activeAction) {
-        vote_count -= actionMap[activeAction];
-      }
-      vote_count += value;
-    }
-  
-    spanEl.innerHTML = vote_count;
   } catch (err) {
     console.error(err);
-    alert("Something went wrong, Please try again.");
+    notyfCenter.error("Something went wrong, Please try again.");
+  } finally {
+    setButtonsDisabled(voteBtnA, false);
   }
 }
 
-const handleCommentFormDisplay = (type, id, button) => {
+function removeCommentFormError(type, id, form) {
+  form.querySelector(`#${type + id}_comment_error`)?.remove();
+}
+
+function commentFormHide(type, id, form) {
+  form.reset();
+  removeCommentFormError(type, id, form);
+  document
+    .getElementById(`${type + id}_comment_btn`)
+    .classList.remove("at-hidden");
+  form.classList.add("at-hidden");
+}
+
+function handleCommentFormDisplay(type, id, button) {
   let btnType = button.dataset.btn;
   let commentForm = document.getElementById(`${type + id}_comment_form`);
   if (btnType === "show") {
     button.classList.add("at-hidden");
     commentForm.classList.remove("at-hidden");
   } else {
-    commentForm.reset();
-    commentForm.querySelector(`#${type + id}_comment_error`)?.remove();
-    document
-      .getElementById(`${type + id}_comment_btn`)
-      .classList.remove("at-hidden");
-    commentForm.classList.add("at-hidden");
+    commentFormHide(type, id, commentForm);
   }
-};
+}
 
-const addCommentToUi = (comment, type, id) => {
+function addCommentToUi(comment, type, id) {
   const container = document.getElementById(`${type + id}_comments_container`);
   container.insertAdjacentHTML("beforeend", comment);
   formatUTCtoLocal(container);
-};
+}
 
-const handleCommentSubmit = (e, type, id, form) => {
-  e.preventDefault();
-  let content = document.getElementById(`${type + id}_comment_content`).value;
+function showCommentFormError(type, id, form, message) {
+  removeCommentFormError(type, id, form);
 
-  fetch(`${form.dataset.url}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRFToken": getCSRFToken(),
-    },
-    body: JSON.stringify({
-      content: content.trim(),
-      [type]: id,
-    }),
-  })
-    .then((res) => {
-      if (res.ok) {
-        return res.json();
-      } else {
-        return res.json().then((err) => {
-          throw err;
-        });
-      }
-    })
-    .then((data) => {
-      form.querySelector(`#${type + id}_comment_error`)?.remove();
-      form.reset();
-      addCommentToUi(data.html, type, id);
-      document
-        .getElementById(`${type + id}_comment_btn`)
-        .classList.remove("at-hidden");
-      form.classList.add("at-hidden");
-    })
-    .catch((err) => {
-      const p = document.createElement("p");
-      p.id = `${type + id}_comment_error`;
-      p.className = "at-form-error mb-1";
-      if (err.content) {
-        p.textContent = err.content[0];
-      } else {
-        p.textContent = "some error occurred";
-      }
-      form.appendChild(p);
+  const p = document.createElement("p");
+  p.id = `${type + id}_comment_error`;
+  p.className = "at-form-error mb-1";
+  p.textContent = message;
+  form.appendChild(p);
+}
+
+async function handleCommentSubmit(e, type, id, form) {
+  try {
+    e.preventDefault();
+    const url = form.dataset.url;
+    const value = document.getElementById(`${type + id}_comment_content`).value;
+    const comment = value?.trim() ?? "";
+
+    if (!comment) {
+      showCommentFormError(type, id, form, "Comment cannot be empty");
+      return;
+    }
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCSRFToken(),
+      },
+      body: JSON.stringify({
+        content: comment,
+        [type]: id,
+      }),
     });
-};
 
-const handleAcceptedAnswer = (id, button) => {
-  let method,
-    body = null;
+    const data = await pJson(res);
 
-  let questionSection = document.getElementById("question-section");
-  let acceptedAnswer =
-    questionSection.dataset.acceptedAnswerId !== ""
-      ? parseInt(questionSection.dataset.acceptedAnswerId)
-      : null;
-
-  let url = questionSection.dataset.acceptUrl;
-
-  if (acceptedAnswer === id) {
-    method = "DELETE";
-  } else {
-    method = "POST";
-    body = JSON.stringify({ answer: id });
+    addCommentToUi(data.html, type, id);
+    commentFormHide(type, id, form);
+  } catch (err) {
+    const msg = err?.content?.[0] || "Some error occurred";
+    showCommentFormError(type, id, form, msg);
   }
+}
 
-  fetch(url, {
-    method,
-    headers: {
-      "X-CSRFToken": getCSRFToken(),
-      ...(body && { "Content-Type": "application/json" }),
-    },
-    ...(body && { body }),
-  })
-    .then((res) =>
-      res.ok
-        ? res.json()
-        : res.json().then((err) => {
-            throw err;
-          }),
-    )
-    .then((data) => {
-      const prev = acceptedAnswer;
-      acceptedAnswer = data.accepted_answer;
-      questionSection.dataset.acceptedAnswerId =
-        acceptedAnswer === null ? "" : `${acceptedAnswer}`;
+async function handleAcceptedAnswer(id, button) {
+  try {
+    let method,
+      body = null;
 
-      if (prev !== null && prev !== id) {
-        updateAcceptedAnswerUI(prev, false);
-      }
+    const questionSection = document.getElementById("question-section");
+    let acceptedAnswer =
+      questionSection.dataset.acceptedAnswerId !== ""
+        ? parseInt(questionSection.dataset.acceptedAnswerId)
+        : null;
+    const url = questionSection.dataset.acceptUrl;
 
-      updateAcceptedAnswerUI(id, acceptedAnswer === id);
-    })
-    .catch((err) => {
-      console.error(err);
-      alert("Something went wrong, Please try again.");
+    if (acceptedAnswer === id) {
+      method = "DELETE";
+    } else {
+      method = "POST";
+      body = JSON.stringify({ answer: id });
+    }
+
+    const res = await fetch(url, {
+      method,
+      headers: {
+        "X-CSRFToken": getCSRFToken(),
+        ...(body && { "Content-Type": "application/json" }),
+      },
+      ...(body && { body }),
     });
-};
+
+    const data = await pJson(res);
+
+    const prev = acceptedAnswer;
+    acceptedAnswer = data.accepted_answer;
+    questionSection.dataset.acceptedAnswerId =
+      acceptedAnswer === null ? "" : `${acceptedAnswer}`;
+
+    if (prev !== null && prev !== id) {
+      updateAcceptedAnswerUI(prev, false);
+    }
+
+    updateAcceptedAnswerUI(id, acceptedAnswer === id);
+  } catch (err) {
+    console.error(err);
+    notyfCenter.error("Something went wrong, Please try again.");
+  }
+}
 
 function updateAcceptedAnswerUI(answerId, isAccepted) {
   const btn = document.getElementById(`answer${answerId}_acc_btn`);
@@ -254,42 +259,33 @@ function updateAcceptedAnswerUI(answerId, isAccepted) {
   btn.dataset.accepted = isAccepted ? "True" : "False";
 }
 
-const fetchMoreComments = (type, id, button) => {
-  const last_id = button.dataset.lastCommentId;
-  const url = button.dataset.url;
+async function fetchMoreComments(type, id, button) {
+  try {
+    const last_id = button.dataset.lastCommentId;
+    const url = button.dataset.url;
 
-  fetch(
-    `${url}?${type === "question" ? "question_id" : "answer_id"}=${id}&last_id=${last_id}`,
-    {
-      method: "GET",
-      headers: {
-        "X-CSRFToken": getCSRFToken(),
+    const res = await fetch(
+      `${url}?${type === "question" ? "question_id" : "answer_id"}=${id}&last_id=${last_id}`,
+      {
+        method: "GET",
+        headers: {
+          "X-CSRFToken": getCSRFToken(),
+        },
       },
-    },
-  )
-    .then((res) => {
-      if (res.ok) {
-        return res.json();
-      } else {
-        return res.json().then((err) => {
-          throw err;
-        });
-      }
-    })
-    .then((data) => {
-      data.comments.forEach((comment) =>
-        addCommentToUi(comment.html, type, id),
-      );
-      button.dataset.lastCommentId = data.last_id;
-      if (!data.has_more) {
-        button.classList.add("at-hidden");
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      alert("Something went wrong, Please try again.");
-    });
-};
+    );
+
+    const data = await pJson(res);
+
+    data.comments.forEach((comment) => addCommentToUi(comment.html, type, id));
+    button.dataset.lastCommentId = data.last_id;
+    if (!data.has_more) {
+      button.classList.add("at-hidden");
+    }
+  } catch (err) {
+    console.error(err);
+    notyfCenter.error("Something went wrong, Please try again.");
+  }
+}
 
 document.addEventListener("click", (e) => {
   const voteBtn = e.target.closest("[data-vote]");

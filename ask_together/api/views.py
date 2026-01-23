@@ -189,6 +189,7 @@ def get_posts(request, pk):
         logger.exception("Error while fetching posts for user_id=%s", pk)
         raise
 
+
 upvote_milestone = [5, 25, 50, 100, 500]
 
 @api_view(['POST'])
@@ -197,82 +198,83 @@ upvote_milestone = [5, 25, 50, 100, 500]
 def vote_question(request, pk):
     action = request.data.get('action')
     
-    if not action or action not in ['upvote', 'downvote', 'remove']:
-        return Response({'message':'Please provide valid action: upvote/downvote/remove'}, status=400)
-    
+    if not action or action not in ['upvote', 'downvote']:
+        return Response({'message':'Please provide valid action: upvote/downvote'}, status=400)
+
     try:
         question = get_object_or_404(Question, pk = pk)
     except Http404:
         return Response({
             "message":"Question does not exist."
         }, status=404)
-    
-    if action == 'remove':
-        vote = Vote.objects.filter(user=request.user, question=question).first()
-        if not vote:
-            return Response({
-                "message": "You haven't voted on this question yet.",
-                "question_id": question.id,
-                "u_vote": 0
-            }, status=404)
-            
-        value = vote.value
-        vote.delete()
-        if value == 1:
-            question.upvotes = F('upvotes') - 1
-            question.save(update_fields=['upvotes'])
-        else:
-            question.downvotes = F('downvotes') - 1
-            question.save(update_fields=['downvotes'])
-        
-        return Response({'message':'Vote removed successfully', 'question_id':question.id, 'u_vote':0})
-
-    
-    action_map = {"upvote": 1, "downvote":-1}
+   
+    action_map = {"upvote": 1, "downvote": -1}
     value = action_map[action]
-
-    vote, created = Vote.objects.get_or_create(user=request.user, 
-                                              question=question,
-                                              defaults={'value': value})
     
+    vote, created = Vote.objects.get_or_create(user=request.user, 
+                                               question=question,
+                                               defaults={'value': value})
+    new_user_vote = None
     if not created:
-        if value == vote.value:
-            return Response({'message':f'You have already {action}d','question_id':vote.question.id, 'u_vote':vote.value})
+        vote_value = vote.value
+        
+        if vote_value == value:
+            vote.delete()
+            
+            if value == 1:
+                question.upvotes = F('upvotes') - 1
+                delta = -1
+            else:
+                question.downvotes = F('downvotes') - 1
+                delta = 1            
+            new_user_vote = None
         else:
             vote.value = value
             vote.save()
             
-            if action == 'upvote':
+            if value == 1:
                 question.downvotes = F('downvotes') - 1
                 question.upvotes = F('upvotes') + 1
+                delta = 2
+                new_user_vote = 1
             else:
                 question.downvotes = F('downvotes') + 1
                 question.upvotes = F('upvotes') - 1
-            
-            question.save(update_fields=['upvotes', 'downvotes'])  
-            
-            return Response({'message':f'switched to {action}','question_id':vote.question.id, 'u_vote':vote.value})
+                delta = -2
+                new_user_vote = -1
     else:
-        if action == 'upvote':
+        if value == 1:
             question.upvotes = F('upvotes') + 1
+            delta = 1
+            new_user_vote = 1
         else:
             question.downvotes = F('downvotes') + 1
+            delta = -1
+            new_user_vote = -1
         
-        question.save(update_fields=['upvotes', 'downvotes'])
-    
+    question.save(update_fields=['upvotes', 'downvotes'])
     question.refresh_from_db()
-        
-    for i in range(len(upvote_milestone)-1, -1, -1):
-        milestone = upvote_milestone[i]
-        temp = question.upvotes // milestone
-        
-        if (temp and
-            not Notification.objects
-                .filter(user=question.user, question=question, event_type="UPVOTE_MILESTONE", upvotes = milestone).exists()):
-            notify_question_upvote_milestone(question, milestone)
-            break
-        
-    return Response({'message':f'{action}d successfully', 'question_id':vote.question.id, 'u_vote':vote.value})
+    
+    if delta > 0:
+        for i in range(len(upvote_milestone)-1, -1, -1):
+            milestone = upvote_milestone[i]
+            temp = question.upvotes // milestone
+            
+            if (temp and
+                not Notification.objects
+                    .filter(user=question.user, question=question, event_type="UPVOTE_MILESTONE", upvotes = milestone).exists()):
+                notify_question_upvote_milestone(question, milestone)
+                break
+
+    return Response({
+        'message':'ok', 
+        'question_id':question.id,
+        'user_vote': new_user_vote,
+        'upvotes': question.upvotes,
+        'downvotes': question.downvotes, 
+        'user_delta': delta})
+    
+    
 
 @api_view(['POST'])
 @authentication_classes([SessionAuthentication])
@@ -280,82 +282,81 @@ def vote_question(request, pk):
 def vote_answer(request, pk):
     action = request.data.get('action')
     
-    if not action or action not in ['upvote', 'downvote', 'remove']:
-        return Response({'message':'Please provide valid action: upvote/downvote/remove'}, status=400)
-    
+    if not action or action not in ['upvote', 'downvote']:
+        return Response({'message':'Please provide valid action: upvote/downvote'}, status=400)
+
     try:
         answer = get_object_or_404(Answer, pk = pk)
     except Http404:
         return Response({
             "message":"Answer does not exist."
         }, status=404)
-    
-    if action == 'remove':
-        vote = Vote.objects.filter(user=request.user, answer=answer).first()
-        if not vote:
-            return Response({
-                "message": "You haven't voted on this answer yet.",
-                "answer_id": answer.id,
-                "u_vote": 0
-            }, status=404)
-            
-        value = vote.value
-        vote.delete()
-        if value == 1:
-            answer.upvotes = F('upvotes') - 1
-            answer.save(update_fields=['upvotes'])
-        else:
-            answer.downvotes = F('downvotes') - 1
-            answer.save(update_fields=['downvotes'])
-        
-        
-        return Response({'message':'Vote removed successfully', 'answer_id':answer.id, 'u_vote':0})
-
-    
-    action_map = {"upvote": 1, "downvote":-1}
+   
+    action_map = {"upvote": 1, "downvote": -1}
     value = action_map[action]
-
+    
     vote, created = Vote.objects.get_or_create(user=request.user, 
-                                              answer=answer,
-                                              defaults={'value': value})
+                                               answer=answer,
+                                               defaults={'value': value})
     
     if not created:
-        if value == vote.value:
-            return Response({'message':f'You have already {action}d','answer_id':vote.answer.id, 'u_vote':vote.value})
+        vote_value = vote.value
+        
+        if vote_value == value:
+            vote.delete()
+            
+            if value == 1:
+                answer.upvotes = F('upvotes') - 1
+                delta = -1
+            else:
+                answer.downvotes = F('downvotes') - 1
+                delta = 1            
+            new_user_vote = None
         else:
             vote.value = value
             vote.save()
             
-            if action == 'upvote':
+            if value == 1:
                 answer.downvotes = F('downvotes') - 1
                 answer.upvotes = F('upvotes') + 1
+                delta = 2
+                new_user_vote = 1
             else:
                 answer.downvotes = F('downvotes') + 1
                 answer.upvotes = F('upvotes') - 1
-            
-            answer.save(update_fields=['upvotes', 'downvotes'])  
-            
-            return Response({'message':f'switched to {action}','answer_id':vote.answer.id, 'u_vote':vote.value})
+                delta = -2
+                new_user_vote = -1
     else:
-        if action == 'upvote':
+        if value == 1:
             answer.upvotes = F('upvotes') + 1
+            delta = 1
+            new_user_vote = 1
         else:
             answer.downvotes = F('downvotes') + 1
+            delta = -1
+            new_user_vote = -1
         
-        answer.save(update_fields=['upvotes', 'downvotes'])  
-    
+    answer.save(update_fields=['upvotes', 'downvotes'])
     answer.refresh_from_db()
     
-    for i in range(len(upvote_milestone)-1, -1, -1):
-        milestone = upvote_milestone[i]
-        temp = answer.upvotes // milestone
-        if (temp and
-            not Notification.objects
-                .filter(user=answer.author, answer=answer, event_type="UPVOTE_MILESTONE", upvotes = milestone).exists()):
-            notify_answer_upvote_milestone(answer, milestone)
-            break
-    
-    return Response({'message':f'{action}d successfully', 'answer_id':vote.answer.id, 'u_vote':vote.value})
+    if delta > 0:
+        for i in range(len(upvote_milestone)-1, -1, -1):
+            milestone = upvote_milestone[i]
+            temp = answer.upvotes // milestone
+            
+            if (temp and
+                not Notification.objects
+                    .filter(user=answer.author, answer=answer, event_type="UPVOTE_MILESTONE", upvotes = milestone).exists()):
+                notify_answer_upvote_milestone(answer, milestone)
+                break
+
+    return Response({
+        'message':'ok', 
+        'answer_id':answer.id,
+        'user_vote': new_user_vote,
+        'upvotes': answer.upvotes,
+        'downvotes': answer.downvotes, 
+        'user_delta': delta})
 
 
 @api_view(['GET'])
