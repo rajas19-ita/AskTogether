@@ -456,6 +456,7 @@ def check_username(request):
 def get_notifications(request):
     cursor_id = request.GET.get('cursor_id')
     is_read = request.GET.get('is_read')
+    limit = 10
     
     filters = {}
     if cursor_id:
@@ -481,13 +482,21 @@ def get_notifications(request):
         "actor__id", "actor__username", "actor__profile_image",
         "question__id", "question__title",
         "answer__id"
-    ).order_by('-id')[:10]
+    ).order_by('-id')[:limit + 1]
     
     if not notifications:
         return Response({
             "next_cursor": None,
-            "data": []
+            "data": [],
+            "has_more": False
         })
+    
+    notifications = list(notifications) 
+    has_more = len(notifications) > limit
+    print('has_more',has_more)
+    
+    if has_more:
+        notifications = notifications[:limit]
     
     if not filters['is_read'] and notifications:
         ids = [n.id for n in notifications]
@@ -497,7 +506,8 @@ def get_notifications(request):
         
     return Response({
         "next_cursor":next_cursor,
-        "data":NotificationSerializer(notifications, many=True).data
+        "data":NotificationSerializer(notifications, many=True).data,
+        "has_more": has_more
     })
     
     

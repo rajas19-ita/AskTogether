@@ -6,123 +6,121 @@ const notificationSection = document.getElementById("notification-section");
 let nextUnread = null;
 let nextRead = null;
 
-const switchTab = (button) => {
+const state = {
+  read: { next: null, loadingGif: readLoadingGif },
+  unread: { next: null, loadingGif: unreadLoadingGif },
+};
+
+const keyPanel = (type) => document.getElementById(`${type}_panel`);
+const keyLoadMore = (type) => document.getElementById(`load_more_${type}`);
+const keyEmptyMsg = (type) => document.getElementById(`no_${type}_msg`);
+
+function switchTab(button) {
   let type = button.dataset.type;
 
   tabs.forEach((btn) => {
-    btn.classList.remove("active");
-    btn.ariaSelected = "false";
-  });
-  tabContents.forEach((tabC) => {
-    tabC.classList.remove("active");
-    tabC.hidden = true;
+    let active = btn === button;
+    btn.classList.toggle("active", active);
+    btn.ariaSelected = String(active);
   });
 
-  button.classList.add("active");
-  button.ariaSelected = "true";
-  const panel = document.getElementById(`${type}_panel`);
-  panel.classList.add("active");
-  panel.hidden = false;
-};
+  tabContents.forEach((panel) => {
+    let active = panel.id === `${type}_panel`;
+    panel.classList.toggle("active", active);
+    panel.hidden = !active;
+  });
+}
 
-const fetchNotifications = (type, next = null) => {
-  return fetch(
-    `${notificationSection.dataset.fetchUrl}?is_read=${type === "read"}${next ? `&cursor_id=${next}` : ""}`,
-    {
-      headers: {
-        "X-CSRFToken": getCSRFToken(),
-      },
-    },
-  )
-    .then((res) => {
-      if (res.ok) {
-        return res.json();
-      } else {
-        return res.json().then((err) => {
-          throw err;
-        });
-      }
-    })
-    .then((data) => {
-      return data;
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-};
+async function fetchNotifications(type, cursor = null) {
+  const baseUrl = notificationSection.dataset.fetchUrl;
+  const params = new URLSearchParams({
+    is_read: String(type === "read"),
+  });
 
-const loadMoreNotifications = (button, type) => {
-  button.classList.add("at-hidden");
-  if (type === "read") {
-    document.getElementById(`${type}_panel`).append(readLoadingGif);
-    readLoadingGif.classList.remove("at-hidden");
-  } else {
-    document.getElementById(`${type}_panel`).append(unreadLoadingGif);
-    unreadLoadingGif.classList.remove("at-hidden");
-  }
-  fetchNotifications(type, type === "read" ? nextRead : nextUnread).then(
-    (data) => {
-      readLoadingGif.classList.add("at-hidden");
-      unreadLoadingGif.classList.add("at-hidden");
-      if (type === "read") {
-        nextRead = data.next_cursor;
-        renderReadNotifications(data.data);
-      } else {
-        nextUnread = data.next_cursor;
-        renderUnreadNotifications(data.data);
-      }
-    },
-  );
-};
+  if (cursor) params.set("cursor_id", cursor);
 
-const renderReadNotifications = (data) => {
-  const container = document.getElementById(`read_panel`);
-  data.forEach((notification) => addNotificationToUI(notification, "read"));
+  const res = await fetch(`${baseUrl}?${params.toString()}`, {
+    headers: { "X-CSRFToken": getCSRFToken() },
+  });
 
-  let loadMoreBtn = document.getElementById("load_more_read");
-  if (data.length) {
-    loadMoreBtn.classList.remove("at-hidden");
-    container.appendChild(loadMoreBtn);
-  } else {
-    loadMoreBtn.classList.add("at-hidden");
-  }
-};
+  const data = await pJson(res);
 
-const renderUnreadNotifications = (data) => {
-  const container = document.getElementById(`unread_panel`);
-  console.log("unread_panel", container);
+  return data;
+}
 
-  data.forEach((notification) => addNotificationToUI(notification, "unread"));
-  let loadMoreBtn = document.getElementById("load_more_unread");
-  if (data.length) {
-    loadMoreBtn.classList.remove("at-hidden");
-    container.appendChild(loadMoreBtn);
-  } else {
-    loadMoreBtn.classList.add("at-hidden");
-  }
-};
+function setLoading(type, isLoading) {
+  const panel = keyPanel(type);
+  const gif = state[type].loadingGif;
 
-const addNotificationToUI = (notification, type) => {
-  const container = document.getElementById(`${type}_panel`);
+  if (!panel || !gif) return;
+
+  gif.classList.toggle("at-hidden", !isLoading);
+  if (isLoading) panel.append(gif);
+}
+
+function addNotificationToUI(notification, type) {
+  const container = keyPanel(type);
+  if (!container) return;
 
   const wrapper = document.createElement("article");
   wrapper.className = "at-notification-card";
 
-  wrapper.innerHTML = `
-                ${notificationSVG(notification)}
-                <div class="at-notification__content">
-                    <p class="at-notification__message">
-                        <a href=${notificationSection.dataset.notificationUrl.replace("0", notification.question.id)} target="_blank">
-                            ${notification.message}
-                        </a>
-                    </p>
-                    <time class="at-notification__time" data-dt="${notification.created_at}">
-                        ${timeAgo(notification.created_at)}
-                    </time>
-                </div>
-        `;
+  wrapper.insertAdjacentHTML("beforeend", notificationSVG(notification));
+
+  const content = document.createElement("div");
+  content.className = "at-notification__content";
+
+  const p = document.createElement("p");
+  p.className = "at-notification__message";
+
+  const a = document.createElement("a");
+  a.target = "_blank";
+  a.href = notificationSection.dataset.notificationUrl.replace(
+    "0",
+    notification.question.id,
+  );
+  a.textContent = notification.message;
+
+  p.appendChild(a);
+
+  const time = document.createElement("time");
+  time.className = "at-notification__time";
+  time.dataset.dt = notification.created_at;
+  time.textContent = timeAgo(notification.created_at);
+
+  content.append(p, time);
+  wrapper.appendChild(content);
   container.appendChild(wrapper);
-};
+}
+
+function renderNotification(type, notifications, has_more) {
+  notifications.forEach((n) => addNotificationToUI(n, type));
+
+  const loadMoreBtn = keyLoadMore(type);
+  const panel = keyPanel(type);
+
+  if (!loadMoreBtn || !panel) return;
+
+  loadMoreBtn.classList.toggle("at-hidden", !has_more);
+  panel.appendChild(loadMoreBtn);
+}
+
+async function loadMoreNotifications(type, button) {
+  button.classList.add("at-hidden");
+  setLoading(type, true);
+
+  try {
+    const data = await fetchNotifications(type, state[type].next);
+    state[type].next = data.next_cursor;
+
+    renderNotification(type, data.data, data.has_more);
+  } catch (err) {
+    console.error(err);
+    button.classList.remove("at-hidden");
+  } finally {
+    setLoading(type, false);
+  }
+}
 
 const notificationSVG = (notification) => {
   switch (notification.event_type) {
@@ -168,32 +166,35 @@ document.addEventListener("click", (e) => {
 
   const loadMoreBtn = e.target.closest("[data-load-notification]");
   if (loadMoreBtn) {
-    loadMoreNotifications(loadMoreBtn, loadMoreBtn.dataset.type);
+    loadMoreNotifications(loadMoreBtn.dataset.type, loadMoreBtn);
   }
 });
 
-const fetchInitialNotifications = () => {
-  readLoadingGif.classList.remove("at-hidden");
-  unreadLoadingGif.classList.remove("at-hidden");
-  Promise.all([fetchNotifications("read"), fetchNotifications("unread")]).then(
-    (data) => {
-      readLoadingGif.classList.add("at-hidden");
-      unreadLoadingGif.classList.add("at-hidden");
-      nextRead = data[0].next_cursor;
-      nextUnread = data[1].next_cursor;
+async function fetchInitialNotifications() {
+  setLoading("read", true);
+  setLoading("unread", true);
 
-      if (data[0].data.length !== 0) {
-        renderReadNotifications(data[0].data);
-      } else {
-        document.getElementById("no_read_msg").classList.remove("at-hidden");
-      }
-      if (data[1].data.length !== 0) {
-        renderUnreadNotifications(data[1].data);
-      } else {
-        document.getElementById("no_unread_msg").classList.remove("at-hidden");
-      }
-    },
-  );
-};
+  try {
+    const [read, unread] = await Promise.all([
+      fetchNotifications("read"),
+      fetchNotifications("unread"),
+    ]);
+
+    state.read.next = read.next_cursor;
+    state.unread.next = unread.next_cursor;
+
+      if (read.data.length) renderNotification("read", read.data, read.has_more);
+    else keyEmptyMsg("read")?.classList.remove("at-hidden");
+
+    if (unread.data.length)
+      renderNotification("unread", unread.data, unread.has_more);
+    else keyEmptyMsg("unread")?.classList.remove("at-hidden");
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading("read", false);
+    setLoading("unread", false);
+  }
+}
 
 fetchInitialNotifications();
