@@ -3,8 +3,6 @@ const tabContents = document.querySelectorAll(".at-tab-content");
 const unreadLoadingGif = document.getElementById("unread_loading_gif");
 const readLoadingGif = document.getElementById("read_loading_gif");
 const notificationSection = document.getElementById("notification-section");
-let nextUnread = null;
-let nextRead = null;
 
 const state = {
   read: { next: null, loadingGif: readLoadingGif },
@@ -93,7 +91,7 @@ function addNotificationToUI(notification, type) {
   container.appendChild(wrapper);
 }
 
-function renderNotification(type, notifications, has_more) {
+function renderNotifications(type, notifications, has_more) {
   notifications.forEach((n) => addNotificationToUI(n, type));
 
   const loadMoreBtn = keyLoadMore(type);
@@ -113,7 +111,7 @@ async function loadMoreNotifications(type, button) {
     const data = await fetchNotifications(type, state[type].next);
     state[type].next = data.next_cursor;
 
-    renderNotification(type, data.data, data.has_more);
+    renderNotifications(type, data.data, data.has_more);
   } catch (err) {
     console.error(err);
     button.classList.remove("at-hidden");
@@ -183,11 +181,11 @@ async function fetchInitialNotifications() {
     state.read.next = read.next_cursor;
     state.unread.next = unread.next_cursor;
 
-      if (read.data.length) renderNotification("read", read.data, read.has_more);
+    if (read.data.length) renderNotifications("read", read.data, read.has_more);
     else keyEmptyMsg("read")?.classList.remove("at-hidden");
 
     if (unread.data.length)
-      renderNotification("unread", unread.data, unread.has_more);
+      renderNotifications("unread", unread.data, unread.has_more);
     else keyEmptyMsg("unread")?.classList.remove("at-hidden");
   } catch (err) {
     console.error(err);

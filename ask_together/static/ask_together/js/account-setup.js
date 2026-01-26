@@ -13,49 +13,62 @@ const debouncedFunction = (callback, delay) => {
   };
 };
 
-const handleUsernameCheck = (username) => {
-  fetch(`${usernameCheckUrl}?username=${username}`)
-    .then((res) => {
-      if (res.ok) {
-        return res.json();
-      } else {
-        return res.json().then((err) => {
-          throw err;
-        });
-      }
-    })
-    .then((data) => {
-      let available = data.available;
-
-      if (available) {
-        messageEl.classList.remove("account-setup__message--danger");
-        messageEl.classList.add("account-setup__message--success");
-        messageEl.innerHTML = `username '${username}' is available`;
-        selectBtn.disabled = false;
-      } else {
-        messageEl.classList.add("account-setup__message--danger");
-        messageEl.classList.remove("account-setup__message--success");
-        messageEl.innerHTML = `username '${username}' is taken`;
-        selectBtn.disabled = true;
-      }
-    })
-    .catch((err) => {
-      if (err.error === "username query param is required") {
-        messageEl.classList.add("account-setup__message--danger");
-        messageEl.classList.remove("account-setup__message--success");
-        messageEl.innerHTML = `username is required`;
-        selectBtn.disabled = true;
-      } else {
-        console.log(err);
-        alert("something went wrong, please try again.");
-      }
-    });
+const setMessage = ({ type, text, enableSubmit }) => {
+  messageEl.classList.toggle(
+    "account-setup__message--success",
+    type === "success",
+  );
+  messageEl.classList.toggle(
+    "account-setup__message--danger",
+    type === "danger",
+  );
+  messageEl.textContent = text;
+  selectBtn.disabled = !enableSubmit;
 };
 
-const debouncedUsernameCheck = debouncedFunction(handleUsernameCheck, 300);
+async function checkUsername(username) {
+  const u = (username ?? "").trim();
+
+  if (!u) {
+    setMessage({
+      type: "danger",
+      text: "username is required",
+      enableSubmit: false,
+    });
+
+    return;
+  }
+
+  const params = new URLSearchParams({ username: u });
+
+  try {
+    const res = await fetch(`${usernameCheckUrl}?${params.toString()}`);
+
+    const data = await pJson(res);
+
+    if (data.available) {
+      setMessage({
+        type: "success",
+        text: `username '${u}' is available`,
+        enableSubmit: true,
+      });
+    } else {
+      setMessage({
+        type: "danger",
+        text: `username '${u}' is taken`,
+        enableSubmit: false,
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    notyfCenter.error("Something went wrong, Please try again.");
+  }
+}
+
+const debouncedCheckUsername = debouncedFunction(checkUsername, 300);
 
 const handleChange = (e) => {
-  debouncedUsernameCheck(e.target.value);
+  debouncedCheckUsername(e.target.value);
 };
 
 usernameInput.addEventListener("input", handleChange);
