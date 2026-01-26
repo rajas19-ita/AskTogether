@@ -73,6 +73,8 @@ async function handleAnswerSubmit(e) {
 
     incrementAnswerCount();
     addAnswerToUI(data.html);
+
+    notyfCenter.success("Answer posted");
   } catch (err) {
     const msg = err?.content?.[0] || "Some error occurred";
     showFormError(formEl, msg);
@@ -200,6 +202,7 @@ async function handleCommentSubmit(e, type, id, form) {
 
     addCommentToUi(data.html, type, id);
     commentFormHide(type, id, form);
+    notyfCenter.success("comment posted");
   } catch (err) {
     const msg = err?.content?.[0] || "Some error occurred";
     showCommentFormError(type, id, form, msg);
@@ -244,6 +247,9 @@ async function handleAcceptedAnswer(id, button) {
     if (prev !== null && prev !== id) {
       updateAcceptedAnswerUI(prev, false);
     }
+    notyfCenter.success(
+      acceptedAnswer !== null ? "Answer accepted" : "Removed accepted answer",
+    );
 
     updateAcceptedAnswerUI(id, acceptedAnswer === id);
   } catch (err) {
