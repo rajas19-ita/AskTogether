@@ -72,7 +72,7 @@ function addNotificationToUI(notification, type) {
   p.className = "at-notification__message";
 
   const a = document.createElement("a");
-  a.target = "_blank";
+  // a.target = "_blank";
   a.href = notificationSection.dataset.notificationUrl.replace(
     "0",
     notification.question.id,
