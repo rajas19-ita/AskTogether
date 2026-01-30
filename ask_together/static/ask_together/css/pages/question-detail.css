@@ -132,7 +132,7 @@
   display: inline;
 }
 
-@media (min-width: 786px) {
+@media (min-width: 768px) {
   .at-question__meta {
     flex-direction: row;
     align-items: center;

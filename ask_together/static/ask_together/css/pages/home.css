@@ -200,7 +200,7 @@
   border-bottom: 2px solid var(--color-primary);
 }
 
-@media (min-width: 786px) {
+@media (min-width: 1024px) {
   .at-home-hero {
     flex-direction: row;
     gap: 0;

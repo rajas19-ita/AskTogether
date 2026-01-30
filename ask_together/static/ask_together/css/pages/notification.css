@@ -63,7 +63,7 @@
   font-size: var(--fs-sm);
 }
 
-@media (min-width: 786px) {
+@media (min-width: 768px) {
   .at-notifications__title {
     margin-left: 0;
   }

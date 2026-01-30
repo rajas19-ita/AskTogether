@@ -294,9 +294,6 @@ pre {
   word-break: break-word !important;
 }
 
-@media (min-width: 576px) {
-}
-
 @media (min-width: 768px) {
   .at-content-container {
     padding: 1.5rem;
@@ -313,6 +310,5 @@ pre {
   .at-avatar-profile {
     width: 100px;
     height: 120px;
-    object-fit: cover;
   }
 }
