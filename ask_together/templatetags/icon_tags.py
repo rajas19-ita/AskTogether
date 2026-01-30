@@ -8,5 +8,4 @@ def icon(name, class_name=""):
     return {
         'name': name,
         'class_name': class_name,
-        'sprite_url': static('ask_together/icons/sprite.svg')
     }
