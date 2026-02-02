@@ -18,7 +18,10 @@
                         {% csrf_token %}
                         <div class="at-ask-form__field">
                             <label for="id_title" class="at-ask-form__label">Title<span class="at-form-required"> *</span></label>
-                            <input type="text" name="title" maxlength="200" required="" id="id_title" class="at-form-input" placeholder="e.g. How to center a div using CSS?">
+                            <input type="text" name="title" value="{{form.title.value|default:''}}" maxlength="200" required="" id="id_title" class="at-form-input" placeholder="e.g. How to center a div using CSS?">
+                            {% for error in form.title.errors %}
+                                <p class="at-form-error">{{error}}</p>
+                            {% endfor %}
                         </div>
                         <div class="at-ask-form__field">
                             <label for="id_description" class="at-ask-form__label">Description<span class="at-form-required">*</span></label>

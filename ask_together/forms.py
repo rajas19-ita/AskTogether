@@ -64,13 +64,34 @@ class QuestionForm(forms.ModelForm):
                 }
             })
         }
+        
+    def clean_title(self):
+        title = self.cleaned_data.get("title","").strip()
+        
+        if len(title) < 20:
+            raise forms.ValidationError(
+                "Title must be at least 20 characters."
+            )
+        
+        return title
             
     def clean_description(self):
         html = self.cleaned_data.get("description","")
         
         soup = BeautifulSoup(html, "html.parser")
+        text = soup.get_text(separator=" ", strip=True)
         
-        self.cleaned_data['description_text'] = soup.get_text(separator=" ", strip=True)
+        if len(text) < 150:
+            raise forms.ValidationError(
+                "Please provide more details (at least 150 characters)."
+            )
+        
+        if len(text) > 3000:
+            raise forms.ValidationError(
+                "Description is too long. Please keep it under 3000 characters."
+            )
+        
+        self.cleaned_data['description_text'] = text
         
         return sanitize_html(html)
         
